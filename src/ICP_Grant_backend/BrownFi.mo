@@ -7,9 +7,11 @@ import Nat8 "mo:base/Nat8";
 import Float "mo:base/Float";
 import Text "mo:base/Text";
 import Option "mo:base/Option";
+import Error "mo:base/Error";
 
 import Tokens "./libraries/Tokens";
 import Root "./libraries/Root";
+import Utils "./libraries/Utils";
 
 shared(msg) actor class BrownFi(owner_ : Principal) = this {
 
@@ -63,6 +65,12 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         totalSupply : Nat;
         owner : Principal;
         fee : Nat;
+    };
+    type WithdrawState = {
+        tokenId : Text;
+        caller : Principal;     //  Principal ID of an account that sent a withdrawal request, but it failed
+        amount : Nat;
+        refundStatus : Bool
     };
     type Subaccount = Blob; 
 
@@ -119,12 +127,14 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     private stable var feeTo = owner_;
     private stable var txCounter : Nat = 0;
     private stable var depositCounter : Nat = 0;
+    private stable var ticketNo : Nat = 0;      //  being used to track failed withdraws
     private stable var tokenFee: Nat = 10000; // 0.0001 if decimal == 8
     private stable let blackhole : Principal = Principal.fromText("aaaaa-aa");
 
     private var tokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var lpTokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var pairs = HashMap.HashMap<Text, PairInfo>(1, Text.equal, Text.hash);
+    private var failedWithdraws = HashMap.HashMap<Text, WithdrawState>(1, Text.equal, Text.hash);   
 
     /*
       - Call to set new `owner` of the Canister
@@ -386,6 +396,19 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         return #ok(txCounter - 1);
     };
 
+    /*
+      - Deposit `amount` of `tokenId` into the canister
+      - Note: This function is different than the one above
+        It supports `msg.sender` and a receiver `to` are two different account
+      - Requirement: 
+        - `msg.caller` can be ANY
+        - `tokenId` must be registered by `owner`
+        - `amount` must be greater or equal the `tokenFee`
+      - Params:
+        - `tokenId`: the Principal ID of a token canister
+        - `to`: the Principal ID of a receiver
+        - `amount`: deposit amount
+    */
     public shared(msg) func depositTo(tokenId : Principal, to : Principal, amount : Nat) : async TxReceipt {
         let tid : Text = Principal.toText(tokenId);
         let fee : Nat = tokens.getFee(tid);
@@ -427,6 +450,87 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         );
         txCounter += 1;
         return #ok(txCounter - 1);
+    };
+
+    /*
+      - Withdraw `amount` of `tokenId` to `msg.caller`
+      - Requirement: 
+        - `msg.caller` can be ANY
+        - `tokenId` must be registered by `owner`
+        - `amount` must be less than or equal a current recorded balance
+      - Params:
+        - `tokenId`: the Principal ID of a token canister
+        - `amount`: withdrawing amount
+    */
+    public shared(msg) func withdraw(tokenId : Principal, amount : Nat) : async TxReceipt {
+        let tid: Text = Principal.toText(tokenId);
+        assert(tokens.hasToken(tid));
+
+        ignore _addRecord(
+            msg.caller, "withdraw-pre", 
+            [
+                ("tokenId", #Text(tid)),
+                ("from", #Principal(msg.caller)),
+                ("to", #Principal(msg.caller)),
+                ("amount", #Text(_u64ToText(amount))),
+                ("fee", #Text(_u64ToText(tokens.getFee(tid)))),
+                ("balance", #Text(_u64ToText(tokens.balanceOf(tid, msg.caller)))),
+                ("totalSupply", #Text(_u64ToText(tokens.totalSupply(tid))))
+            ]
+        );
+        
+        if (tokens.burn(tid, msg.caller, amount)) {
+            let tokenActor : ICRC2TokenActor = actor(tid);
+            let fee = tokens.getFee(tid);
+            var txid : Nat = 0;
+            try {
+                var withdrawAmount : Nat = amount - fee;
+                switch(await _transfer(tokenActor, msg.caller, withdrawAmount)) {
+                    case(#Ok(id)) { txid := id; };
+                    case(#Err(e)) {
+                        ignore tokens.mint(tid, msg.caller, amount);
+                        return #err("token transfer failed:" # tid);
+                    };
+                    case(#ICRCTransferError(e)) {
+                        ignore tokens.mint(tid, msg.caller, amount);
+                        return #err("token transfer failed:" # tid);
+                    };
+                };
+            } catch (e) {
+                let ticketId : Text = _failedWithdraw(tid, msg.caller, amount);
+                ignore _addRecord(
+                    msg.caller, "withdraw-failed", 
+                    [
+                        ("ticketId", #Text(ticketId)),
+                        ("tokenId", #Text(tid)),
+                        ("from", #Principal(msg.caller)),
+                        ("to", #Principal(msg.caller)),
+                        ("amount", #Text(_u64ToText(amount))),
+                        ("fee", #Text(_u64ToText(tokens.getFee(tid)))),
+                        ("balance", #Text(_u64ToText(tokens.balanceOf(tid, msg.caller)))),
+                        ("totalSupply", #Text(_u64ToText(tokens.totalSupply(tid)))),
+                        ("Error", #Text(Error.message(e))),
+                    ]
+                );
+                return #err("token transfer failed:" # ticketId);
+            };
+            ignore _addRecord(
+                msg.caller, "withdraw", 
+                [
+                    ("tokenId", #Text(tid)),
+                    ("txid", #Text(_u64ToText(txid))),
+                    ("from", #Principal(msg.caller)),
+                    ("to", #Principal(msg.caller)),
+                    ("amount", #Text(_u64ToText(amount))),
+                    ("fee", #Text(_u64ToText(fee))),
+                    ("balance", #Text(_u64ToText(tokens.balanceOf(tid, msg.caller)))),
+                    ("totalSupply", #Text(_u64ToText(tokens.totalSupply(tid))))
+                ]
+            );
+            txCounter += 1;
+            return #ok(txCounter - 1);
+        }; 
+        return #err("burn token failed:" # tid);
     };
 
     /*
@@ -499,23 +603,51 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
 
 
     /* *************************************** Private Functions *************************************** */
+    private func _transfer(tokenActor : ICRC2TokenActor, caller : Principal, amount : Nat) : async TransferReceipt {
+        var defaultSubaccount : Blob = Utils.defaultSubAccount();
+        var args : ICRCTransferArg =
+        {
+            from_subaccount = ?defaultSubaccount;
+            to = { owner = caller; subaccount = ?defaultSubaccount };
+            amount = amount;
+        };
+        switch (await tokenActor.icrc1_transfer(args)) {
+            case(#Ok(id)) { return #Ok(id); };
+            case(#Err(e)) { return #ICRCTransferError(e); };
+        };
+    };
+
     private func _transferFrom(
         tid : Text,
         tokenActor : ICRC2TokenActor,
         caller : Principal,
-        value : Nat, 
+        amount : Nat, 
         fee: Nat
     ) : async TransferReceipt{      
         var args = {
             from = { owner = caller; subaccount = null };
             to = { owner = Principal.fromActor(this); subaccount = null };
-            amount = value;
+            amount = amount;
         };
-        var txid = await tokenActor.icrc2_transfer_from(args);  
-        switch (txid){
+        switch (await tokenActor.icrc2_transfer_from(args)){
             case (#Ok(id)) { return #Ok(id); };                 
             case (#Err(e)) { return #ICRCTransferError(e); };
         };              
+    };
+
+    private func _failedWithdraw(tokenId : Text, caller : Principal, amount : Nat) : Text {
+        ticketNo += 1;
+        let ticketId : Text = _u64ToText(ticketNo);
+        failedWithdraws.put(
+            ticketId,
+            {
+              tokenId = tokenId; 
+              caller = caller; 
+              amount = amount; 
+              refundStatus = false
+            }
+        );
+        return ticketId;
     };
 
     private func _getMetadata(tokenActor : ICRC2TokenActor, tokenId : Principal) : async Metadata {
@@ -602,6 +734,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #deposit : () -> (Principal, Nat);
           #depositTo : () -> (Principal, Principal, Nat);
           #setPairConfig : () -> (Text, Text, Float, Float, Float);
+          #withdraw : () -> (Principal, Nat);
 
           #getOwner : () -> ();
           #getFeeTo : () -> ();
@@ -635,6 +768,11 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
                     Nat.less(amount,fee) or 
                     Principal.isAnonymous(caller)
                 ) return false;
+                return true;
+            };
+            case (#withdraw d) {
+                var tid : Text = Principal.toText(d().0);
+                if (tokens.hasToken(tid) == false or Principal.isAnonymous(caller)) return false;
                 return true;
             };
 
