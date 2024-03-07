@@ -1,10 +1,10 @@
 {
   "canisters": {
-    "ICP_Grant_backend": {
-      "main": "src/ICP_Grant_backend/main.mo",
+    "BrownFi_Core": {
+      "main": "src/ICP_Grant_backend/BrownFi.mo",
       "type": "motoko"
     },
-    "ICP_Grant_frontend": {
+    "BrownFi_FE": {
       "dependencies": [
         "ICP_Grant_backend"
       ],
@@ -13,6 +13,16 @@
       ],
       "type": "assets",
       "workspace": "ICP_Grant_frontend"
+    },
+    "token0": {
+      "type": "custom",
+      "candid": "https://raw.githubusercontent.com/dfinity/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/rs/rosetta-api/icrc1/ledger/ledger.did",
+      "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz"
+    },
+    "token1": {
+      "type": "custom",
+      "candid": "https://raw.githubusercontent.com/dfinity/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/rs/rosetta-api/icrc1/ledger/ledger.did",
+      "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz"
     }
   },
   "defaults": {
