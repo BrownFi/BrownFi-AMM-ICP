@@ -1,7 +1,7 @@
 #!/bin/bash
 export ALICE=$(dfx --identity alice identity get-principal)
 export BOB=$(dfx --identity bob identity get-principal)
-export OWNER=$(dfx --identity jasont identity get-principal)
+export OWNER=$(dfx --identity owner identity get-principal)
 dfx deploy token1 --argument '
   (variant {
     Init = record {

@@ -1,4 +1,4 @@
 #!/bin/bash
-dfx canister create BrownFi_Core
-dfx deploy BrownFi_Core --argument="(principal \"$(dfx identity get-principal)\")"
+dfx canister create core
+dfx deploy core --argument="(principal \"$(dfx identity get-principal)\")"
 

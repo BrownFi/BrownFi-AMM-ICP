@@ -8,6 +8,7 @@ import Float "mo:base/Float";
 import Text "mo:base/Text";
 import Option "mo:base/Option";
 import Error "mo:base/Error";
+import Time "mo:base/Time";
 
 import Tokens "./libraries/Tokens";
 import Root "./libraries/Root";
@@ -72,6 +73,10 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         amount : Nat;
         refundStatus : Bool
     };
+    type UserInfo = {
+        balances: [(Text, Nat)];
+        lpBalances: [(Text, Nat)];
+    };
     type Subaccount = Blob; 
 
     public type ICRC2TokenActor = actor {
@@ -93,10 +98,10 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         creator : Principal;
         var bReserve : Nat;
         var qReserve : Nat;
-        var pLast : Float;      //  last swap price  
-        var k : Float;          //  liquidity concentration
-        var l : Float;          //  price reversal
-        var feeRate : Float;
+        var pLast : Nat;        //  last swap price  
+        var k : Nat;            //  liquidity concentration
+        var l : Nat;            //  price reversal
+        var feeRate : Nat;
         var totalSupply : Nat;
         lpToken : Text;
     };
@@ -107,10 +112,10 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         creator : Principal;
         bReserve : Nat;
         qReserve : Nat;
-        pLast : Float;
-        k : Float;
-        l : Float;
-        feeRate : Float;
+        pLast : Nat;
+        k : Nat;
+        l : Nat;
+        feeRate : Nat;
         totalSupply : Nat;
         lpToken : Text;
     };
@@ -130,6 +135,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     private stable var ticketNo : Nat = 0;      //  being used to track failed withdraws
     private stable var tokenFee: Nat = 10000; // 0.0001 if decimal == 8
     private stable let blackhole : Principal = Principal.fromText("aaaaa-aa");
+    private stable let scale : Nat = 100_000_000;
 
     private var tokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var lpTokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
@@ -241,9 +247,9 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             var bReserve = 0;
             var qReserve = 0;
             var pLast = 0;
-            var k = 0;
-            var l = 0;
-            var feeRate = 0.001;
+            var k = 5_000_000;            //  liquidity concentration = 0.05 = 5_000_000 / 100_000_000
+            var l = 100_000_000;          //  price reversal = 1.0 = 100_000_000 / 100_000_000
+            var feeRate = 100_000;        //  feeRate = 0.001 = 100_000 / 100_000_000 
             var totalSupply = 0;
             lpToken = pair;
         };
@@ -277,9 +283,9 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     public shared(msg) func setPairConfig(
         bToken : Text,
         qToken : Text,
-        k_ : Float,          
-        l_ : Float,
-        feeRate_ : Float
+        k_ : Nat,          
+        l_ : Nat,
+        feeRate_ : Nat
     ) : async Bool {
         assert(msg.caller == owner);
 
@@ -296,10 +302,10 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
                         ("creator", #Principal(info.creator)),
                         ("bReserve", #Text(_u64ToText(info.bReserve))),
                         ("qReserve", #Text(_u64ToText(info.qReserve))),
-                        ("pLast", #Text(_floatToText(info.pLast))),
-                        ("k", #Text(_floatToText(info.k))),
-                        ("l", #Text(_floatToText(info.l))),
-                        ("feeRate", #Text(_floatToText(info.feeRate))),
+                        ("pLast", #Text(_u64ToText(info.pLast))),
+                        ("k", #Text(_u64ToText(info.k))),
+                        ("l", #Text(_u64ToText(info.l))),
+                        ("feeRate", #Text(_u64ToText(info.feeRate))),
                         ("totalSupply", #Text(_u64ToText(info.totalSupply))),
                         ("lpToken", #Text(info.lpToken))
                     ]
@@ -328,10 +334,10 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
                         ("creator", #Principal(newInfo.creator)),
                         ("bReserve", #Text(_u64ToText(newInfo.bReserve))),
                         ("qReserve", #Text(_u64ToText(newInfo.qReserve))),
-                        ("pLast", #Text(_floatToText(newInfo.pLast))),
-                        ("k", #Text(_floatToText(newInfo.k))),
-                        ("l", #Text(_floatToText(newInfo.l))),
-                        ("feeRate", #Text(_floatToText(newInfo.feeRate))),
+                        ("pLast", #Text(_u64ToText(newInfo.pLast))),
+                        ("k", #Text(_u64ToText(newInfo.k))),
+                        ("l", #Text(_u64ToText(newInfo.l))),
+                        ("feeRate", #Text(_u64ToText(newInfo.feeRate))),
                         ("totalSupply", #Text(_u64ToText(newInfo.totalSupply))),
                         ("lpToken", #Text(newInfo.lpToken))
                     ]
@@ -448,6 +454,85 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
                 ("totalSupply", #Text(_u64ToText(tokens.totalSupply(tid))))
             ]
         );
+        txCounter += 1;
+        return #ok(txCounter - 1);
+    };
+
+    public shared(msg) func addLiquidity(
+        bToken : Principal,
+        qToken : Principal,
+        bAmount : Nat,
+        qAmount : Nat,
+        deadline : Int
+    ) : async TxReceipt {
+        if (Time.now() > deadline) return #err("Tx expired");
+        if (bAmount == 0 or qAmount == 0) return #err("Amount should not be zero");
+
+        let btid : Text = Principal.toText(bToken);
+        let qtid : Text = Principal.toText(qToken);
+        if (tokens.hasToken(btid) == false) return #err("Token not supported: " # btid);
+        if (tokens.hasToken(qtid) == false) return #err("Token not supported: " # qtid);
+        if (tokens.balanceOf(btid, msg.caller) < bAmount) return #err("insufficient balance: " # btid);
+        if (tokens.balanceOf(qtid, msg.caller) < qAmount) return #err("insufficient balance: " # qtid);
+        var pair : PairInfo = switch (pairs.get(btid # ":" # qtid)) {
+            case (?p) { p; };
+            case (_) return #err("Pair not existed");
+        };
+        if (tokens.zeroFeeTransfer(btid, msg.caller, Principal.fromActor(this), bAmount) == false)
+            return #err("Transfer failed: " # btid);
+        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), qAmount) == false)
+            return #err("Transfer failed: " # qtid);
+        
+        pair.bReserve += bAmount;
+        pair.qReserve += qAmount;
+        let bDecimals : Nat8 = tokens.getMetadata(btid).decimals;
+        let qDecimals : Nat8 = tokens.getMetadata(qtid).decimals;
+        pair.pLast := (pair.qReserve * 10**Nat8.toNat(bDecimals) * scale) / (pair.bReserve * 10**Nat8.toNat(qDecimals));
+        pairs.put(pair.id, pair);
+
+        txCounter += 1;
+        return #ok(txCounter - 1);
+    };
+
+    public shared(msg) func swap(
+        bToken : Principal,
+        qToken : Principal,
+        amount : Nat,
+        deadline : Int
+    ) : async TxReceipt {
+        if (Time.now() > deadline) return #err("Tx expired");
+        if (amount == 0) return #err("Amount should not be zero");
+
+        let btid : Text = Principal.toText(bToken);
+        let qtid : Text = Principal.toText(qToken);
+        if (tokens.hasToken(btid) == false) return #err("Token not supported: " # btid);
+        if (tokens.hasToken(qtid) == false) return #err("Token not supported: " # qtid);
+        var pair : PairInfo = switch (pairs.get(btid # ":" # qtid)) {
+            case (?p) { p; };
+            case (_) return #err("Pair not existed");
+        };
+        if (amount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
+        let sqrtDx : Nat = Utils.sqrt(amount);
+        let sqrtX0 : Nat = Utils.sqrt(pair.bReserve);
+        let temp : Nat = sqrtX0 - sqrtDx;
+
+        let Dy : Nat = (pair.pLast * amount * (3 * temp * scale + 2 * pair.k * sqrtDx) / (3 * temp)) / (scale**2); 
+        let P1 : Nat = (pair.pLast * (temp * scale**2 + pair.k * pair.l * sqrtDx) / (temp)) / (scale**2);
+        let txFee : Nat = (Dy * pair.feeRate) / scale;
+        let y1 : Nat = pair.qReserve + Dy + txFee;
+        let x1 : Nat = pair.bReserve - amount;
+
+        if (tokens.balanceOf(qtid, msg.caller) < (Dy + txFee)) return #err("Insufficient balance: " # qtid);
+        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), Dy + txFee) == false)
+            return #err("Transfer failed: " # qtid);
+        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), msg.caller, amount) == false)
+            return #err("Transfer failed: " # btid);
+        
+        pair.pLast := P1;
+        pair.qReserve := y1;
+        pair.bReserve := x1;
+        pairs.put(pair.id, pair);
+
         txCounter += 1;
         return #ok(txCounter - 1);
     };
@@ -601,6 +686,12 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         return pairInfo;
     };
 
+    public query func getUserInfo(user : Principal): async UserInfo {
+        {
+            balances = tokens.getBalances(user);
+            lpBalances = lpTokens.getBalances(user);
+        }
+    };
 
     /* *************************************** Private Functions *************************************** */
     private func _transfer(tokenActor : ICRC2TokenActor, caller : Principal, amount : Nat) : async TransferReceipt {
@@ -733,13 +824,16 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #setPair : () -> (Principal, Principal);
           #deposit : () -> (Principal, Nat);
           #depositTo : () -> (Principal, Principal, Nat);
-          #setPairConfig : () -> (Text, Text, Float, Float, Float);
+          #setPairConfig : () -> (Text, Text, Nat, Nat, Nat);
           #withdraw : () -> (Principal, Nat);
+          #addLiquidity : () -> (Principal, Principal, Nat, Nat, Int);
+          #swap : () -> (Principal, Principal, Nat, Int);
 
           #getOwner : () -> ();
           #getFeeTo : () -> ();
           #getTokenMetadata : () -> Text;
           #getPair : () -> (Text, Text);
+          #getUserInfo : () -> Principal
       }
     }) : Bool {
         switch (msg) {
@@ -770,6 +864,8 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
                 ) return false;
                 return true;
             };
+            case (#addLiquidity d) { true };
+            case (#swap d) { true };
             case (#withdraw d) {
                 var tid : Text = Principal.toText(d().0);
                 if (tokens.hasToken(tid) == false or Principal.isAnonymous(caller)) return false;
@@ -780,6 +876,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (#getFeeTo _) { true };
             case (#getTokenMetadata _) { true };
             case (#getPair _) { true };
+            case (#getUserInfo _) { true };
         }
     };
 
