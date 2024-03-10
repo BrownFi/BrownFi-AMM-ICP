@@ -969,9 +969,14 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     };
 
     system func postupgrade() {
-        pairs := HashMap.fromIter<Text, PairInfo>(mPairs.vals(), 1, Text.equal, Text.hash);
-        failedWithdraws := HashMap.fromIter<Text, WithdrawState>(mFailedWithdraws.vals(), 1, Text.equal, Text.hash);
+        pairs := HashMap.fromIter<Text, PairInfo>(mPairs.vals(), mPairs.size(), Text.equal, Text.hash);
+        failedWithdraws := HashMap.fromIter<Text, WithdrawState>(mFailedWithdraws.vals(), mFailedWithdraws.size(), Text.equal, Text.hash);
         lpTokens := Tokens.Tokens(feeTo, _arrayToMap(mLPTokens));
         tokens := Tokens.Tokens(feeTo, _arrayToMap(mTokens));
+
+        mPairs := [];
+        mFailedWithdraws := [];
+        mLPTokens := [];
+        mTokens := [];
     };
 }
