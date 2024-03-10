@@ -1,18 +1,20 @@
-import HashMap "mo:base/HashMap";
-import Principal "mo:base/Principal";
-import Result "mo:base/Result";
-import Blob "mo:base/Blob";
-import Nat "mo:base/Nat";
-import Nat8 "mo:base/Nat8";
-import Float "mo:base/Float";
-import Text "mo:base/Text";
-import Option "mo:base/Option";
-import Error "mo:base/Error";
-import Time "mo:base/Time";
+import Array        "mo:base/Array";
+import Blob         "mo:base/Blob";
+import Error        "mo:base/Error";
+import Float        "mo:base/Float";
+import HashMap      "mo:base/HashMap";
+import Iter         "mo:base/Iter";
+import Nat          "mo:base/Nat";
+import Nat8         "mo:base/Nat8";
+import Option       "mo:base/Option";
+import Principal    "mo:base/Principal";
+import Result       "mo:base/Result";
+import Text         "mo:base/Text";
+import Time         "mo:base/Time";
 
-import Tokens "./libraries/Tokens";
-import Root "./libraries/Root";
-import Utils "./libraries/Utils";
+import Tokens       "./libraries/Tokens";
+import Root         "./libraries/Root";
+import Utils        "./libraries/Utils";
 
 shared(msg) actor class BrownFi(owner_ : Principal) = this {
 
@@ -125,6 +127,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         #ICRCTransferError: ICRCTransferError;
     };
     public type TokenInfo = Tokens.TokenInfo;
+    public type TokenInfoExt = Tokens.TokenInfoExt;
     public type TokenAnalyticsInfo = Tokens.TokenAnalyticsInfo;
     public type TxReceipt = Result.Result<Nat, Text>;
 
@@ -140,7 +143,13 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     private var tokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var lpTokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var pairs = HashMap.HashMap<Text, PairInfo>(1, Text.equal, Text.hash);
-    private var failedWithdraws = HashMap.HashMap<Text, WithdrawState>(1, Text.equal, Text.hash);   
+    private var failedWithdraws = HashMap.HashMap<Text, WithdrawState>(1, Text.equal, Text.hash);  
+
+    //  migrate data when upgrade Canister
+    private var mTokens : [(Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])] = [];
+    private var mLPTokens : [(Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])] = [];
+    private var mPairs : [(Text, PairInfo)] = [];
+    private var mFailedWithdraws : [(Text, WithdrawState)] = [];
 
     /*
       - Call to set new `owner` of the Canister
@@ -814,6 +823,78 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         return Float.format(#exact, value);
     };
 
+    //  These two below functions used to migrate data: pre-upgrade and post-upgrade Canister
+    private func _mapToArray(x: [(Text, TokenInfo)]) : [(Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])] {
+        var size : Nat = x.size();
+        var token : TokenInfoExt = {
+            id = "";
+            name = "";
+            symbol = "";
+            decimals = 0;
+            fee = 0;
+            totalSupply = 0;
+        };
+        var res_temp: [var (Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])] = Array.init<(Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])>(size, ("", token, [],[]));
+        size := 0;
+        for ((k, v) in x.vals()) {
+            let _token : TokenInfoExt = {
+                id = v.id;
+                name = v.name;
+                symbol = v.symbol;
+                decimals = v.decimals;
+                fee = v.fee;
+                totalSupply = v.totalSupply;
+            };
+            var allowances_size : Nat = v.allowances.size();
+            var allowances_temp : [var (Principal, [(Principal, Nat)])] = Array.init<(Principal, [(Principal, Nat)])>(allowances_size, (owner, []));
+            allowances_size := 0;
+            for ((i,j) in v.allowances.entries()) {
+                allowances_temp[allowances_size] := (i, Iter.toArray(j.entries()));
+                allowances_size += 1;
+            };
+            let allowances_temp_ = Array.freeze(allowances_temp);
+            res_temp[size] := (k, _token, Iter.toArray(v.balances.entries()), allowances_temp_);
+            size += 1;
+        };
+        return Array.freeze(res_temp);
+    };
+
+    private func _arrayToMap(x: [(Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])]) : [(Text, TokenInfo)] {
+        var _token : TokenInfo = {
+            id = "";
+            var name = "";
+            var symbol = "";
+            var decimals = 0;
+            var fee = 0;
+            var totalSupply = 0;
+            balances = HashMap.HashMap<Principal, Nat>(1, Principal.equal, Principal.hash);
+            allowances = HashMap.HashMap<Principal, HashMap.HashMap<Principal, Nat>>(1, Principal.equal, Principal.hash);
+        };
+        var size = x.size();
+        var res_temp: [var (Text, TokenInfo)] = Array.init<(Text, TokenInfo)>(size, ("", _token));
+        size := 0;
+        for ((a, b, c, d) in x.vals()) {
+            var map2_temp = HashMap.HashMap<Principal, HashMap.HashMap<Principal, Nat>>(1, Principal.equal, Principal.hash);
+            for ((k, v) in d.vals()) {
+                let allowed_temp = HashMap.fromIter<Principal, Nat>(v.vals(), 1, Principal.equal, Principal.hash);
+                map2_temp.put(k, allowed_temp);
+            };
+            let token: TokenInfo = {
+                id = b.id;
+                var name = b.name;
+                var symbol = b.symbol;
+                var decimals = b.decimals;
+                var fee = b.fee;
+                var totalSupply = b.totalSupply;
+                balances = HashMap.fromIter<Principal, Nat>(c.vals(), 1, Principal.equal, Principal.hash);
+                allowances = map2_temp;
+            };
+            res_temp[size] := (a, token);
+            size += 1;
+        };
+        return Array.freeze(res_temp);
+    };
+
     system func inspect({
       caller : Principal;
       arg : Blob;
@@ -881,10 +962,16 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     };
 
     system func preupgrade() {
-
+        mPairs := Iter.toArray(pairs.entries());
+        mFailedWithdraws := Iter.toArray(failedWithdraws.entries());
+        mLPTokens := _mapToArray(lpTokens.getTokenInfoList());
+        mTokens := _mapToArray(tokens.getTokenInfoList());
     };
 
     system func postupgrade() {
-
+        pairs := HashMap.fromIter<Text, PairInfo>(mPairs.vals(), 1, Text.equal, Text.hash);
+        failedWithdraws := HashMap.fromIter<Text, WithdrawState>(mFailedWithdraws.vals(), 1, Text.equal, Text.hash);
+        lpTokens := Tokens.Tokens(feeTo, _arrayToMap(mLPTokens));
+        tokens := Tokens.Tokens(feeTo, _arrayToMap(mTokens));
     };
 }
