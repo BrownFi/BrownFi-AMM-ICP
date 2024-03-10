@@ -6,7 +6,7 @@
     },
     "frontend": {
       "dependencies": [
-        "ICP_Grant_backend"
+        "core"
       ],
       "source": [
         "src/ICP_Grant_frontend/dist"

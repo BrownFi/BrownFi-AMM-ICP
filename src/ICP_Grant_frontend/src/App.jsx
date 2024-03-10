@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ICP_Grant_backend } from 'declarations/ICP_Grant_backend';
+import { core } from 'declarations/core';
 
 function App() {
   const [greeting, setGreeting] = useState('');
@@ -7,7 +7,7 @@ function App() {
   function handleSubmit(event) {
     event.preventDefault();
     const name = event.target.elements.name.value;
-    ICP_Grant_backend.greet(name).then((greeting) => {
+    core.greet(name).then((greeting) => {
       setGreeting(greeting);
     });
     return false;
