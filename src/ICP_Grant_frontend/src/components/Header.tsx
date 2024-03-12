@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
-import { RowFixed } from './Row';
 
+// import { ExternalLink } from 'theme/components'
+import styled from 'styled-components';
+// import useScrollPosition from '@react-hook/window-scroll';
+
+import TickIcon from '/images/icon-tick.svg';
+import Logo from '/images/logo.png';
+import CollaseIconDown from '/images/select-icon-down.svg';
+import CollaseIconUp from '/images/select-icon-up.svg';
+import Row, { RowFixed } from './Row';
 const HeaderFrame = styled.div<{ showBackground: boolean; isHomePage: boolean }>`
   display: grid;
   grid-template-columns: 230px 0fr 1fr;
@@ -207,11 +214,43 @@ export const StyledLink = styled.a.attrs({
   }
 
   :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.primary1)};
-  }
 `;
 
+// :focus {
+//   color: ${({ theme }) => darken(0.1, theme.primary1)};
+// }
+
+// const StyledExternalLink = styled(ExternalLink).attrs({
+//   activeClassName,
+// })<{ isActive?: boolean }>`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: left;
+//   border-radius: 3rem;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: ${({ theme }) => theme.primary1};
+//   font-size: 1rem;
+//   width: fit-content;
+//   margin: 0 12px;
+//   font-weight: 500;
+
+//   &.${activeClassName} {
+//     border-radius: 0px;
+//     font-weight: 800;
+//     color: ${({ theme }) => theme.primary1};
+//   }
+
+//   :hover,
+//   :focus {
+//     text-decoration: none;
+//     color: ${({ theme }) => darken(0.1, theme.primary1)};
+//   }
+
+//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+//       display: none;
+// `}
+// `
 
 export const StyledMenuButton = styled.button`
   position: relative;
@@ -304,7 +343,12 @@ const ListItem = styled('li')`
 
 export default function Header() {
   const location = useLocation();
-  const scrollY = useScrollPosition();
+  // const scrollY = useScrollPosition();
+
+  const options = [
+    { icon: "", value: 'BNB Chain' },
+    { icon: "", value: 'Avalanche' },
+  ];
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options?.[0]);
@@ -314,11 +358,10 @@ export default function Header() {
   const onOptionClicked = (value: any) => () => {
     setSelectedOption(value);
     setIsOpen(false);
-    console.log(selectedOption);
   };
 
   return (
-    <HeaderFrame showBackground={scrollY > 45} isHomePage={location.pathname === '/'}>
+    <HeaderFrame isHomePage={location.pathname === '/'}>
       {/* <Modal isOpen={showUniBalanceModal} onDismiss={() => setShowUniBalanceModal(false)}>
         <UniBalanceContent setShowUniBalanceModal={setShowUniBalanceModal} />
       </Modal> */}
@@ -384,7 +427,6 @@ export default function Header() {
 
         <HeaderElementWrap>
           <HideLarge>
-            <MobileMenu />
           </HideLarge>
         </HeaderElementWrap>
         {/* <HeaderElementWrap>
