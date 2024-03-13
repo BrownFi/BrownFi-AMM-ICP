@@ -1,16 +1,15 @@
-import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import styled from "styled-components";
+import Row, { RowFixed } from "./Row";
+import Login from "./Login";
 
-// import { ExternalLink } from 'theme/components'
-import styled from 'styled-components';
-// import useScrollPosition from '@react-hook/window-scroll';
+import Logo from "/images/logo.png";
 
-import TickIcon from '/images/icon-tick.svg';
-import Logo from '/images/logo.png';
-import CollaseIconDown from '/images/select-icon-down.svg';
-import CollaseIconUp from '/images/select-icon-up.svg';
-import Row, { RowFixed } from './Row';
-const HeaderFrame = styled.div<{ showBackground: boolean; isHomePage: boolean }>`
+const HeaderFrame = styled.div<{
+  showBackground: boolean;
+  isHomePage: boolean;
+}>`
   display: grid;
   grid-template-columns: 230px 0fr 1fr;
   align-items: center;
@@ -79,11 +78,6 @@ const HeaderElement = styled.div`
   `};
 `;
 
-const HeaderElementWrap = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 const HeaderRow = styled(RowFixed)`
   ${({ theme }) => theme.mediaWidth.upToMedium`
    width: 100%;
@@ -145,12 +139,6 @@ const HideSmall = styled.span`
   `};
 `;
 
-const HideLarge = styled.span`
-  @media screen and (min-width: 700px) {
-    display: none !important;
-  }
-`;
-
 const Title = styled(Link)`
   display: flex;
   align-items: center;
@@ -165,7 +153,7 @@ const Title = styled(Link)`
   }
 `;
 
-const activeClassName = 'ACTIVE';
+const activeClassName = "ACTIVE";
 
 const StyledNavLink = styled(NavLink).attrs({
   activeClassName,
@@ -216,42 +204,6 @@ export const StyledLink = styled.a.attrs({
   :hover,
 `;
 
-// :focus {
-//   color: ${({ theme }) => darken(0.1, theme.primary1)};
-// }
-
-// const StyledExternalLink = styled(ExternalLink).attrs({
-//   activeClassName,
-// })<{ isActive?: boolean }>`
-//   ${({ theme }) => theme.flexRowNoWrap}
-//   align-items: left;
-//   border-radius: 3rem;
-//   outline: none;
-//   cursor: pointer;
-//   text-decoration: none;
-//   color: ${({ theme }) => theme.primary1};
-//   font-size: 1rem;
-//   width: fit-content;
-//   margin: 0 12px;
-//   font-weight: 500;
-
-//   &.${activeClassName} {
-//     border-radius: 0px;
-//     font-weight: 800;
-//     color: ${({ theme }) => theme.primary1};
-//   }
-
-//   :hover,
-//   :focus {
-//     text-decoration: none;
-//     color: ${({ theme }) => darken(0.1, theme.primary1)};
-//   }
-
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//       display: none;
-// `}
-// `
-
 export const StyledMenuButton = styled.button`
   position: relative;
   width: 100%;
@@ -281,109 +233,31 @@ export const StyledMenuButton = styled.button`
   }
 `;
 
-const DropDownContainer = styled('div')`
-  width: 190px;
-  margin: 0 auto;
-`;
-
-const DropDownHeader = styled('div')`
-  font-weight: 500;
-  font-size: 16px;
-  height: 56px;
-  color: ${({ theme }) => theme.text1};
-  background: rgba(30, 30, 30, 1);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-`;
-
-const DropDownListContainer = styled('div')`
-  position: absolute;
-  margin-top: 10px;
-  z-index: 2;
-`;
-
-const Overlay = styled('div')`
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-`;
-
-const DropDownList = styled('ul')`
-  padding: 10px;
-  width: 190px;
-  margin: 0;
-  padding-left: 1em;
-  background: rgba(30, 30, 30, 1);
-  box-sizing: border-box;
-  color: ${({ theme }) => theme.text1};
-  font-weight: 500;
-  font-size: 16px;
-  li {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    margin-bottom: 20px;
-    cursor: pointer;
-  }
-  li:last-child {
-    margin-bottom: 0px;
-  }
-`;
-
-const ListItem = styled('li')`
-  list-style: none;
-  margin-bottom: 0.8em;
-`;
-
 export default function Header() {
   const location = useLocation();
-  // const scrollY = useScrollPosition();
-
-  const options = [
-    { icon: "", value: 'BNB Chain' },
-    { icon: "", value: 'Avalanche' },
-  ];
-
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(options?.[0]);
-
-  const toggling = () => setIsOpen(!isOpen);
-
-  const onOptionClicked = (value: any) => () => {
-    setSelectedOption(value);
-    setIsOpen(false);
-  };
 
   return (
-    <HeaderFrame isHomePage={location.pathname === '/'}>
-      {/* <Modal isOpen={showUniBalanceModal} onDismiss={() => setShowUniBalanceModal(false)}>
-        <UniBalanceContent setShowUniBalanceModal={setShowUniBalanceModal} />
-      </Modal> */}
+    <HeaderFrame isHomePage={location.pathname === "/"}>
       <HeaderRow>
-        <Title to='/'>
+        <Title to="/">
           <img src={Logo} />
         </Title>
       </HeaderRow>
       <HideSmall>
         <HeaderLinks>
-          <StyledNavLink id={`swap-nav-link`} to={'/swap'}>
+          <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
             Swap
           </StyledNavLink>
           <StyledNavLink
             id={`pool-nav-link`}
-            to={'/pool'}
+            to={"/pool"}
             isActive={(match, { pathname }) =>
               Boolean(match) ||
-              pathname.startsWith('/add') ||
-              pathname.startsWith('/remove') ||
-              pathname.startsWith('/increase') ||
-              pathname.startsWith('/find')
+              pathname.startsWith("/add") ||
+              pathname.startsWith("/remove") ||
+              pathname.startsWith("/increase") ||
+              pathname.startsWith("/find")
             }
           >
             Pools
@@ -392,46 +266,9 @@ export default function Header() {
       </HideSmall>
 
       <HeaderControls>
-        <DropDownContainer>
-          <DropDownHeader onClick={toggling}>
-            {
-              <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                <img src={selectedOption?.icon} style={{ width: '28px', height: '28px' }} />
-                {selectedOption?.value} &nbsp;
-                <img src={!isOpen ? CollaseIconDown : CollaseIconUp} />
-              </div>
-            }
-          </DropDownHeader>
-          {isOpen && (
-            <DropDownListContainer>
-              <DropDownList>
-                {options.map((option) => (
-                  <ListItem onClick={onOptionClicked(option)} key={Math.random()}>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <img src={option?.icon} style={{ width: '24px', height: '24px' }} />
-                      {option?.value}
-                      {selectedOption?.value === option?.value && (
-                        <img src={TickIcon} style={{ width: '14px', height: '11px' }} />
-                      )}
-                    </div>
-                  </ListItem>
-                ))}
-              </DropDownList>
-            </DropDownListContainer>
-          )}
-        </DropDownContainer>
-        {isOpen ? <Overlay onClick={() => setIsOpen(false)} /> : null}
-
         <HeaderElement>
+          <Login />
         </HeaderElement>
-
-        <HeaderElementWrap>
-          <HideLarge>
-          </HideLarge>
-        </HeaderElementWrap>
-        {/* <HeaderElementWrap>
-          <Menu />
-        </HeaderElementWrap> */}
       </HeaderControls>
     </HeaderFrame>
   );
