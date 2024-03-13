@@ -79,6 +79,13 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         balances: [(Text, Nat)];
         lpBalances: [(Text, Nat)];
     };
+    type SwapUpdate = {
+        p1 : Nat;         //  update new `price` value after swapping
+        x1 : Nat;         //  new value of `bReserve` after swapping
+        y1 : Nat;         //  new value of `qReserve` after swapping
+        dy : Nat;         //  amount of `qToken` needs to pay (before fee)
+        fee : Nat         //  tx fee amount
+    };
     type Subaccount = Blob; 
 
     public type ICRC2TokenActor = actor {
@@ -521,25 +528,18 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (_) return #err("Pair not existed");
         };
         if (amount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
-        let sqrtDx : Nat = Utils.sqrt(amount);
-        let sqrtX0 : Nat = Utils.sqrt(pair.bReserve);
-        let temp : Nat = sqrtX0 - sqrtDx;
 
-        let Dy : Nat = (pair.pLast * amount * (3 * temp * scale + 2 * pair.k * sqrtDx) / (3 * temp)) / (scale**2); 
-        let P1 : Nat = (pair.pLast * (temp * scale**2 + pair.k * pair.l * sqrtDx) / (temp)) / (scale**2);
-        let txFee : Nat = (Dy * pair.feeRate) / scale;
-        let y1 : Nat = pair.qReserve + Dy + txFee;
-        let x1 : Nat = pair.bReserve - amount;
-
-        if (tokens.balanceOf(qtid, msg.caller) < (Dy + txFee)) return #err("Insufficient balance: " # qtid);
-        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), Dy + txFee) == false)
+        let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
+        let pAmount : Nat = updateInfo.dy + updateInfo.fee;
+        if (tokens.balanceOf(qtid, msg.caller) < (pAmount)) return #err("Insufficient balance: " # qtid);
+        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), pAmount) == false)
             return #err("Transfer failed: " # qtid);
         if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), msg.caller, amount) == false)
             return #err("Transfer failed: " # btid);
         
-        pair.pLast := P1;
-        pair.qReserve := y1;
-        pair.bReserve := x1;
+        pair.pLast := updateInfo.p1;
+        pair.qReserve := updateInfo.y1;
+        pair.bReserve := updateInfo.x1;
         pairs.put(pair.id, pair);
 
         txCounter += 1;
@@ -695,11 +695,51 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         return pairInfo;
     };
 
+    /*
+      - Query current balances of `user`
+      - Requirements: `msg.caller` can be ANY
+      - Params: 
+        - `user` the User's Principal ID
+      - Returns:
+        - UserInfo: {balances : [Text, Nat], lpBalances : [Text, Nat]}
+    */
     public query func getUserInfo(user : Principal): async UserInfo {
         {
             balances = tokens.getBalances(user);
             lpBalances = lpTokens.getBalances(user);
         }
+    };
+
+    /*
+      - Calculate the amount of `qToken` that `msg.caller` needs to pay in swapping
+      - Requirements: `msg.caller` can be ANY
+      - Params: 
+        - `bToken` the Principal ID of `bToken`
+        - `qToken` the Principal ID of `qToken`
+        - `oAmount` the exact amount of `bToken` that `msg.caller` wants to receive
+      - Returns:
+        - iAmount: the amount of `qToken` that `msg.caller` needs to pay (included tx_fee)
+    */
+    public shared(msg) func getAmountIn(
+        bToken : Principal,
+        qToken : Principal,
+        oAmount : Nat
+    ) : async TxReceipt {
+        if (oAmount == 0) return #err("Amount should not be zero");
+
+        let btid : Text = Principal.toText(bToken);
+        let qtid : Text = Principal.toText(qToken);
+        if (tokens.hasToken(btid) == false) return #err("Token not supported: " # btid);
+        if (tokens.hasToken(qtid) == false) return #err("Token not supported: " # qtid);
+        var pair : PairInfo = switch (pairs.get(btid # ":" # qtid)) {
+            case (?p) { p; };
+            case (_) return #err("Pair not existed");
+        };
+        if (oAmount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
+        let updateInfo : SwapUpdate = _getSwapUpdate(pair, oAmount);
+        let iAmount : Nat = updateInfo.dy + updateInfo.fee;
+
+        return #ok(iAmount);
     };
 
     /* *************************************** Private Functions *************************************** */
@@ -733,6 +773,28 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (#Ok(id)) { return #Ok(id); };                 
             case (#Err(e)) { return #ICRCTransferError(e); };
         };              
+    };
+
+    private func _getSwapUpdate(pair : PairInfo, oAmount : Nat) : SwapUpdate {
+        let sqrtDx : Nat = Utils.sqrt(oAmount);
+        let sqrtX0 : Nat = Utils.sqrt(pair.bReserve);
+        let temp : Nat = sqrtX0 - sqrtDx;
+
+        let Dy : Nat = (pair.pLast * oAmount * (3 * temp * scale + 2 * pair.k * sqrtDx) / (3 * temp)) / (scale**2); 
+        let P1 : Nat = (pair.pLast * (temp * scale**2 + pair.k * pair.l * sqrtDx) / (temp)) / (scale**2);
+        let txFee : Nat = (Dy * pair.feeRate) / scale;
+        let y1 : Nat = pair.qReserve + Dy + txFee;
+        let x1 : Nat = pair.bReserve - oAmount;
+
+        let update : SwapUpdate = {
+            p1 = P1;
+            x1 = x1;
+            y1 = y1;
+            dy = Dy;
+            fee = txFee;
+        };
+
+        return update;
     };
 
     private func _failedWithdraw(tokenId : Text, caller : Principal, amount : Nat) : Text {
@@ -914,7 +976,8 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #getFeeTo : () -> ();
           #getTokenMetadata : () -> Text;
           #getPair : () -> (Text, Text);
-          #getUserInfo : () -> Principal
+          #getUserInfo : () -> Principal;
+          #getAmountIn : () -> (Principal, Principal, Nat)
       }
     }) : Bool {
         switch (msg) {
@@ -958,6 +1021,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (#getTokenMetadata _) { true };
             case (#getPair _) { true };
             case (#getUserInfo _) { true };
+            case (#getAmountIn _) { true };
         }
     };
 
