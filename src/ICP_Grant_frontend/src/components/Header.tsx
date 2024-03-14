@@ -246,21 +246,14 @@ export default function Header() {
       </HeaderRow>
       <HideSmall>
         <HeaderLinks>
+          <StyledNavLink id={`create-pair-nav-link`} to={"/create-pair"}>
+            Create Pair
+          </StyledNavLink>
+          <StyledNavLink id={`add-liquidity-nav-link`} to={"/add-liquidity"}>
+            Add Liquidity
+          </StyledNavLink>
           <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
             Swap
-          </StyledNavLink>
-          <StyledNavLink
-            id={`pool-nav-link`}
-            to={"/pool"}
-            isActive={(match, { pathname }) =>
-              Boolean(match) ||
-              pathname.startsWith("/add") ||
-              pathname.startsWith("/remove") ||
-              pathname.startsWith("/increase") ||
-              pathname.startsWith("/find")
-            }
-          >
-            Pools
           </StyledNavLink>
         </HeaderLinks>
       </HideSmall>
