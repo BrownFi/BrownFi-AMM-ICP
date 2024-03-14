@@ -752,6 +752,23 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         return tokens.tokenList();
     };
 
+    /*
+      - Retrieve a current balance of `user`
+      - Requirements: `msg.caller` can be ANY
+      - Params: 
+        - `tokenId` the Principal ID of `token` (as Text)
+        - `user` the Principal ID of an account that needs to query
+      - Returns:
+        - balance: user's current balance
+    */
+    public shared(msg) func balanceOf(tokenId : Text, user : Principal) : async Nat {
+        if(Text.contains(tokenId, #text ":")) {
+            return lpTokens.balanceOf(tokenId, user);
+        } else {
+            return tokens.balanceOf(tokenId, user);
+        };
+    };
+
     /* *************************************** Private Functions *************************************** */
     private func _transfer(tokenActor : ICRC2TokenActor, caller : Principal, amount : Nat) : async TransferReceipt {
         var defaultSubaccount : Blob = Utils.defaultSubAccount();
@@ -989,6 +1006,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #getUserInfo : () -> Principal;
           #getAmountIn : () -> (Principal, Principal, Nat);
           #getTokenList : () -> ();
+          #balanceOf : () -> (Text, Principal);
       }
     }) : Bool {
         switch (msg) {
@@ -1034,6 +1052,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (#getUserInfo _) { true };
             case (#getAmountIn _) { true };
             case (#getTokenList _) { true };
+            case (#balanceOf _) { true };
         }
     };
 

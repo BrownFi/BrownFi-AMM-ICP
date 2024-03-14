@@ -19,6 +19,7 @@
     "ic-use-actor": "^0.0.9",
     "ic-use-internet-identity": "^0.0.10",
     "polished": "^4.3.1",
+    "react-feather": "^2.0.10",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.2.1"
   }
