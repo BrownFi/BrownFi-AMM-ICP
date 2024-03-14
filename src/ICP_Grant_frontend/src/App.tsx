@@ -1,9 +1,13 @@
-import { useState } from 'react';
-import Footer from './components/Footer';
-import Header from './components/Header';
-import styled from 'styled-components';
-import BannerImg from '/images/background-1.png';
-import BannerImg2 from '/images/background-2.png';
+import { useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import styled from "styled-components";
+import BannerImg from "/images/background-1.png";
+import BannerImg2 from "/images/background-2.png";
+import CreatePair from "./components/CreatePair";
+import Swap from "./components/Swap";
+import AddLiquidity from "./components/AddLiquidity";
 
 const AppWrapper = styled.div<{ isHomePage: boolean }>`
   display: flex;
@@ -41,16 +45,25 @@ const HeaderWrapper = styled.div`
   z-index: 2;
 `;
 
-
 function App() {
   return (
     <>
-      <AppWrapper isHomePage={location.pathname === '/'}>
-        <img src={BannerImg2} alt='' style={{ position: 'absolute', bottom: 150, width: '100%' }} />
+      <AppWrapper isHomePage={location.pathname === "/"}>
+        <img
+          src={BannerImg2}
+          alt=""
+          style={{ position: "absolute", bottom: 150, width: "100%" }}
+        />
         <HeaderWrapper>
-            <Header />
+          <Header />
         </HeaderWrapper>
         <BodyWrapper>
+          <Routes>
+            <Route path="/" element={<Swap />} />
+            <Route path="/create-pair" element={<CreatePair />} />
+            <Route path="/add-liquidity" element={<AddLiquidity />} />
+            <Route path="/swap" element={<Swap />} />
+          </Routes>
         </BodyWrapper>
       </AppWrapper>
       <Footer />
