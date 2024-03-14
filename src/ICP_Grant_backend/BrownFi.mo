@@ -742,6 +742,16 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         return #ok(iAmount);
     };
 
+    /*
+      - Retrieve a list of supported tokens
+      - Requirements: `msg.caller` can be ANY
+      - Returns:
+        - [TokenInfoExt]: [{id, name, symbol, decimals, fee, totalSupply}]
+    */
+    public shared(msg) func getTokenList() : async [TokenInfoExt] {
+        return tokens.tokenList();
+    };
+
     /* *************************************** Private Functions *************************************** */
     private func _transfer(tokenActor : ICRC2TokenActor, caller : Principal, amount : Nat) : async TransferReceipt {
         var defaultSubaccount : Blob = Utils.defaultSubAccount();
@@ -977,7 +987,8 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #getTokenMetadata : () -> Text;
           #getPair : () -> (Text, Text);
           #getUserInfo : () -> Principal;
-          #getAmountIn : () -> (Principal, Principal, Nat)
+          #getAmountIn : () -> (Principal, Principal, Nat);
+          #getTokenList : () -> ();
       }
     }) : Bool {
         switch (msg) {
@@ -1022,6 +1033,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (#getPair _) { true };
             case (#getUserInfo _) { true };
             case (#getAmountIn _) { true };
+            case (#getTokenList _) { true };
         }
     };
 
