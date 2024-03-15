@@ -2,7 +2,7 @@ import { useInternetIdentity } from "ic-use-internet-identity";
 import styled from "styled-components";
 import { ButtonLight } from "./Button";
 import { AutoColumn } from "./Column";
-import ConnectWallet from "../../public/images/connect-wallet.png";
+import ConnectWallet from "/images/connect-wallet.png";
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;

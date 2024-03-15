@@ -64,7 +64,8 @@ const HeaderElement = styled.div`
   height: 56px;
   display: flex;
   align-items: center;
-  width: 193px;
+  letter-spacing:5px;
+  word-spacing:44px;
   font-family: Montserrat;
   background: ${({ theme }) => theme.red2};
   /* addresses safari's lack of support for "gap" */
@@ -235,8 +236,6 @@ export const StyledMenuButton = styled.button`
 
 export default function Header() {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <HeaderFrame isHomePage={location.pathname === "/"}>
       <HeaderRow>
@@ -246,14 +245,21 @@ export default function Header() {
       </HeaderRow>
       <HideSmall>
         <HeaderLinks>
-          <StyledNavLink id={`create-pair-nav-link`} to={"/create-pair"}>
-            Create Pair
-          </StyledNavLink>
-          <StyledNavLink id={`add-liquidity-nav-link`} to={"/add-liquidity"}>
-            Add Liquidity
-          </StyledNavLink>
           <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
             Swap
+          </StyledNavLink>
+          <StyledNavLink
+            id={`pool-nav-link`}
+            to={'/pool'}
+            isActive={(match, { pathname }) =>
+              Boolean(match) ||
+              pathname.startsWith('/add') ||
+              pathname.startsWith('/remove') ||
+              pathname.startsWith('/increase') ||
+              pathname.startsWith('/find')
+            }
+          >
+            Pools
           </StyledNavLink>
         </HeaderLinks>
       </HideSmall>

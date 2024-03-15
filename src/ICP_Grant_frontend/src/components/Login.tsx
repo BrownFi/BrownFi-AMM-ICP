@@ -1,7 +1,7 @@
 import { useInternetIdentity } from "ic-use-internet-identity";
 import styled, { css } from "styled-components";
 import { ButtonSecondary } from "./Button";
-import ConnectWallet from "../../public/images/connect-wallet.png";
+import ConnectWallet from "/images/connect-wallet.png";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -16,7 +16,7 @@ const Web3StatusGeneric = styled(ButtonSecondary)`
   }
 `;
 
-const Web3StatusConnect = styled(Web3StatusGeneric)<{ faded?: boolean }>`
+const Web3StatusConnect = styled(Web3StatusGeneric) <{ faded?: boolean, pending?: boolean }>`
   background-color: transparent;
   border: none;
   color: ${({ theme }) => theme.text1};
@@ -32,11 +32,6 @@ const Web3StatusConnect = styled(Web3StatusGeneric)<{ faded?: boolean }>`
   }
 
   ${({ faded }) => faded && css``}
-`;
-
-const Web3StatusConnected = styled(Web3StatusGeneric)<{ pending?: boolean }>`
-  color: ${({ theme }) => theme.bg0};
-  font-weight: 500;
 `;
 
 const Text = styled.p`
@@ -55,30 +50,20 @@ export default function Login() {
   const { isLoggingIn, login, clear, identity } = useInternetIdentity();
 
   function handleClick() {
-    if (identity) clear();
-    else login();
+    if (!identity) login();
+    else clear();
   }
 
-  if (identity) {
-    return (
-      <Web3StatusConnected
-        id="web3-status-connected"
-        onClick={handleClick}
-        pending={isLoggingIn}
-      >
-        <Text>Connected</Text>
-      </Web3StatusConnected>
-    );
-  } else {
-    return (
-      <Web3StatusConnect
-        id="connect-wallet"
-        faded={!identity}
-        onClick={handleClick}
-      >
-        <img src={ConnectWallet} />
-        <Text>Connect Wallet</Text>
-      </Web3StatusConnect>
-    );
-  }
+  return (
+    <Web3StatusConnect
+      id="connect-wallet"
+      faded={!identity}
+      onClick={handleClick}
+      pending={isLoggingIn}
+    >
+      <img src={ConnectWallet} />
+      <Text>{identity ? identity?.getPrincipal().toString() : "Connect Wallet"}</Text>
+    </Web3StatusConnect>
+  );
+
 }

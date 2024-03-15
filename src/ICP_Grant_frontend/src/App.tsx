@@ -59,10 +59,7 @@ function App() {
         </HeaderWrapper>
         <BodyWrapper>
           <Routes>
-            <Route path="/" element={<Swap />} />
             <Route path="/create-pair" element={<CreatePair />} />
-            <Route path="/add-liquidity" element={<AddLiquidity />} />
-            <Route path="/swap" element={<Swap />} />
           </Routes>
         </BodyWrapper>
       </AppWrapper>
