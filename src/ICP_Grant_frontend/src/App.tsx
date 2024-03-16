@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -6,8 +6,10 @@ import styled from "styled-components";
 import BannerImg from "/images/background-1.png";
 import BannerImg2 from "/images/background-2.png";
 import CreatePair from "./components/CreatePair";
-import Swap from "./components/Swap";
+// import Swap from "./components/Swap";
 import AddLiquidity from "./components/AddLiquidity";
+import Pool from "./components/Pool";
+import Swap from "./components/Swap";
 
 const AppWrapper = styled.div<{ isHomePage: boolean }>`
   display: flex;
@@ -59,7 +61,9 @@ function App() {
         </HeaderWrapper>
         <BodyWrapper>
           <Routes>
-            <Route path="/create-pair" element={<CreatePair />} />
+            <Route path="/" element={<Pool />} />
+            <Route path="/swap" element={<Swap />} />
+            <Route path="/pool" element={<Pool />} />
           </Routes>
         </BodyWrapper>
       </AppWrapper>

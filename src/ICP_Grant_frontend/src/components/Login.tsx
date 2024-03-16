@@ -62,7 +62,8 @@ export default function Login() {
       pending={isLoggingIn}
     >
       <img src={ConnectWallet} />
-      <Text>{identity ? identity?.getPrincipal().toString() : "Connect Wallet"}</Text>
+      <Text>{identity ? `${identity.getPrincipal().toString().slice(0, 5)}...${identity.getPrincipal().toString().slice(-3)}` 
+       : "Connect Wallet"}</Text>
     </Web3StatusConnect>
   );
 

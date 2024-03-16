@@ -13,6 +13,11 @@
 //   Wrapper,
 // } from "./styleds";
 
+import { createReactor, useQueryCall } from "@ic-reactor/react";
+import { useInternetIdentity } from "ic-use-internet-identity";
+import { idlFactory } from "../../../declarations/token1";
+import useActorManagers from "../hooks/useActorManagers";
+
 // import CurrencyInputPanel, {
 //   ShortcutAmount,
 // } from "../../components/CurrencyInputPanel";
@@ -76,3 +81,43 @@
 //     </>
 //   );
 // }
+
+export default function Swap() {
+    const { identity } = useInternetIdentity();
+    const { useQueryCall } = createReactor({
+        canisterId: import.meta.env.CANISTER_ID_TOKEN1,
+        idlFactory,
+        host: "http://localhost:8080",
+    });
+
+    identity?.getPrincipal()
+    
+    const { call, data, loading, error } = useQueryCall({
+        functionName: "icrc1_balance_of",
+        args: [{ owner: identity?.getPrincipal(), subaccount: [] }],
+        refetchInterval: 1000,
+        refetchOnMount: true,
+        onLoading: () => console.log("Loading..."),
+        onSuccess: (data) => console.log("Success!", data),
+        onError: (error) => console.log("Error!", error),
+    })
+
+    return (
+        <div>
+            <h2>ICP Balance:</h2>
+            <div>
+                Loading: {loading.toString()}
+                <br />
+                Error: {error?.toString()}
+                <br />
+                balance:{" "}
+                {data !== undefined
+                    ? JSON.stringify(data, (_, v) =>
+                        typeof v === "bigint" ? v.toString() : v
+                    )
+                    : null}
+            </div>
+            <button onClick={call}>Get Balance</button>
+        </div>
+    )
+}
