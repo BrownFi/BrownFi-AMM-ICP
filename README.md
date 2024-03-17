@@ -27,6 +27,14 @@ If you want to test your project locally, you can use the following commands:
 # Starts the replica, running in the background
 dfx start --background
 
+dfx identity new alice --storage-mode plaintext
+dfx identity new bob --storage-mode plaintext
+dfx identity new owner --storage-mode plaintext
+dfx identity use owner
+
+npm install
+npm run build
+
 # Deploys your canisters to the replica and generates your candid interface
 dfx deploy
 ```
