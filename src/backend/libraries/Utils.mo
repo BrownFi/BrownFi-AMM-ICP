@@ -7,57 +7,12 @@ import Nat32      "mo:base/Nat32";
 import Buffer     "mo:base/Buffer";
 import Blob       "mo:base/Blob";
 import Array      "mo:base/Array";
-import Float      "mo:base/Float";
 import Account    "./Account";
 import CRC32      "./CRC32";
 import Hex        "./Hex";
 import SHA224     "./SHA224";
 
 module {
-
-    //  f(x) = ax^3 + bx^2 + cx + d
-    public func cubic(
-        a : Float, 
-        b : Float, 
-        c : Float, 
-        d : Float, 
-        x : Float
-    ) : Float {
-        return (a * x**3) + (b * x**2) + (c * x) + d;
-    };
-
-    public func cubicDerivative(
-        a : Float, 
-        b : Float, 
-        c : Float, 
-        d : Float, 
-        x : Float
-    ) : Float {
-        return (3 * a * x**2) + (2 * b * x) + c;
-    };
-
-    public func newtonRaphson(
-        a : Float, 
-        b : Float, 
-        c : Float, 
-        d : Float, 
-        x0 : Float
-    ) : Float {
-        let maxIteration = 30;
-        let tolerance = 1e-15;
-        var iteration = 0;
-        var xOld : Float = x0;
-        var xNew : Float = 0;
-        label iterate while (iteration < maxIteration) {
-            var f = cubic(a, b, c, d, xOld);
-            var df = cubicDerivative(a, b, c, d, xOld);
-            xNew := xOld - f / df;
-            if (Float.equalWithin(xNew, xOld, tolerance)) { break iterate };
-            iteration += 1;
-            xOld := xNew;
-        };
-        return xNew;
-    };
 
     /// Get the min value of two input nature.
     public func min(x: Nat, y: Nat): Nat {
