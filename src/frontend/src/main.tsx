@@ -1,10 +1,9 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { InternetIdentityProvider } from "ic-use-internet-identity";
 import App from "./App";
 import ThemeProvider from "./theme";
 import { HashRouter } from "react-router-dom";
-import { ActorManagersContext } from "./hooks/useActorManagers";
+import { AgentProvider } from "@ic-reactor/react";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -12,12 +11,12 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <InternetIdentityProvider>
+    <AgentProvider>
         <ThemeProvider>
           <HashRouter>
             <App />
           </HashRouter>
         </ThemeProvider>
-    </InternetIdentityProvider>
+    </AgentProvider>
   </StrictMode>
 );

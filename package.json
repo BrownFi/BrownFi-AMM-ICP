@@ -13,6 +13,6 @@
   },
   "type": "module",
   "workspaces": [
-    "src/ICP_Grant_frontend"
+    "src/frontend"
   ]
 }

@@ -1,7 +1,7 @@
-import { useInternetIdentity } from "ic-use-internet-identity";
 import styled, { css } from "styled-components";
 import { ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
+import { useAuth } from "@ic-reactor/react";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -47,22 +47,22 @@ const Text = styled.p`
 `;
 
 export default function Login() {
-  const { isLoggingIn, login, clear, identity } = useInternetIdentity();
+  const { authenticated, authenticating, login, logout, identity } = useAuth();
 
   function handleClick() {
-    if (!identity) login();
-    else clear();
+    if (identity?.getPrincipal().isAnonymous()) login();
+    else logout();
   }
 
   return (
     <Web3StatusConnect
       id="connect-wallet"
-      faded={!identity}
+      faded={!authenticated}
       onClick={handleClick}
-      pending={isLoggingIn}
+      pending={authenticating}
     >
       <img src={ConnectWallet} />
-      <Text>{identity ? `${identity.getPrincipal().toString().slice(0, 5)}...${identity.getPrincipal().toString().slice(-3)}` 
+      <Text>{authenticated ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity?.getPrincipal().toString().slice(-3)}` 
        : "Connect Wallet"}</Text>
     </Web3StatusConnect>
   );

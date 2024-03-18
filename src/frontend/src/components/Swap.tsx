@@ -1,25 +1,7 @@
-// import { useInternetIdentity } from "ic-use-internet-identity";
-// import styled from "styled-components";
-// import { ButtonLight } from "./Button";
-// import { AutoColumn } from "./Column";
-// import ConnectWallet from "/images/connect-wallet.png";
-// // import AppBody from "./AppBody";
-// // import SwapHeader from "./SwapHeader";
-// import {
-//   ArrowWrapper,
-//   BottomGrouping,
-//   Dots,
-//   SwapCallbackError,
-//   Wrapper,
-// } from "./styleds";
-
-import { createReactor, useQueryCall } from "@ic-reactor/react";
-import { useInternetIdentity } from "ic-use-internet-identity";
+import { createReactor } from "@ic-reactor/react";
 import { idlFactory } from "../../../declarations/token1";
-import useActorManagers from "../hooks/useActorManagers";
 import { styled } from "styled-components";
 import { colors, theme } from "../theme";
-import { useMemo } from "react";
 
 // import CurrencyInputPanel, {
 //   ShortcutAmount,

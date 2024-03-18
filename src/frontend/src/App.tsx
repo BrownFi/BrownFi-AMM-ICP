@@ -5,9 +5,6 @@ import Header from "./components/Header";
 import styled from "styled-components";
 import BannerImg from "/images/background-1.png";
 import BannerImg2 from "/images/background-2.png";
-import CreatePair from "./components/CreatePair";
-// import Swap from "./components/Swap";
-import AddLiquidity from "./components/AddLiquidity";
 import Pool from "./components/Pool";
 import Swap from "./components/Swap";
 

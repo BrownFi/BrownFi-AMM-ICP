@@ -1,19 +1,20 @@
-import { useInternetIdentity } from "ic-use-internet-identity";
+
 import styled from "styled-components";
 import { ButtonLight } from "./Button";
 import { AutoColumn } from "./Column";
 import ConnectWallet from "/images/connect-wallet.png";
+import { useAuth } from "@ic-reactor/react";
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
 `;
 
 export default function AddLiquidity() {
-  const { login, identity } = useInternetIdentity();
+  const { login, authenticated } = useAuth();
 
   return (
     <>
-      ({!!identity} && (
+      ({authenticated} && (
       <PageWrapper>
         <AutoColumn gap="lg" justify="center">
           <AutoColumn
@@ -21,7 +22,7 @@ export default function AddLiquidity() {
             style={{ width: "100%", justifyContent: "center" }}
           >
             <div className="flex w-full justify-center">
-              <ButtonLight maxWidth={"436px"} onClick={login}>
+              <ButtonLight maxWidth={"436px"} onClick={() => login()}>
                 <img src={ConnectWallet} /> &nbsp; Connect Wallet
               </ButtonLight>
             </div>
