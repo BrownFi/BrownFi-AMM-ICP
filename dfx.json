@@ -1,7 +1,7 @@
 {
   "canisters": {
     "core": {
-      "main": "src/ICP_Grant_backend/BrownFi.mo",
+      "main": "src/backend/BrownFi.mo",
       "type": "motoko"
     },
     "frontend": {
@@ -9,10 +9,10 @@
         "core"
       ],
       "source": [
-        "src/ICP_Grant_frontend/dist"
+        "src/frontend/dist"
       ],
       "type": "assets",
-      "workspace": "ICP_Grant_frontend"
+      "workspace": "frontend"
     },
     "token0": {
       "type": "custom",
