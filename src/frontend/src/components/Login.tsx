@@ -35,7 +35,7 @@ const Web3StatusConnect = styled(Web3StatusGeneric) <{ faded?: boolean, pending?
 `;
 
 const Text = styled.p`
-  font-family: Montserrat
+  font-family: Montserrat;
   flex: 1 1 auto;
   text-overflow: ellipsis;
   white-space: nowrap;

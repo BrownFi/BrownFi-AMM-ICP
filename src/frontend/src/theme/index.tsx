@@ -1,5 +1,6 @@
 import { ReactNode, useMemo } from "react";
 import styled, {
+  createGlobalStyle,
     css,
     DefaultTheme,
     ThemeProvider as StyledComponentsThemeProvider,
@@ -164,3 +165,62 @@ export const TYPE = {
       return <TextWrapper fontWeight={500} color={error ? 'red1' : 'primary1'} {...props} />;
     },
   };
+
+export const FixedGlobalStyle = createGlobalStyle`
+  html, input, textarea, button {
+    font-family: 'Montserrat';
+    font-display: fallback;
+  }
+  @supports (font-variation-settings: normal) {
+    html, input, textarea, button {
+      font-family: 'Montserrat';
+    }
+  }
+  
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  
+  
+   a {
+     color: ${colors().blue1}; 
+   }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  button {
+    user-select: none;
+  }
+  
+  html {
+    font-size: 16px;
+    font-variant: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    font-feature-settings: 'ss01' on, 'ss02' on,  'cv01' on, 'cv03' on;
+    
+  }
+  `;
+  
+  export const ThemedGlobalStyle = createGlobalStyle`
+  html {
+    color: ${({ theme }) => theme.primary1};
+    background-color: ${({ theme }) => theme.bg0};
+  }
+  
+  body {
+    min-height: 100vh;
+    background-position: 0 -30vh;
+    background-repeat: no-repeat;
+  }
+  `;
