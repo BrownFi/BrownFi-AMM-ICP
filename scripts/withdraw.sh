@@ -1,9 +1,9 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-Token=$3
-Amount=$4
+caller=$1
+canister_name=$2
+token=$3
+amount=$4
 
-dfx canister call --identity ${Caller} ${CanisterName} withdraw '(
-  (principal "'$(dfx canister id ${Token})'"), '${Amount}'
+dfx canister call --identity ${caller} ${canister_name} withdraw '(
+  (principal "'$(dfx canister id ${token})'"), '${amount}'
 )'

@@ -1,9 +1,9 @@
 #!/bin/bash
-CanisterName=$1
-Account=$2
+canister_name=$1
+account=$2
 
-dfx canister call --identity ${Account} ${CanisterName} icrc1_balance_of '(
+dfx canister call --identity ${account} ${canister_name} icrc1_balance_of '(
   record {
-    owner = (principal "'$(dfx --identity ${Account} identity get-principal)'")
+    owner = (principal "'$(dfx --identity ${account} identity get-principal)'")
   }
 )'

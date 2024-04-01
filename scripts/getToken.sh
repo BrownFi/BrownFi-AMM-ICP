@@ -1,8 +1,8 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-Token=$3
+caller=$1
+canister_name=$2
+token=$3
 
-dfx canister call --identity ${Caller} ${CanisterName} getTokenMetadata '(
-  "'$(dfx canister id ${Token})'"
+dfx canister call --identity ${caller} ${canister_name} gettokenMetadata '(
+  "'$(dfx canister id ${token})'"
 )'

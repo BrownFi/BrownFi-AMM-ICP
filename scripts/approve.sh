@@ -1,14 +1,14 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-Spender=$3
-Amount=$4
+caller=$1
+canister_name=$2
+spender=$3
+amount=$4
 
-dfx canister call --identity ${Caller} ${CanisterName} icrc2_approve '(
+dfx canister call --identity ${caller} ${canister_name} icrc2_approve '(
   record {
     spender = record {
-      owner = (principal "'$(dfx canister id ${Spender})'")
+      owner = (principal "'$(dfx canister id ${spender})'")
     };
-    amount = '${Amount}';
+    amount = '${amount}';
   }
 )'

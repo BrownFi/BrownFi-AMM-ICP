@@ -11,6 +11,11 @@ let
       , version = "moc-0.6.24"
       , dependencies = [] : List Text
       }, 
+      { name = "cap"
+      , repo = "https://github.com/Psychedelic/cap-motoko-library"
+      , version = "v1.0.4"
+      , dependencies = ["base"] : List Text
+      }
     ] : List Package
 
 let

@@ -1,11 +1,11 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-bToken=$3
-qToken=$4
-Amount=$5
-Deadline=$6
-dfx canister call --identity ${Caller} ${CanisterName} swap '(
-  (principal "'$(dfx canister id ${bToken})'"), (principal "'$(dfx canister id ${qToken})'"),
-  '${Amount}', '${Deadline}'
+caller=$1
+canister_name=$2
+base_token=$3
+quote_token=$4
+amount=$5
+deadline=$6
+dfx canister call --identity ${caller} ${canister_name} swap '(
+  (principal "'$(dfx canister id ${base_token})'"), (principal "'$(dfx canister id ${quote_token})'"),
+  '${amount}', '${deadline}'
 )'

@@ -15,8 +15,9 @@ import Time         "mo:base/Time";
 import Tokens       "./libraries/Tokens";
 import Root         "./libraries/Root";
 import Utils        "./libraries/Utils";
+import Cap          "./libraries/Cap";
 
-shared(msg) actor class BrownFi(owner_ : Principal) = this {
+shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Principal) = this {
 
     type Errors = {
         #InsufficientBalance;
@@ -86,9 +87,13 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         dy : Nat;         //  amount of `qToken` needs to pay (before fee)
         fee : Nat         //  tx fee amount
     };
+    type CapSettings={
+        CapRootBucketId:?Text;
+        CapId:Text;
+    };
     type Subaccount = Blob; 
 
-    public type ICRC2TokenActor = actor {
+    type ICRC2TokenActor = actor {
         icrc2_approve: shared (from_subaccount :?Subaccount, spender: Principal, amount : Nat) -> async ICRCTokenTxReceipt;
         icrc2_allowance: shared (account  :Subaccount, spender: Principal) -> async (allowance: Nat, expires_at: ?Nat64);
         icrc1_balance_of: (account: ICRCAccount) -> async Nat;
@@ -100,7 +105,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         icrc2_transfer_from : shared (ICRC2TransferArg) -> async ICRCTokenTxReceipt;
         icrc1_transfer: shared (ICRCTransferArg) -> async ICRCTokenTxReceipt;
     };
-    public type PairInfo = {
+    type PairInfo = {
         id : Text;
         bToken : Text;           //  Principal
         qToken : Text;           //  Principal     
@@ -114,6 +119,16 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         var totalSupply : Nat;
         lpToken : Text;
     };
+    type TransferReceipt = { 
+        #Ok: Nat;
+        #Err: Errors;
+        #ICRCTransferError: ICRCTransferError;
+    };
+    type TokenInfo = Tokens.TokenInfo;
+
+    public type TokenInfoExt = Tokens.TokenInfoExt;
+    public type TokenAnalyticsInfo = Tokens.TokenAnalyticsInfo;
+    public type TxReceipt = Result.Result<Nat, Text>;
     public type PairInfoExt = {
         id : Text;
         bToken : Text;           //  Principal
@@ -128,15 +143,6 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         totalSupply : Nat;
         lpToken : Text;
     };
-    public type TransferReceipt = { 
-        #Ok: Nat;
-        #Err: Errors;
-        #ICRCTransferError: ICRCTransferError;
-    };
-    public type TokenInfo = Tokens.TokenInfo;
-    public type TokenInfoExt = Tokens.TokenInfoExt;
-    public type TokenAnalyticsInfo = Tokens.TokenAnalyticsInfo;
-    public type TxReceipt = Result.Result<Nat, Text>;
 
     private stable var owner = owner_;
     private stable var feeTo = owner_;
@@ -146,6 +152,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     private stable var tokenFee: Nat = 10000; // 0.0001 if decimal == 8
     private stable let blackhole : Principal = Principal.fromText("aaaaa-aa");
     private stable let scale : Nat = 100_000_000;
+    private stable var capId: Text = Principal.toText(capId_);
 
     private var tokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var lpTokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
@@ -157,6 +164,8 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
     private var mLPTokens : [(Text, TokenInfoExt, [(Principal, Nat)], [(Principal, [(Principal, Nat)])])] = [];
     private var mPairs : [(Text, PairInfo)] = [];
     private var mFailedWithdraws : [(Text, WithdrawState)] = [];
+
+    private var cap: Cap.Cap = Cap.Cap(bfId, capId, 1_000_000_000_000);
 
     /*
       - Call to set new `owner` of the Canister
@@ -216,6 +225,19 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
 
         txCounter += 1;
         return true;
+    };
+
+    /*
+      - Call to updat new Principal ID of Certified Asset Provenance (CAP) Canister
+      - Requirement: `msg.caller` must be `owner`
+      - Params:
+        - `newCapId`: the Pricipal ID of CAP Canister
+    */
+    public shared(msg) func setCapId (newCapId : Principal) : async Bool {
+        assert(msg.caller == owner);
+        capId := Principal.toText(newCapId);
+        
+        return cap.setRouterId(capId);
     };
 
     /*
@@ -769,6 +791,21 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
         };
     };
 
+    /*
+      - Retrieve a current Certified Asset Provenance (CAP) settings
+      - Requirements: `msg.caller` can be ANY
+      - Returns:
+        - CapSettings object:
+          - CapRootBucketId: as Text (option)
+          - CapId: the Pricipal ID (as Text) of CAP Canister
+    */
+    public shared(msg) func getCapSetting() : async CapSettings {
+      return ({
+        CapRootBucketId = cap.getRootBucketId();
+        CapId = capId;
+      });
+    };
+
     /* *************************************** Private Functions *************************************** */
     private func _transfer(tokenActor : ICRC2TokenActor, caller : Principal, amount : Nat) : async TransferReceipt {
         var defaultSubaccount : Blob = Utils.defaultSubAccount();
@@ -902,6 +939,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             operation = operation_;
             details = details_;
         };
+        ignore cap.insert(record);
     };
 
     private func _u64ToText(value : Nat) : Text {
@@ -991,6 +1029,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #setOwner : () -> Principal;
           #setFeeTo : () -> Principal;
           #setToken : () -> Principal;
+          #setCapId : () -> Principal;
           #setPair : () -> (Principal, Principal);
           #deposit : () -> (Principal, Nat);
           #depositTo : () -> (Principal, Principal, Nat);
@@ -1007,12 +1046,14 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
           #getAmountIn : () -> (Principal, Principal, Nat);
           #getTokenList : () -> ();
           #balanceOf : () -> (Text, Principal);
+          #getCapSetting : () -> ();
       }
     }) : Bool {
         switch (msg) {
             case (#setOwner _) { ( caller == owner ) };
             case (#setFeeTo _) { ( caller == owner ) };
             case (#setToken _) { ( caller == owner ) };
+            case (#setCapId _) { ( caller == owner ) };
             case (#setPair _) { true };
             case (#setPairConfig d) {
                 var pair = d().0 # ":" # d().1;
@@ -1053,6 +1094,7 @@ shared(msg) actor class BrownFi(owner_ : Principal) = this {
             case (#getAmountIn _) { true };
             case (#getTokenList _) { true };
             case (#balanceOf _) { true };
+            case (#getCapSetting _) { true };
         }
     };
 

@@ -1,12 +1,12 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-bToken=$3
-qToken=$4
-bAmount=$5
-qAmount=$6
-Deadline=$7
-dfx canister call --identity ${Caller} ${CanisterName} addLiquidity '(
-  (principal "'$(dfx canister id ${bToken})'"), (principal "'$(dfx canister id ${qToken})'"),
-  '${bAmount}', '${qAmount}', '${Deadline}'
+caller=$1
+canister_name=$2
+base_token=$3
+quote_token=$4
+base_amount=$5
+quote_amount=$6
+deadline=$7
+dfx canister call --identity ${caller} ${canister_name} addLiquidity '(
+  (principal "'$(dfx canister id ${base_token})'"), (principal "'$(dfx canister id ${quote_token})'"),
+  '${base_amount}', '${quote_amount}', '${deadline}'
 )'

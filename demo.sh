@@ -5,6 +5,12 @@ export OWNER=$(dfx --identity owner identity get-principal)
 
 # 1741447837000000000 nanoseconds = 1741447837 = March 8, 2025 10:30:37 PM GMT+07:00
 
+echo Deploy Certified Asset Provenance - CAP Router
+echo ================================================================
+echo ""
+eval ./scripts/deploy-router.sh
+echo ""
+
 echo Deploy BrownFi Core
 echo ================================================================
 echo ""
@@ -69,4 +75,16 @@ echo ""
 eval ./scripts/getPair.sh owner core token0 token1
 echo ""
 eval ./scripts/get-user-info.sh bob core
+echo ""
+
+echo Get Root Bucket ID
+echo ================================================================
+echo ""
+eval ./scripts/get-root-bucket.sh alice router
+echo ""
+
+echo Get Transaction Info
+echo ================================================================
+echo ""
+eval ./scripts/get-transaction.sh alice router 6
 echo ""

@@ -1,6 +1,6 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-dfx canister call --identity ${Caller} ${CanisterName} getUserInfo '(
-  (principal "'$(dfx --identity ${Caller} identity get-principal)'")
+caller=$1
+canister_name=$2
+dfx canister call --identity ${caller} ${canister_name} getUserInfo '(
+  (principal "'$(dfx --identity ${caller} identity get-principal)'")
 )'

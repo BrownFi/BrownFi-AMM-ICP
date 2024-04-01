@@ -1,9 +1,9 @@
 #!/bin/bash
-Caller=$1
-CanisterName=$2
-bToken=$3
-qToken=$4
+caller=$1
+canister_name=$2
+base_token=$3
+quote_token=$4
 
-dfx canister call --identity ${Caller} ${CanisterName} getPair '(
-  "'$(dfx canister id ${bToken})'", "'$(dfx canister id ${qToken})'"
+dfx canister call --identity ${caller} ${canister_name} getPair '(
+  "'$(dfx canister id ${base_token})'", "'$(dfx canister id ${quote_token})'"
 )'

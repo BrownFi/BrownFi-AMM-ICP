@@ -1,14 +1,14 @@
 #!/bin/bash
-CanisterName=$1
-Sender=$2
-Receiver=$3
-Amount=$4
+canister_name=$1
+sender=$2
+receiver=$3
+amount=$4
 
-dfx canister call --identity ${Sender} ${CanisterName} icrc1_transfer '(
+dfx canister call --identity ${sender} ${canister_name} icrc1_transfer '(
   record {
     to = record {
-      owner = (principal "'$(dfx identity --identity ${Receiver} get-principal)'")
+      owner = (principal "'$(dfx identity --identity ${receiver} get-principal)'")
     };
-    amount = '${Amount}';
+    amount = '${amount}';
   }
 )'
