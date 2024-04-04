@@ -7,7 +7,7 @@ const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
   width: 100%;
   align-items: center;
-  padding: 0.5rem;
+  padding: 18px 24px;
   border-radius: 8px;
   cursor: pointer;
   user-select: none;
@@ -16,7 +16,10 @@ const Web3StatusGeneric = styled(ButtonSecondary)`
   }
 `;
 
-const Web3StatusConnect = styled(Web3StatusGeneric) <{ faded?: boolean, pending?: boolean }>`
+const Web3StatusConnect = styled(Web3StatusGeneric)<{
+  faded?: boolean;
+  pending?: boolean;
+}>`
   background-color: transparent;
   border: none;
   color: ${({ theme }) => theme.text1};
@@ -39,10 +42,10 @@ const Text = styled.p`
   flex: 1 1 auto;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin: 0 0.5rem 0 0.5rem;
+  margin: 0 0.5rem 0 0.6rem;
   font-size: 16px;
   width: fit-content;
-  font-weight: 700;
+  font-weight: 500;
   color: ${({ theme }) => theme.text1};
 `;
 
@@ -62,9 +65,14 @@ export default function Login() {
       pending={authenticating}
     >
       <img src={ConnectWallet} />
-      <Text>{authenticated ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity?.getPrincipal().toString().slice(-3)}` 
-       : "Connect Wallet"}</Text>
+      <Text>
+        {authenticated
+          ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
+              ?.getPrincipal()
+              .toString()
+              .slice(-3)}`
+          : "Connect Wallet"}
+      </Text>
     </Web3StatusConnect>
   );
-
 }
