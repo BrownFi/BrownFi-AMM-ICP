@@ -10,17 +10,15 @@ const HeaderFrame = styled.div<{
   showBackground: boolean;
   isHomePage: boolean;
 }>`
-  display: grid;
-  grid-template-columns: 230px 0fr 1fr;
-  align-items: center;
+  display: flex;
+  gap: 44px;
   height: 96px;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
   width: 100%;
   top: 0;
   position: relative;
-  padding: 1rem;
+  padding: 20px 44px;
   z-index: 21;
   position: relative;
   background: ${({ theme }) => theme.bg0};
@@ -39,8 +37,6 @@ const HeaderControls = styled.div`
   display: flex;
   gap: 15px;
   flex-direction: row;
-  align-items: center;
-  justify-self: flex-end;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: row;
@@ -64,8 +60,7 @@ const HeaderElement = styled.div`
   height: 56px;
   display: flex;
   align-items: center;
-  letter-spacing:5px;
-  word-spacing:44px;
+
   font-family: Montserrat;
   background: ${({ theme }) => theme.red2};
   /* addresses safari's lack of support for "gap" */
@@ -86,13 +81,9 @@ const HeaderRow = styled(RowFixed)`
 `;
 
 const HeaderLinks = styled(Row)`
-  margin-left: 4%;
-  width: fit-content;
-  padding: 4px;
   border-radius: 10px;
-  display: grid;
   grid-auto-flow: column;
-  grid-gap: 10px;
+  gap: 1rem;
   overflow: auto;
   font-size: 20px;
   font-weight: 400;
@@ -135,9 +126,15 @@ export const AccountElement = styled.div<{ active: boolean }>`
 `;
 
 const HideSmall = styled.span`
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${({ theme }) => theme.mediaWidth.upToSmall` 
     display: none;
   `};
+`;
+
+const HeaderLeft = styled.span`
+  display: flex;
+  gap: 44px;
+  align-items: center;
 `;
 
 const Title = styled(Link)`
@@ -145,7 +142,6 @@ const Title = styled(Link)`
   align-items: center;
   pointer-events: auto;
   justify-self: flex-start;
-  margin-right: 12px;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     justify-self: center;
   `};
@@ -169,17 +165,18 @@ const StyledNavLink = styled(NavLink).attrs({
   color: ${({ theme }) => theme.text2};
   width: fit-content;
   font-weight: 400;
-  padding: 8px 12px;
+  font-size: 16px;
+  padding: 8px 16px;
 
   &.${activeClassName} {
     border-radius: 0px;
     color: rgba(39, 227, 171, 1);
   }
 
-  :hover, ;
-  // :focus {
-  //   color: ${({ theme }) => theme.primary2};
-  // }
+  :hover,
+  :focus {
+    color: ${({ theme }) => theme.primary2};
+  }
 `;
 
 export const StyledLink = styled.a.attrs({
@@ -202,7 +199,7 @@ export const StyledLink = styled.a.attrs({
     color: ${({ theme }) => theme.primary1};
   }
 
-  :hover,
+  :hover, ;
 `;
 
 export const StyledMenuButton = styled.button`
@@ -238,32 +235,33 @@ export default function Header() {
   const location = useLocation();
   return (
     <HeaderFrame isHomePage={location.pathname === "/"}>
-      <HeaderRow>
-        <Title to="/">
-          <img src={Logo} />
-        </Title>
-      </HeaderRow>
-      <HideSmall>
-        <HeaderLinks>
-          <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
-            Swap
-          </StyledNavLink>
-          <StyledNavLink
-            id={`pool-nav-link`}
-            to={'/pool'}
-            isActive={(match, { pathname }) =>
-              Boolean(match) ||
-              pathname.startsWith('/add') ||
-              pathname.startsWith('/remove') ||
-              pathname.startsWith('/increase') ||
-              pathname.startsWith('/find')
-            }
-          >
-            Pools
-          </StyledNavLink>
-        </HeaderLinks>
-      </HideSmall>
-
+      <HeaderLeft>
+        <HeaderRow>
+          <Title to="/">
+            <img src={Logo} />
+          </Title>
+        </HeaderRow>
+        <HideSmall>
+          <HeaderLinks>
+            <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
+              Swap
+            </StyledNavLink>
+            <StyledNavLink
+              id={`pool-nav-link`}
+              to={"/pool"}
+              isActive={(match, { pathname }) =>
+                Boolean(match) ||
+                pathname.startsWith("/add") ||
+                pathname.startsWith("/remove") ||
+                pathname.startsWith("/increase") ||
+                pathname.startsWith("/find")
+              }
+            >
+              Pools
+            </StyledNavLink>
+          </HeaderLinks>
+        </HideSmall>
+      </HeaderLeft>
       <HeaderControls>
         <HeaderElement>
           <Login />
