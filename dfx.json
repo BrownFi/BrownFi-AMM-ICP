@@ -1,6 +1,9 @@
 {
   "canisters": {
     "core": {
+      "dependencies": [
+        "router"
+      ],
       "main": "src/backend/BrownFi.mo",
       "type": "motoko"
     },

@@ -18,15 +18,21 @@ If you want to test your project locally, you can use the following commands:
 # Starts the replica, running in the background
 dfx start --background
 
+# Create identity to demo
 dfx identity new alice --storage-mode plaintext
 dfx identity new bob --storage-mode plaintext
-dfx identity new owner --storage-mode plaintext
+dfx identity new owner --storage-mode plaintext 
 dfx identity use owner
 
+# Deploy and demo and generate .did files 
+# Generate did for AMM modules
+./demo.sh
+
+# Install deps
 npm install
+# Build fe
 npm run build
 
-# Deploys your canisters to the replica and generates your candid interface
 dfx deploy
 ```
 
