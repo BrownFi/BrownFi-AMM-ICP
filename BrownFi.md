@@ -1,11 +1,11 @@
-# BrownAMM Introduction
+# BrownFi AMM Introduction
 **Novel AMM protocol with high CE & tailored market making strategies**  
 
 ## Fundamental problems
 - Uniswap v2 is simple but low Capital Efficiency (CE)
 - Uniswap v3 has high CE but complicated UX for LPs, non-fungible LP tokens. It requires manually adjusting bins &  unbalanced inventory.
 ## Solution (a novel AMM - Elastic PLOB): transform MM to asset allocation
-We invent a novel price discovery mechanism, namely, **Elastic PLOB** to tailor CE & market making on AMM, while keeping simple UX, fungibility & reusability of LP tokens of Uniswap v2. PLOB stands for Parameterized Limit Order-Book, which inspires Octan model.
+We invent a novel price discovery mechanism, namely, **Elastic PLOB** to tailor CE & market making on AMM, while keeping simple UX, fungibility & reusability of LP tokens of Uniswap v2. PLOB stands for Parameterized Limit Order-Book, which inspires BrownFi AMM model.
 
 ## Conceptualization
 BrownFi proposes a novel AMM model, where LPs allocate their liquidity into the pool according to a bonding curve that mimics the general shape of a traditional limit orderbook (LOB). We introduce a novel concept, *Elastic Factor*, to allow the liquidity concentration of the AMM to be automatically adjusted according to the relative trading size. This elasticity ensures unbounded liquidity, thus the pool never runs out of liquidity regardless of the trading size. Our general Elastic model covers the special case of the constant-product market making model $xy=k$. More importantly, it opens a new door to create arbitrary AMM with customized local orderbook shape around the market price as well as tailored liquidity concentration.
