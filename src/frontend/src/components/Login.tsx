@@ -1,7 +1,9 @@
+import { useState } from "react";
 import styled, { css } from "styled-components";
-import { ButtonSecondary } from "./Button";
+import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
+import { ConfirmProvider, useConfirm } from "material-ui-confirm";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -16,7 +18,7 @@ const Web3StatusGeneric = styled(ButtonSecondary)`
   }
 `;
 
-const Web3StatusConnect = styled(Web3StatusGeneric)<{
+const Web3StatusConnect = styled(Web3StatusGeneric) <{
   faded?: boolean;
   pending?: boolean;
 }>`
@@ -49,12 +51,40 @@ const Text = styled.p`
   color: ${({ theme }) => theme.text1};
 `;
 
-export default function Login() {
+export interface LoginProps {
+  asButton: boolean;
+}
+
+function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
+  const confirm = useConfirm();
 
   function handleClick() {
     if (identity?.getPrincipal().isAnonymous()) login();
-    else logout();
+    else {
+      confirm({
+        title: "Logout",
+        description: "Are you sure you want to logout?",
+        allowClose: true,
+      })
+        .then(() => logout())
+        .catch(() => { })
+    }
+  }
+
+  if (asButton) {
+    return (
+      <div className='flex w-full justify-center'>
+        <ButtonLight maxWidth={'436px'} onClick={login}>
+          <img src={ConnectWallet} /> &nbsp; {authenticated
+            ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
+              ?.getPrincipal()
+              .toString()
+              .slice(-3)}`
+            : "Connect Wallet"}
+        </ButtonLight>
+      </div>
+    );
   }
 
   return (
@@ -68,11 +98,19 @@ export default function Login() {
       <Text>
         {authenticated
           ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
-              ?.getPrincipal()
-              .toString()
-              .slice(-3)}`
+            ?.getPrincipal()
+            .toString()
+            .slice(-3)}`
           : "Connect Wallet"}
       </Text>
     </Web3StatusConnect>
+  );
+}
+
+export default function WrappedLogin(props: LoginProps) {
+  return (
+    <ConfirmProvider>
+      <Login {...props} />
+    </ConfirmProvider>
   );
 }

@@ -8,6 +8,8 @@ import { AutoColumn } from './Column';
 import { SwapPoolTabs } from './NavigationTabs';
 import { RowBetween, RowFixed } from './Row';
 import { TYPE } from '../theme';
+import Login from './Login';
+import { useAuth } from '@ic-reactor/react';
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -48,8 +50,32 @@ export const EmptyProposals = styled.div`
   align-items: center;
 `;
 
+function BottomSection() {
+  const theme = useTheme();
+
+  return (
+    <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
+      <div className='flex gap-1'>
+        <TYPE.body color={theme.white} fontSize={'14px'}>
+          Learn about providing liquidity
+        </TYPE.body>
+      </div>
+      <TYPE.body
+        color={'#ffffff80'}
+        fontSize={'12px'}
+        fontWeight={500}
+        textAlign={'center'}
+        lineHeight={'18px'}
+      >
+        Check out BrownFi parameter concept
+      </TYPE.body>
+    </div>
+  )
+}
+
 export default function Pool() {
   const theme = useTheme();
+  const { authenticated } = useAuth();
 
   return (
     <>
@@ -57,132 +83,41 @@ export default function Pool() {
         <SwapPoolTabs active={'pool'} />
         <AutoColumn gap='lg' justify='center'>
           <AutoColumn gap='md' style={{ width: '100%', justifyContent: 'center' }}>
-
-            {false ? (
-              <div className='flex flex-col xl:w-[894px]'>
-                <div className='flex flex-col bg-[#1D1C21] p-8 gap-8'>
-                  <div className='flex flex-col'>
-                    <TYPE.body color={theme.white} fontSize={'24px'} fontFamily={'Russo One'}>
-                      Pools
-                    </TYPE.body>
-                    <div className='flex flex-col gap-4 justify-center items-center'>
-                      <div className='flex flex-col gap-4 items-center max-w-[288px]'>
-                        <img src={LIQUIDITY_POSITION_ICON} alt='' className='w-[100px] h-[100px]' />
-                        <TYPE.body color={'#ffffff80'} fontSize={'16x'} fontWeight={500} textAlign={'center'}>
-                          Your active liquidity position will appear here.
-                        </TYPE.body>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
-                  <div className='flex gap-1'>
-                    <TYPE.body color={theme.white} fontSize={'14px'}>
-                      Learn about providing liquidity
-                    </TYPE.body>
-                  </div>
-                  <TYPE.body
-                    color={'#ffffff80'}
-                    fontSize={'12px'}
-                    fontWeight={500}
-                    textAlign={'center'}
-                    lineHeight={'18px'}
-                  >
-                    Check out BrownFi parameter concept
+            <div className='flex flex-col xl:w-[894px]'>
+              <div className='flex flex-col bg-[#1D1C21] p-8 gap-8'>
+                <div className='flex flex-col'>
+                  <TYPE.body color={theme.white} fontSize={'24px'} fontFamily={'Russo One'}>
+                    Pools
                   </TYPE.body>
-                </div>
-              </div>
-            ) : [].length == 0 ?(
-              <>
-                <div className='flex flex-col xl:w-[894px]'>
-                  <div className='flex flex-col bg-[#1D1C21] p-8 gap-8'>
-                    <RowBetween>
-                      <TYPE.body color={theme.white} fontSize={'24px'} fontFamily={'Russo One'}>
-                        Pools
-                      </TYPE.body>
-                      <Link to='/add/v2'>
-                        <div className='flex w-full justify-center'>
-                          <ButtonLight maxWidth={'436px'} href='/add/v2'>
-                            <Plus size='16' color={theme.white} /> &nbsp; New Position
-                          </ButtonLight>
+                  {
+                    authenticated ? (
+                      <div className='flex flex-col gap-4 justify-center items-center'>
+                        <div className='flex flex-col gap-4 items-center max-w-[288px]'>
+                          <img src={LIQUIDITY_POSITION_ICON} alt='' className='w-[100px] h-[100px]' />
+                          <TYPE.body color={'#ffffff80'} fontSize={'16x'} fontWeight={500} textAlign={'center'}>
+                            RENDER YOUR POSITION HERE BRO
+                          </TYPE.body>
                         </div>
-                      </Link>
-                    </RowBetween>
-                    <div className='flex flex-col bg-[#323038]'>
-                      <RowBetween className='!py-3 !px-6'>
-                        <TYPE.body color={theme.white} fontSize={16} fontWeight={700}>
-                          Your positions
-                        </TYPE.body>
-                        <TYPE.body color={'#27e3ab'} fontSize={14} fontWeight={500}>
-                          Hide closed positions
-                        </TYPE.body>
-                      </RowBetween>
-                      <div className='w-full h-[1px] bg-[#4c4a4f]' />
-                    </div>
-                  </div>
-                  <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
-                    <div className='flex gap-1'>
-                      <TYPE.body color={theme.white} fontSize={'14px'}>
-                        Learn about providing liquidity
-                      </TYPE.body>
-                    </div>
-                    <TYPE.body
-                      color={'#ffffff80'}
-                      fontSize={'12px'}
-                      fontWeight={500}
-                      textAlign={'center'}
-                      lineHeight={'18px'}
-                    >
-                      Check out BrownFi parameter concept
-                    </TYPE.body>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className='flex flex-col xl:w-[894px]'>
-                <div className='flex flex-col bg-[#1D1C21] p-8 gap-8'>
-                  <div className='flex flex-col'>
-                    <TYPE.body color={theme.white} fontSize={'24px'} fontFamily={'Russo One'}>
-                      Pools
-                    </TYPE.body>
-                    <div className='flex flex-col gap-4 justify-center items-center'>
-                      <div className='flex flex-col gap-4 items-center max-w-[288px]'>
-                        <img src={LIQUIDITY_POSITION_ICON} alt='' className='w-[100px] h-[100px]' />
-                        <TYPE.body color={'#ffffff80'} fontSize={'16x'} fontWeight={500} textAlign={'center'}>
-                          Your active liquidity position will appear here.
-                        </TYPE.body>
                       </div>
-                    </div>
-                  </div>
-                  <Link to='/add/v2'>
-                    <div className='flex w-full justify-center'>
-                      <ButtonLight maxWidth={'436px'} href='/add/v2'>
-                        <Plus size='16' color={theme.white} /> &nbsp; New Position
-                      </ButtonLight>
-                    </div>
-                  </Link>
-                </div>
-                <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
-                  <div className='flex gap-1'>
-                    <TYPE.body color={theme.white} fontSize={'14px'}>
-                      Learn about providing liquidity
-                    </TYPE.body>
-                  </div>
-                  <TYPE.body
-                    color={'#ffffff80'}
-                    fontSize={'12px'}
-                    fontWeight={500}
-                    textAlign={'center'}
-                    lineHeight={'18px'}
-                  >
-                    Check out BrownFi parameter concept
-                  </TYPE.body>
+                    ) : (
+                      <div className='flex flex-col gap-4 justify-center items-center'>
+                        <div className='flex flex-col gap-4 items-center max-w-[288px]'>
+                          <img src={LIQUIDITY_POSITION_ICON} alt='' className='w-[100px] h-[100px]' />
+                          <TYPE.body color={'#ffffff80'} fontSize={'16x'} fontWeight={500} textAlign={'center'}>
+                            Your active liquidity position will appear here.
+                          </TYPE.body>
+                          <Login asButton />
+                        </div>
+                      </div>
+                    )
+                  }
                 </div>
               </div>
-            )}
+              <BottomSection />
+            </div>
           </AutoColumn>
-        </AutoColumn>
-      </PageWrapper>
+        </AutoColumn >
+      </PageWrapper >
     </>
   );
 }
