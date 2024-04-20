@@ -16,11 +16,13 @@ const detail = {
   othernumber: "14231.3",
 };
 
+const PageWrapper = styled(AutoColumn)`
+width: 100%;
+`;
+
 export default function PositionDetail() {
   const theme = useTheme();
-  const PageWrapper = styled(AutoColumn)`
-    width: 100%;
-  `;
+
   return (
     <PageWrapper>
       <AutoColumn gap="lg" justify="center">
