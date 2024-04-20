@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { Box } from 'rebass/styled-components';
+import styled from "styled-components";
+import { Box, BoxProps } from "rebass/styled-components";
 
-const Row = styled(Box)<{
+const Row: React.FunctionComponent<BoxProps> = styled(Box)<{
   width?: string;
   align?: string;
   justify?: string;
@@ -9,11 +9,11 @@ const Row = styled(Box)<{
   border?: string;
   borderRadius?: string;
 }>`
-  width: ${({ width }) => width ?? '100%'};
+  width: ${({ width }) => width ?? "100%"};
   display: flex;
-  align-items: ${({ align }) => align ?? 'center'};
-  justify-content: ${({ justify }) => justify ?? 'flex-start'};
-  padding: ${({ padding }) => padding ?? '0'};
+  align-items: ${({ align }) => align ?? "center"};
+  justify-content: ${({ justify }) => justify ?? "flex-start"};
+  padding: ${({ padding }) => padding ?? "0"};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};
 `;
@@ -43,21 +43,21 @@ export const RowFixed = styled(Row)<{ gap?: string; justify?: string }>`
 `;
 
 export const ResponsiveRow = styled.div<{
-  breakpoint?: 'xs' | 'sm' | 'md' | 'lg';
-  rowAlignment?: 'center' | 'flex-start' | 'flex-end' | string;
+  breakpoint?: "xs" | "sm" | "md" | "lg";
+  rowAlignment?: "center" | "flex-start" | "flex-end" | string;
 }>`
   display: flex;
   flex-direction: row;
-  align-items: ${({ rowAlignment }) => rowAlignment || 'center'};
+  align-items: ${({ rowAlignment }) => rowAlignment || "center"};
   justify-content: initial;
 
   ${({ theme, breakpoint, rowAlignment }) =>
-    ((breakpoint === 'sm' && theme.mediaWidth.upToSmall) ||
-      (breakpoint === 'md' && theme.mediaWidth.upToMedium) ||
-      (breakpoint === 'lg' && theme.mediaWidth.upToLarge) ||
+    ((breakpoint === "sm" && theme.mediaWidth.upToSmall) ||
+      (breakpoint === "md" && theme.mediaWidth.upToMedium) ||
+      (breakpoint === "lg" && theme.mediaWidth.upToLarge) ||
       theme.mediaWidth.upToExtraSmall)`
     flex-direction: column;
-    justify-content: ${rowAlignment || 'center'};
+    justify-content: ${rowAlignment || "center"};
     align-items: initial;
   `};
 `;

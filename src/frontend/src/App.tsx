@@ -7,6 +7,7 @@ import BannerImg from "/images/background-1.png";
 import BannerImg2 from "/images/background-2.png";
 import Pool from "./components/Pool";
 import Swap from "./components/Swap";
+import PositionDetail from "./components/PositionDetail";
 
 const AppWrapper = styled.div<{ isHomePage: boolean }>`
   display: flex;
@@ -27,7 +28,6 @@ const BodyWrapper = styled.div`
   z-index: 1;
   height: 100vh;
   justify-content: center;
-  margin-bottom: 130px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 16px;
@@ -61,6 +61,7 @@ function App() {
             <Route path="/" element={<Pool />} />
             <Route path="/swap" element={<Swap />} />
             <Route path="/pool" element={<Pool />} />
+            <Route path="/pool/:id" element={<PositionDetail />} />
           </Routes>
         </BodyWrapper>
       </AppWrapper>
