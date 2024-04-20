@@ -2,11 +2,21 @@ import { useTheme } from "styled-components";
 import { TYPE } from "../../theme";
 import { RowBetween } from "../Row";
 import { GoDotFill } from "react-icons/go";
+import { useNavigate } from "react-router-dom";
 
 export default function Position({ position }) {
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const handleOnClick = () => {
+    navigate(`/pool/${position.id}`);
+  };
+
   return (
-    <div className="py-3 px-6 flex flex-col gap-3 cursor-pointer">
+    <div
+      className="py-3 px-6 flex flex-col gap-3 cursor-pointer"
+      onClick={handleOnClick}
+    >
       <RowBetween>
         <TYPE.body
           className="flex gap-2"

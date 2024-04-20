@@ -1,6 +1,6 @@
 import { TYPE } from "../../theme";
 import styled, { useTheme } from "styled-components";
-import { RowBetween } from "../Row";
+import { RowBetween, RowFixed } from "../Row";
 import { GoDotFill } from "react-icons/go";
 import { Button } from "rebass";
 import { AutoColumn } from "../Column";
@@ -12,6 +12,8 @@ const detail = {
   isActive: true,
   parameter: "23",
   currentLP: "2.333",
+  somenumber: "9472.08",
+  othernumber: "14231.3",
 };
 
 export default function PositionDetail() {
@@ -31,7 +33,7 @@ export default function PositionDetail() {
               <div className="flex flex-col gap-8">
                 <div className="flex row gap-3">
                   <a
-                    href="#/swap"
+                    href="#/pool"
                     style={{
                       color: "white",
                       fontSize: "24px",
@@ -110,7 +112,7 @@ export default function PositionDetail() {
                       </TYPE.body>
                     </div>
                   </div>
-                  <div className="flex flex=col bg-[#323038]">
+                  <div className="flex flex-col bg-[#323038]">
                     <RowBetween className="!py-3 !px-6">
                       <TYPE.body
                         color={theme.white}
@@ -119,17 +121,169 @@ export default function PositionDetail() {
                       >
                         Liquidity
                       </TYPE.body>
-                      {/* <ClickableText
-                        fontWeight={700}
-                        fontSize={12}
-                        color={theme.white}
-                        backgroundColor={"rgba(30, 30, 30, 1)"}
-                        padding={"3px 19px"}
-                        height={"24px"}
-                      >
-                        Increase liquidity
-                      </ClickableText> */}
+                      <div className="h-6 flex justify-center items-center bg-[#1E1E1E] px-2 cursor-pointer">
+                        <TYPE.body
+                          color={theme.white}
+                          fontSize={12}
+                          fontWeight={700}
+                        >
+                          Increase liquidity
+                        </TYPE.body>
+                      </div>
                     </RowBetween>
+                    <div className="flex flex-col pb-3 px-6 gap-2">
+                      <TYPE.body
+                        fontSize={32}
+                        fontWeight={600}
+                        color={theme.white}
+                      >
+                        $ --
+                      </TYPE.body>
+
+                      <RowBetween>
+                        <div className="flex flex-row gap-5">
+                          <img
+                            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+                            alt="token icon"
+                            width="40px"
+                          />
+                          <TYPE.body
+                            color={theme.white}
+                            fontSize={16}
+                            fontWeight={500}
+                          >
+                            {detail?.tokenPay}
+                          </TYPE.body>
+                        </div>
+                        <div className="flex gap-6">
+                          {detail ? (
+                            <RowFixed>
+                              <TYPE.body
+                                color={theme.white}
+                                fontSize={14}
+                                fontWeight={500}
+                              >
+                                {detail?.somenumber}
+                              </TYPE.body>
+                            </RowFixed>
+                          ) : (
+                            "-"
+                          )}
+                          <TYPE.body
+                            color={theme.white}
+                            fontSize={14}
+                            fontWeight={500}
+                          >
+                            -- %
+                          </TYPE.body>
+                        </div>
+                      </RowBetween>
+                      <RowBetween>
+                        <div className="flex flex-row gap-5">
+                          <img
+                            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+                            alt="token icon"
+                            width="40px"
+                          />
+                          <TYPE.body
+                            color={theme.white}
+                            fontSize={16}
+                            fontWeight={500}
+                          >
+                            {detail?.tokenReceive}
+                          </TYPE.body>
+                        </div>
+                        <div className="flex gap-6">
+                          {detail ? (
+                            <RowFixed>
+                              <TYPE.body
+                                color={theme.white}
+                                fontSize={14}
+                                fontWeight={500}
+                              >
+                                {detail?.othernumber}
+                              </TYPE.body>
+                            </RowFixed>
+                          ) : (
+                            "-"
+                          )}
+                          <TYPE.body
+                            color={theme.white}
+                            fontSize={14}
+                            fontWeight={500}
+                          >
+                            -- %
+                          </TYPE.body>
+                        </div>
+                      </RowBetween>
+                    </div>
+                  </div>
+                  <div className="flex flex-col bg-[#323038]">
+                    <div className="!py-3 !px-6">
+                      <TYPE.body
+                        color={theme.white}
+                        fontSize={16}
+                        fontWeight={500}
+                      >
+                        Accrued fee
+                      </TYPE.body>
+                    </div>
+                    <div className="flex flex-col pb-3 px-6 gap-2">
+                      <TYPE.body
+                        fontSize={32}
+                        fontWeight={600}
+                        color={theme.white}
+                      >
+                        $ --
+                      </TYPE.body>
+
+                      <RowBetween>
+                        <div className="flex flex-row gap-5">
+                          <img
+                            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+                            alt="token icon"
+                            width="40px"
+                          />
+                          <TYPE.body
+                            color={theme.white}
+                            fontSize={16}
+                            fontWeight={500}
+                          >
+                            {detail?.tokenPay}
+                          </TYPE.body>
+                        </div>
+                        <TYPE.body
+                          color={theme.white}
+                          fontSize={14}
+                          fontWeight={500}
+                        >
+                          {"--"}
+                        </TYPE.body>
+                      </RowBetween>
+                      <RowBetween>
+                        <div className="flex flex-row gap-5">
+                          <img
+                            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+                            alt="token icon"
+                            width="40px"
+                          />
+                          <TYPE.body
+                            color={theme.white}
+                            fontSize={16}
+                            fontWeight={500}
+                          >
+                            {detail?.tokenReceive}
+                          </TYPE.body>
+                        </div>
+                        <TYPE.body
+                          color={theme.white}
+                          fontSize={14}
+                          fontWeight={500}
+                        >
+                          {"--"}
+                        </TYPE.body>
+                      </RowBetween>
+                    </div>
                   </div>
                 </div>
               </div>
