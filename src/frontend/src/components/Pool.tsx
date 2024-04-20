@@ -1,6 +1,6 @@
 import { Plus } from "react-feather";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styled, { ThemeContext, useTheme } from 'styled-components';
 import LIQUIDITY_POSITION_ICON from '/images/inbox.svg';
@@ -75,75 +75,88 @@ function BottomSection() {
   )
 }
 
+interface PoolDetails {
+  id: number;
+  tokenPay: string;
+  tokenReceive: string;
+  isActive: boolean;
+  parameter: string;
+  currentLP: string;
+}
+
 export default function Pool() {
   const theme = useTheme();
   const { authenticated } = useAuth();
-  const [positions, setPositions] = useState([
-    {
-      id: 1,
-      tokenPay: "PAY",
-      tokenReceive: "REC",
-      isActive: true,
-      parameter: "23",
-      currentLP: "2.333",
-    },
-    {
-      id: 2,
-      tokenPay: "TEST1",
-      tokenReceive: "TEST2",
-      isActive: true,
-      parameter: "12",
-      currentLP: "4.3",
-    },
-    {
-      id: 1,
-      tokenPay: "PAY",
-      tokenReceive: "REC",
-      isActive: true,
-      parameter: "23",
-      currentLP: "2.333",
-    },
-    {
-      id: 2,
-      tokenPay: "TEST1",
-      tokenReceive: "TEST2",
-      isActive: true,
-      parameter: "12",
-      currentLP: "4.3",
-    },
-    {
-      id: 2,
-      tokenPay: "TEST1",
-      tokenReceive: "TEST2",
-      isActive: true,
-      parameter: "12",
-      currentLP: "4.3",
-    },
-    {
-      id: 1,
-      tokenPay: "PAY",
-      tokenReceive: "REC",
-      isActive: true,
-      parameter: "23",
-      currentLP: "2.333",
-    },
-    {
-      id: 2,
-      tokenPay: "TEST1",
-      tokenReceive: "TEST2",
-      isActive: true,
-      parameter: "12",
-      currentLP: "4.3",
-    },
-    {
-      id: 1,
-      tokenPay: "PAY",
-      tokenReceive: "REC",
-      isActive: true,
-      parameter: "23",
-      currentLP: "2.333",
-    },
-  ]);
+  const [positions, setPositions] = useState<PoolDetails[]>([]);
+
+  useEffect(() => {
+    setPositions([
+      {
+        id: 1,
+        tokenPay: "PAY",
+        tokenReceive: "REC",
+        isActive: true,
+        parameter: "23",
+        currentLP: "2.333",
+      },
+      {
+        id: 2,
+        tokenPay: "TEST1",
+        tokenReceive: "TEST2",
+        isActive: true,
+        parameter: "12",
+        currentLP: "4.3",
+      },
+      {
+        id: 1,
+        tokenPay: "PAY",
+        tokenReceive: "REC",
+        isActive: true,
+        parameter: "23",
+        currentLP: "2.333",
+      },
+      {
+        id: 2,
+        tokenPay: "TEST1",
+        tokenReceive: "TEST2",
+        isActive: true,
+        parameter: "12",
+        currentLP: "4.3",
+      },
+      {
+        id: 2,
+        tokenPay: "TEST1",
+        tokenReceive: "TEST2",
+        isActive: true,
+        parameter: "12",
+        currentLP: "4.3",
+      },
+      {
+        id: 1,
+        tokenPay: "PAY",
+        tokenReceive: "REC",
+        isActive: true,
+        parameter: "23",
+        currentLP: "2.333",
+      },
+      {
+        id: 2,
+        tokenPay: "TEST1",
+        tokenReceive: "TEST2",
+        isActive: true,
+        parameter: "12",
+        currentLP: "4.3",
+      },
+      {
+        id: 1,
+        tokenPay: "PAY",
+        tokenReceive: "REC",
+        isActive: true,
+        parameter: "23",
+        currentLP: "2.333",
+      },
+    ])
+  }, [authenticated])
 
   return (
     <>
@@ -155,7 +168,7 @@ export default function Pool() {
             style={{ width: "100%", justifyContent: "center" }}
           >
             {
-              false ? (
+              !authenticated ? (
                 <div className="flex flex-col xl:w-[894px]">
                   <div className="flex flex-col bg-[#1D1C21] p-8 gap-8">
                     <div className="flex flex-col">
@@ -181,6 +194,7 @@ export default function Pool() {
                           >
                             Your active liquidity position will appear here.
                           </TYPE.body>
+                          <Login asButton/>
                         </div>
                       </div>
                     </div>
