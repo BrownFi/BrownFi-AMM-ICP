@@ -25,3 +25,5 @@ dist/
 .env
 
 !src/frontend/src/declarations
+
+.swc/
