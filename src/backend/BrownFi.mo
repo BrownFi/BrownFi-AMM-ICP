@@ -11,6 +11,7 @@ import Principal    "mo:base/Principal";
 import Result       "mo:base/Result";
 import Text         "mo:base/Text";
 import Time         "mo:base/Time";
+import Buffer       "mo:base/Buffer";
 
 import Tokens       "./libraries/Tokens";
 import Root         "./libraries/Root";
@@ -774,6 +775,35 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         return tokens.tokenList();
     };
 
+    public shared(msg) func getPairList() : async [PairInfoExt] {
+        let pairList = Buffer.Buffer<PairInfoExt>(pairs.size());
+        for ((k, v) in pairs.entries()) {
+            let info : PairInfoExt = {
+                id = v.id;
+                bToken = v.bToken;
+                qToken = v.qToken;
+                creator = v.creator;
+                bReserve = v.bReserve;
+                qReserve = v.qReserve;
+                pLast = v.pLast;
+                k = v.k;
+                l = v.l;
+                feeRate = v.feeRate;
+                totalSupply = v.totalSupply;
+                lpToken = v.lpToken;
+            };
+
+            pairList.add(info);
+        };
+        return Buffer.toArray(pairList);
+    };
+    
+    
+    // public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
+    //     let pairList = getPairList();
+        
+    // }
+
     /*
       - Retrieve a current balance of `user`
       - Requirements: `msg.caller` can be ANY
@@ -1045,6 +1075,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
           #getUserInfo : () -> Principal;
           #getAmountIn : () -> (Principal, Principal, Nat);
           #getTokenList : () -> ();
+          #getPairList : () -> ();
           #balanceOf : () -> (Text, Principal);
           #getCapSetting : () -> ();
       }
@@ -1093,6 +1124,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
             case (#getUserInfo _) { true };
             case (#getAmountIn _) { true };
             case (#getTokenList _) { true };
+            case (#getPairList _) { true };
             case (#balanceOf _) { true };
             case (#getCapSetting _) { true };
         }

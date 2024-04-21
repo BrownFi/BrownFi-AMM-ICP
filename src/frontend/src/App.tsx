@@ -8,6 +8,7 @@ import BannerImg2 from "/images/background-2.png";
 import Pool from "./components/Pool";
 import Swap from "./components/Swap";
 import PositionDetail from "./components/PositionDetail";
+import { HideMedium } from "./components/Responsive";
 
 const AppWrapper = styled.div<{ isHomePage: boolean }>`
   display: flex;
@@ -53,19 +54,21 @@ function App() {
           alt=""
           style={{ position: "absolute", bottom: 150, width: "100%" }}
         />
-        <HeaderWrapper>
-          <Header />
-        </HeaderWrapper>
-        <BodyWrapper>
-          <Routes>
-            <Route path="/" element={<Pool />} />
-            <Route path="/swap" element={<Swap />} />
-            <Route path="/pool" element={<Pool />} />
-            <Route path="/pool/:id" element={<PositionDetail />} />
-          </Routes>
-        </BodyWrapper>
+          <HeaderWrapper>
+            <Header />
+          </HeaderWrapper>
+          <BodyWrapper>
+            <Routes>
+              <Route path="/" element={<Pool />} />
+              <Route path="/swap" element={<Swap />} />
+              <Route path="/pool" element={<Pool />} />
+              <Route path="/pool/:id" element={<PositionDetail />} />
+            </Routes>
+          </BodyWrapper>
       </AppWrapper>
-      <Footer />
+      <HideMedium>
+        <Footer />
+      </HideMedium>
     </>
   );
 }

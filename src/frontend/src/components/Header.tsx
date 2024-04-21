@@ -5,6 +5,7 @@ import Row, { RowFixed } from "./Row";
 import Login from "./Login";
 
 import Logo from "/images/logo.png";
+import { HideSmall } from "./Responsive";
 
 const HeaderFrame = styled.div<{
   showBackground: boolean;
@@ -125,12 +126,6 @@ export const AccountElement = styled.div<{ active: boolean }>`
   }
 `;
 
-const HideSmall = styled.span`
-  ${({ theme }) => theme.mediaWidth.upToSmall` 
-    display: none;
-  `};
-`;
-
 const HeaderLeft = styled.span`
   display: flex;
   gap: 44px;
@@ -234,38 +229,40 @@ export const StyledMenuButton = styled.button`
 export default function Header() {
   const location = useLocation();
   return (
-    <HeaderFrame isHomePage={location.pathname === "/"}>
+    <HeaderFrame isHomePage={location.pathname === "/"} showBackground>
       <HeaderLeft>
-        <HeaderRow>
-          <Title to="/">
-            <img src={Logo} />
-          </Title>
-        </HeaderRow>
         <HideSmall>
-          <HeaderLinks>
-            <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
-              Swap
-            </StyledNavLink>
-            <StyledNavLink
-              id={`pool-nav-link`}
-              to={"/pool"}
-              isActive={(match, { pathname }) =>
-                Boolean(match) ||
-                pathname.startsWith("/add") ||
-                pathname.startsWith("/remove") ||
-                pathname.startsWith("/increase") ||
-                pathname.startsWith("/find")
-              }
-            >
-              Pools
-            </StyledNavLink>
-          </HeaderLinks>
+          <HeaderRow>
+            <Title to="/">
+              <img src={Logo} />
+            </Title>
+          </HeaderRow>
         </HideSmall>
+        <HeaderLinks>
+          <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
+            Swap
+          </StyledNavLink>
+          <StyledNavLink
+            id={`pool-nav-link`}
+            to={"/pool"}
+            isActive={(match, { pathname }) =>
+              Boolean(match) ||
+              pathname.startsWith("/add") ||
+              pathname.startsWith("/remove") ||
+              pathname.startsWith("/increase") ||
+              pathname.startsWith("/find")
+            }
+          >
+            Pools
+          </StyledNavLink>
+        </HeaderLinks>
       </HeaderLeft>
       <HeaderControls>
-        <HeaderElement>
-          <Login />
-        </HeaderElement>
+        <HideSmall>
+          <HeaderElement>
+            <Login />
+          </HeaderElement>
+        </HideSmall>
       </HeaderControls>
     </HeaderFrame>
   );

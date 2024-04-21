@@ -12,6 +12,8 @@ import { TYPE } from '../theme';
 import Login from './Login';
 import { useAuth } from '@ic-reactor/react';
 import PositionList from "./PositionList/PositionList";
+import useFetchPairList from "../hooks/useFetchPairList";
+import { CircularProgress } from "@mui/material";
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -88,6 +90,7 @@ export default function Pool() {
   const theme = useTheme();
   const { authenticated } = useAuth();
   const [positions, setPositions] = useState<PoolDetails[]>([]);
+  const { call, data, error, loading } = useFetchPairList();
 
   useEffect(() => {
     setPositions([
@@ -156,6 +159,7 @@ export default function Pool() {
         currentLP: "2.333",
       },
     ])
+    call();
   }, [authenticated])
 
   return (
@@ -242,7 +246,7 @@ export default function Pool() {
                           )}*/}
                         </RowBetween>
                         <div className="w-full h-[1px] bg-[#4c4a4f]" />
-                        {positions.length != 0 && (
+                        {loading ? <CircularProgress className="w-full"/> : (
                           <PositionList positions={positions}></PositionList>
                         )}
                       </div>

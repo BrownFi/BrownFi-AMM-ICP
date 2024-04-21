@@ -52,7 +52,7 @@ const Text = styled.p`
 `;
 
 export interface LoginProps {
-  asButton: boolean;
+  asButton?: boolean;
 }
 
 function Login({ asButton }: LoginProps) {
@@ -75,7 +75,7 @@ function Login({ asButton }: LoginProps) {
   if (asButton) {
     return (
       <div className='flex w-full justify-center'>
-        <ButtonLight maxWidth={'436px'} onClick={login}>
+        <ButtonLight maxWidth={'436px'} onClick={() => {login()}}>
           <img src={ConnectWallet} /> &nbsp; {authenticated
             ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
               ?.getPrincipal()
@@ -106,6 +106,10 @@ function Login({ asButton }: LoginProps) {
     </Web3StatusConnect>
   );
 }
+
+Login.defaultProps = {
+  asButton: false,
+};
 
 export default function WrappedLogin(props: LoginProps) {
   return (
