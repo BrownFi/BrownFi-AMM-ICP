@@ -2,7 +2,7 @@ import { Plus } from "react-feather";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import styled, { ThemeContext, useTheme } from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import LIQUIDITY_POSITION_ICON from '/images/inbox.svg';
 import { ButtonLight, ButtonPrimary } from './Button';
 import { AutoColumn } from './Column';
@@ -198,7 +198,7 @@ export default function Pool() {
                           >
                             Your active liquidity position will appear here.
                           </TYPE.body>
-                          <Login asButton/>
+                          <Login asButton />
                         </div>
                       </div>
                     </div>
@@ -246,7 +246,11 @@ export default function Pool() {
                           )}*/}
                         </RowBetween>
                         <div className="w-full h-[1px] bg-[#4c4a4f]" />
-                        {loading ? <CircularProgress className="w-full"/> : (
+                        {loading ? (
+                          <div className="flex justify-center items-center w-full h-[100px]">
+                            <CircularProgress/>
+                          </div>
+                        ) : (
                           <PositionList positions={positions}></PositionList>
                         )}
                       </div>
