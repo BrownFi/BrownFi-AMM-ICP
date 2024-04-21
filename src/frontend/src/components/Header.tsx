@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Row, { RowFixed } from "./Row";
@@ -257,13 +256,13 @@ export default function Header() {
           </StyledNavLink>
         </HeaderLinks>
       </HeaderLeft>
-      <HeaderControls>
-        <HideSmall>
+      <HideSmall>
+        <HeaderControls>
           <HeaderElement>
             <Login />
           </HeaderElement>
-        </HideSmall>
-      </HeaderControls>
+        </HeaderControls>
+      </HideSmall>
     </HeaderFrame>
   );
 }
