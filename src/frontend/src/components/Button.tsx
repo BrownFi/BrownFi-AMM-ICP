@@ -3,7 +3,7 @@ import { darken } from "polished";
 import { ReactNode } from "react";
 import type * as CSS from 'csstype';
 
-const ButtonWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+export const ButtonWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   return <button style={props}> {children} </button>;
 }
 

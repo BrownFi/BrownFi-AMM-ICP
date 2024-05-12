@@ -1,7 +1,16 @@
 import { RowBetween } from "../Row";
 import Position from "./Position";
 
-export default function PositionList({ positions }) {
+interface PositionListProps {
+  positions: Array<{
+    id: string;
+    tokenPay: string;
+    tokenReceive: string;
+    isActive: boolean;
+  }>;
+}
+
+export default function PositionList({ positions } : PositionListProps) {
   return (
     <div
       style={{
@@ -15,8 +24,8 @@ export default function PositionList({ positions }) {
     >
       {positions.length != 0
         ? positions.map((position) => (
-            <Position position={position} key={position.id} />
-          ))
+          <Position position={position} key={position.id} />
+        ))
         : null}
     </div>
   );

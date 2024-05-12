@@ -2,12 +2,12 @@ import { Check, ChevronDown } from 'react-feather';
 
 import styled from '@emotion/styled/macro';
 import { darken } from 'polished';
-import { Button as MuiButton } from "@mui/material"
-
 import { RowBetween } from '../Row';
 import { useTheme } from '@emotion/react';
+import { ButtonWrapper } from '../Button';
+import { PropsWithChildren } from 'react';
 
-const Base = styled(MuiButton)<{
+const Base = styled(ButtonWrapper)<{
   padding?: string;
   width?: string;
   borderRadius?: string;
@@ -250,7 +250,7 @@ export function ButtonConfirmed({
   confirmed,
   altDisabledStyle,
   ...rest
-}: { confirmed?: boolean; altDisabledStyle?: boolean } & ButtonProps) {
+}: { confirmed?: boolean; altDisabledStyle?: boolean }) {
   if (confirmed) {
     return <ButtonConfirmedStyle {...rest} />;
   } else {
@@ -258,7 +258,7 @@ export function ButtonConfirmed({
   }
 }
 
-export function ButtonError({ error, ...rest }: { error?: boolean } & ButtonProps) {
+export function ButtonError({ error, ...rest }: { error?: boolean }) {
   if (error) {
     return <ButtonErrorStyle {...rest} />;
   } else {
@@ -266,7 +266,7 @@ export function ButtonError({ error, ...rest }: { error?: boolean } & ButtonProp
   }
 }
 
-export function ButtonDropdown({ disabled = false, children, ...rest }: { disabled?: boolean } & ButtonProps) {
+export function ButtonDropdown({ disabled = false, children, ...rest }: PropsWithChildren & { disabled?: boolean }) {
   return (
     <ButtonPrimary {...rest} disabled={disabled}>
       <RowBetween>
@@ -277,7 +277,7 @@ export function ButtonDropdown({ disabled = false, children, ...rest }: { disabl
   );
 }
 
-export function ButtonDropdownGrey({ disabled = false, children, ...rest }: { disabled?: boolean } & ButtonProps) {
+export function ButtonDropdownGrey({ disabled = false, children, ...rest }: PropsWithChildren & { disabled?: boolean }) {
   return (
     <ButtonGray {...rest} disabled={disabled} style={{ borderRadius: '20px' }}>
       <RowBetween>
@@ -288,7 +288,7 @@ export function ButtonDropdownGrey({ disabled = false, children, ...rest }: { di
   );
 }
 
-export function ButtonDropdownLight({ disabled = false, children, ...rest }: { disabled?: boolean } & ButtonProps) {
+export function ButtonDropdownLight({ disabled = false, children, ...rest }: PropsWithChildren & { disabled?: boolean }) {
   return (
     <ButtonOutlined {...rest} disabled={disabled}>
       <RowBetween>
@@ -299,7 +299,7 @@ export function ButtonDropdownLight({ disabled = false, children, ...rest }: { d
   );
 }
 
-export function ButtonRadio({ active, ...rest }: { active?: boolean } & ButtonProps) {
+export function ButtonRadio({ active, ...rest }: { active?: boolean } ) {
   if (!active) {
     return <ButtonWhite {...rest} />;
   } else {
@@ -334,7 +334,7 @@ const ResponsiveCheck = styled(Check)`
   size: 13px;
 `;
 
-export function ButtonRadioChecked({ active = false, children, ...rest }: { active?: boolean } & ButtonProps) {
+export function ButtonRadioChecked({ active = false, children, ...rest }: PropsWithChildren & { active?: boolean } ) {
   const theme = useTheme();
 
   if (!active) {

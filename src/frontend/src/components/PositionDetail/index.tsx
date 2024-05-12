@@ -46,7 +46,7 @@ export default function PositionDetail() {
                   </a>
                   <Text.body
                     color={theme.white}
-                    fontSize={"24px"}
+                    fontSize={24}
                     fontFamily={"Russo One"}
                   >
                     Back to Pools

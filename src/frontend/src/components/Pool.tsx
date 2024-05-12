@@ -61,13 +61,13 @@ function BottomSection() {
   return (
     <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
       <div className='flex gap-1'>
-        <Text.body color={theme.white} fontSize={'14px'}>
+        <Text.body color={theme.white} fontSize={14}>
           Learn about providing liquidity
         </Text.body>
       </div>
       <Text.body
         color={'#ffffff80'}
-        fontSize={'12px'}
+        fontSize={12}
         fontWeight={500}
         textAlign={'center'}
         lineHeight={'18px'}
@@ -91,7 +91,7 @@ export default function Pool() {
   const theme = useTheme();
   const { authenticated } = useAuth();
   const [positions, setPositions] = useState<PoolDetails[]>([]);
-  const { call, data, error, loading } = useFetchPairList();
+  // const { call, data, error, loading } = useFetchPairList();
 
   useEffect(() => {
     setPositions([
@@ -160,7 +160,7 @@ export default function Pool() {
         currentLP: "2.333",
       },
     ])
-    call();
+    // call();
   }, [authenticated])
 
   return (
@@ -179,7 +179,7 @@ export default function Pool() {
                     <div className="flex flex-col">
                       <Text.body
                         color={theme.white}
-                        fontSize={"24px"}
+                        fontSize={24}
                         fontFamily={"Russo One"}
                       >
                         Pools
@@ -193,7 +193,7 @@ export default function Pool() {
                           />
                           <Text.body
                             color={"#ffffff80"}
-                            fontSize={"16x"}
+                            fontSize={16}
                             fontWeight={500}
                             textAlign={"center"}
                           >
@@ -213,17 +213,17 @@ export default function Pool() {
                       <RowBetween>
                         <Text.body
                           color={theme.white}
-                          fontSize={"24px"}
+                          fontSize={24}
                           fontFamily={"Russo One"}
                         >
                           Pools
                         </Text.body>
                         <Link to="/add/v2">
                           <div className="flex w-full justify-center">
-                            <ButtonLight href="/add/v2">
+                            {/* <ButtonLight href="/add/v2">
                               <Plus size="16" color={theme.white} /> &nbsp; New
                               Position
-                            </ButtonLight>
+                            </ButtonLight> */}
                           </div>
                         </Link>
                       </RowBetween>
@@ -247,12 +247,12 @@ export default function Pool() {
                           )}*/}
                         </RowBetween>
                         <div className="w-full h-[1px] bg-[#4c4a4f]" />
-                        {loading ? (
+                        {/* {loading ? (
                           <div className="flex justify-center items-center w-full h-[100px]">
                           </div>
                         ) : (
                           <PositionList positions={positions}></PositionList>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     <BottomSection />

@@ -1,10 +1,19 @@
 import { useTheme } from "@emotion/react";
-import { TYPE } from "../../theme";
 import { RowBetween } from "../Row";
 import { GoDotFill } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import { Text } from "../../theme";
 
-export default function Position({ position }) {
+interface PositionProps {
+  position: {
+    id: string;
+    tokenPay: string;
+    tokenReceive: string;
+    isActive: boolean;
+  };
+}
+
+export default function Position({ position }: PositionProps) {
   const theme = useTheme();
   const navigate = useNavigate();
 

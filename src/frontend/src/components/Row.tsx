@@ -1,6 +1,12 @@
 import styled from "@emotion/styled";
+import { ReactNode } from "react";
+import type * as CSS from 'csstype';
 
-const Row: React.FunctionComponent = styled.div<{
+export const RowWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLDivElement>) => {
+  return <button style={props}> {children} </button>;
+}
+
+const Row = styled(RowWrapper)<{
   width?: string;
   align?: string;
   justify?: string;

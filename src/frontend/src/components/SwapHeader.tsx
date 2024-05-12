@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
-
-import { TYPE } from '../theme';
+import { Text } from '../theme';
 import { RowBetween, RowFixed } from './Row';
 import { useTheme } from '@emotion/react';
 
@@ -23,7 +22,7 @@ export default function SwapHeader() {
     <StyledSwapHeader>
       <RowBetween>
         <RowFixed>
-          <Text.body fontFamily={'Russo One'} fontSize={24} color={theme.text1} style={{ marginRight: '8px' }}>
+          <Text.body fontFamily={'Russo One'} fontSize={24} color={theme.text1} marginRight={'8px'}>
             Swap Token
           </Text.body>
         </RowFixed>
