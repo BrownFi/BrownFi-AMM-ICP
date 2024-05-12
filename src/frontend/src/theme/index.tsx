@@ -1,18 +1,17 @@
 import { ReactNode, useMemo } from "react";
 import {
   css,
+  CSSObject,
   Global,
   ThemeProvider as StyledComponentsThemeProvider,
 } from "@emotion/react";
-import styled from '@emotion/styled'
-import { Colors } from "./styled";
-import { Text, TextProps } from "rebass";
+import type * as CSS from 'csstype';
 export { ThemedGlobalStyle } from "./ThemedGlobalStyle";
 
 const white = "#FFFFFF";
 const black = "#000000";
 
-export function colors(): Colors {
+export function colors() {
   return {
     white,
     black,
@@ -58,17 +57,6 @@ export const MEDIA_WIDTHS = {
   upToLarge: 1280,
 };
 
-const mediaWidthTemplates: {
-  [width in keyof typeof MEDIA_WIDTHS]: typeof css;
-} = Object.keys(MEDIA_WIDTHS).reduce((accumulator, size) => {
-  (accumulator as any)[size] = (a: any, b: any, c: any) => css`
-    @media (max-width: ${(MEDIA_WIDTHS as any)[size]}px) {
-      ${css(a, b, c)}
-    }
-  `;
-  return accumulator;
-}, {}) as any;
-
 export function theme(darkMode: boolean) {
   return {
     ...colors(),
@@ -94,22 +82,6 @@ export function theme(darkMode: boolean) {
       display: flex;
       flex-flow: row nowrap;
     `,
-
-    transitions: {
-      duration: {
-        shortest: 150,
-        shorter: 200,
-        short: 250,
-        // most basic recommended timing
-        standard: 300,
-        // this is to be used in complex animations
-        complex: 375,
-        // recommended when something is entering screen
-        enteringScreen: 225,
-        // recommended when something is leaving screen
-        leavingScreen: 195,
-      },
-    },
   };
 }
 
@@ -127,56 +99,57 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </StyledComponentsThemeProvider>
   );
+};
+
+const TextWrapper = ({ children, ...props }: { children?: ReactNode} &  CSS.Properties ) => {
+  return <div style={props}> {children} </div>;
 }
 
-const TextWrapper = styled(Text)<{ color: keyof Colors }>`
-  color: ${({ color, theme }) => (theme as any)[color]};
-`;
 
-export const TYPE = {
-  main(props: TextProps) {
+export const Text = {
+  main(props: {}) {
     return <TextWrapper fontWeight={500} color={"primary1"} {...props} />;
   },
-  link(props: TextProps) {
+  link(props: {}) {
     return <TextWrapper fontWeight={500} color={"primary1"} {...props} />;
   },
-  label(props: TextProps) {
+  label(props: {}) {
     return <TextWrapper fontWeight={600} color={"primary1"} {...props} />;
   },
-  black(props: TextProps) {
+  black(props: {}) {
     return <TextWrapper fontWeight={500} color={"primary1"} {...props} />;
   },
-  white(props: TextProps) {
+  white(props: {}) {
     return <TextWrapper fontWeight={500} color={"white"} {...props} />;
   },
-  body(props: TextProps) {
+  body(props: {}) {
     return <TextWrapper fontWeight={400} fontSize={18} {...props} />;
   },
-  largeHeader(props: TextProps) {
+  largeHeader(props: {}) {
     return <TextWrapper fontWeight={600} fontSize={24} {...props} />;
   },
-  mediumHeader(props: TextProps) {
+  mediumHeader(props: {}) {
     return <TextWrapper fontWeight={500} fontSize={20} {...props} />;
   },
-  subHeader(props: TextProps) {
+  subHeader(props: {}) {
     return <TextWrapper fontWeight={400} fontSize={14} {...props} />;
   },
-  small(props: TextProps) {
+  small(props: {}) {
     return <TextWrapper fontWeight={500} fontSize={11} {...props} />;
   },
-  blue(props: TextProps) {
+  blue(props: {}) {
     return <TextWrapper fontWeight={500} color={"blue1"} {...props} />;
   },
-  yellow(props: TextProps) {
+  yellow(props: {}) {
     return <TextWrapper fontWeight={500} color={"yellow3"} {...props} />;
   },
-  darkGray(props: TextProps) {
+  darkGray(props: {}) {
     return <TextWrapper fontWeight={500} color={"primary1"} {...props} />;
   },
-  gray(props: TextProps) {
+  gray(props: {}) {
     return <TextWrapper fontWeight={500} color={"bg3"} {...props} />;
   },
-  italic(props: TextProps) {
+  italic(props: {}) {
     return (
       <TextWrapper
         fontWeight={500}
@@ -187,7 +160,7 @@ export const TYPE = {
       />
     );
   },
-  error({ error, ...props }: { error: boolean } & TextProps) {
+  error({ error, ...props }: { error: boolean } & {}) {
     return (
       <TextWrapper
         fontWeight={500}

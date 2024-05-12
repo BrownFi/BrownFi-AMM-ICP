@@ -1,8 +1,14 @@
 import styled from "@emotion/styled";
 import { darken } from "polished";
-import { Button as RebassButton, ButtonProps } from "@rebass/emotion";
+import { ReactNode } from "react";
+import type * as CSS from 'csstype';
 
-const Base = styled(RebassButton)<{
+const ButtonWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  return <button style={props}> {children} </button>;
+}
+
+
+const Base = styled(ButtonWrapper)<{
   padding?: string;
   width?: string;
   borderRadius?: string;
@@ -245,7 +251,7 @@ export function ButtonConfirmed({
   confirmed,
   altDisabledStyle,
   ...rest
-}: { confirmed?: boolean; altDisabledStyle?: boolean } & ButtonProps) {
+}: { confirmed?: boolean; altDisabledStyle?: boolean }) {
   if (confirmed) {
     return <ButtonConfirmedStyle {...rest} />;
   } else {
@@ -256,7 +262,7 @@ export function ButtonConfirmed({
 export function ButtonError({
   error,
   ...rest
-}: { error?: boolean } & ButtonProps) {
+}: { error?: boolean }) {
   if (error) {
     return <ButtonErrorStyle {...rest} />;
   } else {
@@ -267,7 +273,7 @@ export function ButtonError({
 export function ButtonRadio({
   active,
   ...rest
-}: { active?: boolean } & ButtonProps) {
+}: { active?: boolean }) {
   if (!active) {
     return <ButtonWhite {...rest} />;
   } else {

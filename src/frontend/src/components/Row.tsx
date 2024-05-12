@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
-import { Box, BoxProps } from "@rebass/emotion";
 
-const Row: React.FunctionComponent<BoxProps> = styled(Box)<{
+const Row: React.FunctionComponent = styled.div<{
   width?: string;
   align?: string;
   justify?: string;
@@ -50,16 +49,16 @@ export const ResponsiveRow = styled.div<{
   flex-direction: row;
   align-items: ${({ rowAlignment }) => rowAlignment || "center"};
   justify-content: initial;
-
-  ${({ theme, breakpoint, rowAlignment }) =>
-    ((breakpoint === "sm" && theme.mediaWidth.upToSmall) ||
-      (breakpoint === "md" && theme.mediaWidth.upToMedium) ||
-      (breakpoint === "lg" && theme.mediaWidth.upToLarge) ||
-      theme.mediaWidth.upToExtraSmall)`
-    flex-direction: column;
-    justify-content: ${rowAlignment || "center"};
-    align-items: initial;
-  `};
 `;
+  // ${({ theme, breakpoint, rowAlignment }) =>
+  //   ((breakpoint === "sm" && theme.mediaWidth.upToSmall) ||
+  //     (breakpoint === "md" && theme.mediaWidth.upToMedium) ||
+  //     (breakpoint === "lg" && theme.mediaWidth.upToLarge) ||
+  //     theme.mediaWidth.upToExtraSmall)`
+  //   flex-direction: column;
+  //   justify-content: ${rowAlignment || "center"};
+  //   align-items: initial;
+  // `};
+
 
 export default Row;

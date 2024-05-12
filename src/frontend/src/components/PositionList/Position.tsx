@@ -18,7 +18,7 @@ export default function Position({ position }) {
       onClick={handleOnClick}
     >
       <RowBetween>
-        <TYPE.body
+        <Text.body
           className="flex gap-2"
           color={theme.white}
           fontSize={16}
@@ -26,36 +26,36 @@ export default function Position({ position }) {
         >
           {position.tokenPay}/{position.tokenReceive}
           <div className="h-6 flex justify-center items-center bg-[#314243] px-2">
-            <TYPE.body color={theme.green2} fontSize={14} fontWeight={500}>
+            <Text.body color={theme.green2} fontSize={14} fontWeight={500}>
               --
-            </TYPE.body>
+            </Text.body>
           </div>
-        </TYPE.body>
+        </Text.body>
         <div className="h-6 flex justify-center items-center bg-[#314243] px-2 gap-1">
           <GoDotFill color={theme.green2} size={14} />
-          <TYPE.body
+          <Text.body
             className="flex gap-1"
             color={theme.green2}
             fontSize={14}
             fontWeight={500}
           >
             {position?.isActive ? "Active" : "Closed"}
-          </TYPE.body>
+          </Text.body>
         </div>
       </RowBetween>
 
       <div className="h-6 flex items-center gap-10">
-        <TYPE.body
+        <Text.body
           className="flex gap-2"
           color={theme.white}
           fontSize={14}
           fontWeight={500}
         >
           Parameter: --
-        </TYPE.body>
-        <TYPE.body color={theme.white} fontSize={14} fontWeight={500}>
+        </Text.body>
+        <Text.body color={theme.white} fontSize={14} fontWeight={500}>
           Current LP price: --
-        </TYPE.body>
+        </Text.body>
       </div>
 
       <div className="w-full h-[1px] bg-[#4c4a4f]" />

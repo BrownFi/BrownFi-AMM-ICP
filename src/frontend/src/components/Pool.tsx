@@ -7,13 +7,12 @@ import LIQUIDITY_POSITION_ICON from '/images/inbox.svg';
 import { ButtonLight, ButtonPrimary } from './Button';
 import { AutoColumn } from './Column';
 import { RowBetween, RowFixed } from './Row';
-import { MEDIA_WIDTHS, TYPE } from "../theme";
+import { MEDIA_WIDTHS, Text } from "../theme";
 import { useTheme } from "@emotion/react";
 import { useAuth } from "@ic-reactor/react";
 import useFetchPairList from "../hooks/useFetchPairList";
 import { SwapPoolTabs } from "./NavigationTabs";
 import Login from "./Login";
-import { CircularProgress } from "@mui/material";
 import PositionList from "./PositionList/PositionList";
 
 
@@ -62,11 +61,11 @@ function BottomSection() {
   return (
     <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
       <div className='flex gap-1'>
-        <TYPE.body color={theme.white} fontSize={'14px'}>
+        <Text.body color={theme.white} fontSize={'14px'}>
           Learn about providing liquidity
-        </TYPE.body>
+        </Text.body>
       </div>
-      <TYPE.body
+      <Text.body
         color={'#ffffff80'}
         fontSize={'12px'}
         fontWeight={500}
@@ -74,7 +73,7 @@ function BottomSection() {
         lineHeight={'18px'}
       >
         Check out BrownFi parameter concept
-      </TYPE.body>
+      </Text.body>
     </div>
   )
 }
@@ -178,13 +177,13 @@ export default function Pool() {
                 <div className="flex flex-col xl:w-[894px]">
                   <div className="flex flex-col bg-[#1D1C21] p-8 gap-8">
                     <div className="flex flex-col">
-                      <TYPE.body
+                      <Text.body
                         color={theme.white}
                         fontSize={"24px"}
                         fontFamily={"Russo One"}
                       >
                         Pools
-                      </TYPE.body>
+                      </Text.body>
                       <div className="flex flex-col gap-4 justify-center items-center">
                         <div className="flex flex-col gap-4 items-center max-w-[288px]">
                           <img
@@ -192,14 +191,14 @@ export default function Pool() {
                             alt=""
                             className="w-[100px] h-[100px]"
                           />
-                          <TYPE.body
+                          <Text.body
                             color={"#ffffff80"}
                             fontSize={"16x"}
                             fontWeight={500}
                             textAlign={"center"}
                           >
                             Your active liquidity position will appear here.
-                          </TYPE.body>
+                          </Text.body>
                           <Login asButton />
                         </div>
                       </div>
@@ -212,16 +211,16 @@ export default function Pool() {
                   <div className="flex flex-col xl:w-[894px]">
                     <div className="flex flex-col bg-[#1D1C21] p-8 gap-8">
                       <RowBetween>
-                        <TYPE.body
+                        <Text.body
                           color={theme.white}
                           fontSize={"24px"}
                           fontFamily={"Russo One"}
                         >
                           Pools
-                        </TYPE.body>
+                        </Text.body>
                         <Link to="/add/v2">
                           <div className="flex w-full justify-center">
-                            <ButtonLight maxWidth={"436px"} href="/add/v2">
+                            <ButtonLight href="/add/v2">
                               <Plus size="16" color={theme.white} /> &nbsp; New
                               Position
                             </ButtonLight>
@@ -230,27 +229,26 @@ export default function Pool() {
                       </RowBetween>
                       <div className="flex flex-col bg-[#323038]">
                         <RowBetween className="!py-3 !px-6">
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={16}
                             fontWeight={700}
                           >
                             Your positions ({positions.length})
-                          </TYPE.body>
+                          </Text.body>
                           {/* {positions.length != 0 && (
-                              <TYPE.body
+                              <Text.body
                                 color={"#27e3ab"}
                                 fontSize={14}
                                 fontWeight={500}
                               >
                                 Hide closed positions
-                              </TYPE.body> 
+                              </Text.body> 
                           )}*/}
                         </RowBetween>
                         <div className="w-full h-[1px] bg-[#4c4a4f]" />
                         {loading ? (
                           <div className="flex justify-center items-center w-full h-[100px]">
-                            <CircularProgress/>
                           </div>
                         ) : (
                           <PositionList positions={positions}></PositionList>

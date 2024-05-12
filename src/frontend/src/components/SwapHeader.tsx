@@ -23,9 +23,9 @@ export default function SwapHeader() {
     <StyledSwapHeader>
       <RowBetween>
         <RowFixed>
-          <TYPE.body fontFamily={'Russo One'} fontSize={24} color={theme.text1} style={{ marginRight: '8px' }}>
+          <Text.body fontFamily={'Russo One'} fontSize={24} color={theme.text1} style={{ marginRight: '8px' }}>
             Swap Token
-          </TYPE.body>
+          </Text.body>
         </RowFixed>
 
       </RowBetween>

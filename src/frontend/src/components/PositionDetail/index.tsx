@@ -1,4 +1,4 @@
-import { TYPE } from "../../theme";
+import { Text } from "../../theme";
 import styled from "@emotion/styled";
 import { RowBetween, RowFixed } from "../Row";
 import { GoDotFill } from "react-icons/go";
@@ -44,103 +44,103 @@ export default function PositionDetail() {
                   >
                     &lt;
                   </a>
-                  <TYPE.body
+                  <Text.body
                     color={theme.white}
                     fontSize={"24px"}
                     fontFamily={"Russo One"}
                   >
                     Back to Pools
-                  </TYPE.body>
+                  </Text.body>
                 </div>
                 <div className="flex flex-col gap-4">
                   <RowBetween>
                     <div className="flex row gap-3">
-                      <TYPE.body
+                      <Text.body
                         className="flex gap-2"
                         color={theme.white}
                         fontSize={16}
                         fontWeight={700}
                       >
                         {detail?.tokenPay}/{detail?.tokenReceive}
-                      </TYPE.body>
+                      </Text.body>
                       <div className="h-6 flex justify-center items-center bg-[#314243] px-2 gap-1">
                         <GoDotFill color={theme.green2} size={14} />
-                        <TYPE.body
+                        <Text.body
                           className="flex gap-1"
                           color={theme.green2}
                           fontSize={14}
                           fontWeight={500}
                         >
                           Active
-                        </TYPE.body>
+                        </Text.body>
                       </div>
                     </div>
                     <div className="h-6 flex justify-center items-center bg-[#773030] px-2 cursor-pointer">
-                      <TYPE.body
+                      <Text.body
                         color={theme.white}
                         fontSize={12}
                         fontWeight={700}
                       >
                         Remove
-                      </TYPE.body>
+                      </Text.body>
                     </div>
                   </RowBetween>
                   <div>
                     <div className="h-6 flex items-center gap-10">
-                      <TYPE.body
+                      <Text.body
                         className="flex gap-2"
                         color={theme.white}
                         fontSize={14}
                         fontWeight={500}
                       >
                         Parameter:
-                      </TYPE.body>
-                      <TYPE.body
+                      </Text.body>
+                      <Text.body
                         color={theme.white}
                         fontSize={14}
                         fontWeight={500}
                       >
                         --
-                      </TYPE.body>
+                      </Text.body>
                     </div>
                     <div className="h-6 flex items-center gap-10">
-                      <TYPE.body
+                      <Text.body
                         className="flex gap-2"
                         color={theme.white}
                         fontSize={14}
                         fontWeight={500}
                       >
                         Current LP price: --
-                      </TYPE.body>
+                      </Text.body>
                     </div>
                   </div>
                   <div className="flex flex-col bg-[#323038]">
                     <RowBetween className="!py-3 !px-6">
-                      <TYPE.body
+                      <Text.body
                         color={theme.white}
                         fontSize={16}
                         fontWeight={500}
                       >
                         Liquidity
-                      </TYPE.body>
+                      </Text.body>
                       <div className="h-6 flex justify-center items-center bg-[#1E1E1E] px-2 cursor-pointer">
-                        <TYPE.body
+                        <Text.body
                           color={theme.white}
                           fontSize={12}
                           fontWeight={700}
                         >
                           Increase liquidity
-                        </TYPE.body>
+                        </Text.body>
                       </div>
                     </RowBetween>
                     <div className="flex flex-col pb-3 px-6 gap-2">
-                      <TYPE.body
+                      <Text.body
                         fontSize={32}
                         fontWeight={600}
                         color={theme.white}
                       >
                         $ --
-                      </TYPE.body>
+                      </Text.body>
 
                       <RowBetween>
                         <div className="flex flex-row gap-5">
@@ -149,35 +149,35 @@ export default function PositionDetail() {
                             alt="token icon"
                             width="40px"
                           />
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={16}
                             fontWeight={500}
                           >
                             {detail?.tokenPay}
-                          </TYPE.body>
+                          </Text.body>
                         </div>
                         <div className="flex gap-6">
                           {detail ? (
                             <RowFixed>
-                              <TYPE.body
+                              <Text.body
                                 color={theme.white}
                                 fontSize={14}
                                 fontWeight={500}
                               >
                                 {detail?.somenumber}
-                              </TYPE.body>
+                              </Text.body>
                             </RowFixed>
                           ) : (
                             "-"
                           )}
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={14}
                             fontWeight={500}
                           >
                             -- %
-                          </TYPE.body>
+                          </Text.body>
                         </div>
                       </RowBetween>
                       <RowBetween>
@@ -187,57 +187,57 @@ export default function PositionDetail() {
                             alt="token icon"
                             width="40px"
                           />
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={16}
                             fontWeight={500}
                           >
                             {detail?.tokenReceive}
-                          </TYPE.body>
+                          </Text.body>
                         </div>
                         <div className="flex gap-6">
                           {detail ? (
                             <RowFixed>
-                              <TYPE.body
+                              <Text.body
                                 color={theme.white}
                                 fontSize={14}
                                 fontWeight={500}
                               >
                                 {detail?.othernumber}
-                              </TYPE.body>
+                              </Text.body>
                             </RowFixed>
                           ) : (
                             "-"
                           )}
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={14}
                             fontWeight={500}
                           >
                             -- %
-                          </TYPE.body>
+                          </Text.body>
                         </div>
                       </RowBetween>
                     </div>
                   </div>
                   <div className="flex flex-col bg-[#323038]">
                     <div className="!py-3 !px-6">
-                      <TYPE.body
+                      <Text.body
                         color={theme.white}
                         fontSize={16}
                         fontWeight={500}
                       >
                         Accrued fee
-                      </TYPE.body>
+                      </Text.body>
                     </div>
                     <div className="flex flex-col pb-3 px-6 gap-2">
-                      <TYPE.body
+                      <Text.body
                         fontSize={32}
                         fontWeight={600}
                         color={theme.white}
                       >
                         $ --
-                      </TYPE.body>
+                      </Text.body>
 
                       <RowBetween>
                         <div className="flex flex-row gap-5">
@@ -246,21 +246,21 @@ export default function PositionDetail() {
                             alt="token icon"
                             width="40px"
                           />
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={16}
                             fontWeight={500}
                           >
                             {detail?.tokenPay}
-                          </TYPE.body>
+                          </Text.body>
                         </div>
-                        <TYPE.body
+                        <Text.body
                           color={theme.white}
                           fontSize={14}
                           fontWeight={500}
                         >
                           {"--"}
-                        </TYPE.body>
+                        </Text.body>
                       </RowBetween>
                       <RowBetween>
                         <div className="flex flex-row gap-5">
@@ -269,21 +269,21 @@ export default function PositionDetail() {
                             alt="token icon"
                             width="40px"
                           />
-                          <TYPE.body
+                          <Text.body
                             color={theme.white}
                             fontSize={16}
                             fontWeight={500}
                           >
                             {detail?.tokenReceive}
-                          </TYPE.body>
+                          </Text.body>
                         </div>
-                        <TYPE.body
+                        <Text.body
                           color={theme.white}
                           fontSize={14}
                           fontWeight={500}
                         >
                           {"--"}
-                        </TYPE.body>
+                        </Text.body>
                       </RowBetween>
                     </div>
                   </div>

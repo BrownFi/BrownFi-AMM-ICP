@@ -6,7 +6,7 @@ import { darken } from 'polished';
 
 import { useTheme } from '@emotion/react';
 
-import { TYPE } from '../theme';
+import { Text } from '../theme';
 
 import ARROW_BACK from '/images/arrow-back.svg';
 import { RowBetween } from './Row';
@@ -103,9 +103,9 @@ export function AddRemoveTabs({
             <img src={ARROW_BACK} alt='' />
             {/* <ArrowLeft stroke={theme.white} /> */}
           </HistoryLink>
-          <TYPE.mediumHeader fontWeight={500} color={theme.white} fontFamily={'Russo One'} fontSize={24}>
+          <Text.mediumHeader fontWeight={500} color={theme.white} fontFamily={'Russo One'} fontSize={24}>
             {creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}
-          </TYPE.mediumHeader>
+          </Text.mediumHeader>
         </div>
       </div>
     </Tabs>

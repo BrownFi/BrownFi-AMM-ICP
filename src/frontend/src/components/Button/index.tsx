@@ -2,12 +2,12 @@ import { Check, ChevronDown } from 'react-feather';
 
 import styled from '@emotion/styled/macro';
 import { darken } from 'polished';
-import { Button as RebassButton, ButtonProps } from '@rebass/emotion';
+import { Button as MuiButton } from "@mui/material"
 
 import { RowBetween } from '../Row';
 import { useTheme } from '@emotion/react';
 
-const Base = styled(RebassButton)<{
+const Base = styled(MuiButton)<{
   padding?: string;
   width?: string;
   borderRadius?: string;
