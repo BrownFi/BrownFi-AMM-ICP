@@ -1,10 +1,11 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import Row, { RowFixed } from "./Row";
 import Login from "./Login";
 
 import Logo from "/images/logo.png";
 import { HideSmall } from "./Responsive";
+import { MEDIA_WIDTHS } from "../theme";
 
 const HeaderFrame = styled.div<{
   showBackground: boolean;
@@ -23,14 +24,14 @@ const HeaderFrame = styled.div<{
   position: relative;
   background: ${({ theme }) => theme.bg0};
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${MEDIA_WIDTHS.upToMedium} {
     padding:  1rem;
     grid-template-columns: 275px 1fr;
-  `};
+  };
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  ${MEDIA_WIDTHS.upToExtraSmall} {
     padding: 1rem;
-  `}
+  }
 `;
 
 const HeaderControls = styled.div`
@@ -38,7 +39,7 @@ const HeaderControls = styled.div`
   gap: 15px;
   flex-direction: row;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${MEDIA_WIDTHS.upToMedium} {
     flex-direction: row;
     justify-content: space-between;
     justify-self: center;
@@ -53,7 +54,7 @@ const HeaderControls = styled.div`
     height: 72px;
     border-radius: 12px 12px 0 0;
     background-color: ${({ theme }) => theme.bg0};
-  `};
+  };
 `;
 
 const HeaderElement = styled.div`
@@ -68,16 +69,16 @@ const HeaderElement = styled.div`
     margin-left: 8px;
   }
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${MEDIA_WIDTHS.upToMedium} {
     flex-direction: row-reverse;
     align-items: center;
-  `};
+  };
 `;
 
 const HeaderRow = styled(RowFixed)`
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${MEDIA_WIDTHS.upToMedium} {
    width: 100%;
-  `};
+  };
 `;
 
 const HeaderLinks = styled(Row)`
@@ -87,9 +88,9 @@ const HeaderLinks = styled(Row)`
   overflow: auto;
   font-size: 20px;
   font-weight: 400;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${MEDIA_WIDTHS.upToMedium} {
     justify-self: flex-end;
-  `};
+  };
   .ACTIVE {
     color: rgba(39, 227, 171, 1);
   }
@@ -136,9 +137,9 @@ const Title = styled(Link)`
   align-items: center;
   pointer-events: auto;
   justify-self: flex-start;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${MEDIA_WIDTHS.upToSmall} {
     justify-self: center;
-  `};
+  };
   :hover {
     cursor: pointer;
   }
@@ -146,9 +147,7 @@ const Title = styled(Link)`
 
 const activeClassName = "ACTIVE";
 
-const StyledNavLink = styled(NavLink).attrs({
-  activeClassName,
-})`
+const StyledNavLink = styled(NavLink)`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: left;
   border-radius: 10px;
@@ -171,29 +170,6 @@ const StyledNavLink = styled(NavLink).attrs({
   :focus {
     color: ${({ theme }) => theme.primary2};
   }
-`;
-
-export const StyledLink = styled.a.attrs({
-  activeClassName,
-})`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  border-radius: 10px;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.primary1};
-  font-size: 1rem;
-  width: fit-content;
-  font-weight: 700;
-  padding: 8px 12px;
-
-  &.${activeClassName} {
-    border-radius: 0px;
-    color: ${({ theme }) => theme.primary1};
-  }
-
-  :hover, ;
 `;
 
 export const StyledMenuButton = styled.button`
@@ -244,13 +220,13 @@ export default function Header() {
           <StyledNavLink
             id={`pool-nav-link`}
             to={"/pool"}
-            isActive={(match, { pathname }) =>
-              Boolean(match) ||
-              pathname.startsWith("/add") ||
-              pathname.startsWith("/remove") ||
-              pathname.startsWith("/increase") ||
-              pathname.startsWith("/find")
-            }
+            // isActive={(match, { pathname }) =>
+            //   Boolean(match) ||
+            //   pathname.startsWith("/add") ||
+            //   pathname.startsWith("/remove") ||
+            //   pathname.startsWith("/increase") ||
+            //   pathname.startsWith("/find")
+            // }
           >
             Pools
           </StyledNavLink>

@@ -1,12 +1,13 @@
 import { ReactNode, useMemo } from "react";
-import styled, {
-  createGlobalStyle,
+import {
   css,
-  DefaultTheme,
+  Global,
   ThemeProvider as StyledComponentsThemeProvider,
-} from "styled-components";
+} from "@emotion/react";
+import styled from '@emotion/styled'
 import { Colors } from "./styled";
 import { Text, TextProps } from "rebass";
+export { ThemedGlobalStyle } from "./ThemedGlobalStyle";
 
 const white = "#FFFFFF";
 const black = "#000000";
@@ -68,7 +69,7 @@ const mediaWidthTemplates: {
   return accumulator;
 }, {}) as any;
 
-export function theme(darkMode: boolean): DefaultTheme {
+export function theme(darkMode: boolean) {
   return {
     ...colors(),
 
@@ -81,8 +82,8 @@ export function theme(darkMode: boolean): DefaultTheme {
     //shadows
     shadow1: darkMode ? "#000" : "#4ade80",
 
-    // media queries
-    mediaWidth: mediaWidthTemplates,
+    // // media queries
+    // mediaWidth: mediaWidthTemplates,
 
     // css snippets
     flexColumnNoWrap: css`
@@ -93,6 +94,22 @@ export function theme(darkMode: boolean): DefaultTheme {
       display: flex;
       flex-flow: row nowrap;
     `,
+
+    transitions: {
+      duration: {
+        shortest: 150,
+        shorter: 200,
+        short: 250,
+        // most basic recommended timing
+        standard: 300,
+        // this is to be used in complex animations
+        complex: 375,
+        // recommended when something is entering screen
+        enteringScreen: 225,
+        // recommended when something is leaving screen
+        leavingScreen: 195,
+      },
+    },
   };
 }
 
@@ -181,61 +198,112 @@ export const TYPE = {
   },
 };
 
-export const FixedGlobalStyle = createGlobalStyle`
-  html, input, textarea, button {
-    font-family: 'Montserrat';
-    font-display: fallback;
-  }
-  @supports (font-variation-settings: normal) {
-    html, input, textarea, button {
-      font-family: 'Montserrat';
-    }
-  }
-  
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-  body::-webkit-scrollbar {
-    display: none;
-  }
-  
-  
-   a {
-     color: ${colors().blue1}; 
-   }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
-  button {
-    user-select: none;
-  }
-  
-  html {
-    font-size: 16px;
-    font-variant: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    font-feature-settings: 'ss01' on, 'ss02' on,  'cv01' on, 'cv03' on;
-    
-  }
-  `;
+export const FixedGlobalStyle = props => (
+  <Global
+    {...props}
+    styles={css`
+      html, input, textarea, button {
+          font-family: 'Montserrat';
+          font-display: fallback;
+        }
+        @supports (font-variation-settings: normal) {
+          html, input, textarea, button {
+            font-family: 'Montserrat';
+          }
+        }
+        
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+        body::-webkit-scrollbar {
+          display: none;
+        }
+        
+        
+         a {
+           color: ${colors().blue1}; 
+         }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
+        button {
+          user-select: none;
+        }
+        
+        html {
+          font-size: 16px;
+          font-variant: none;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          font-feature-settings: 'ss01' on, 'ss02' on,  'cv01' on, 'cv03' on;
+          
+        }
+    `}
+  />
+)
 
-export const ThemedGlobalStyle = createGlobalStyle`
-  html {
-    color: ${({ theme }) => theme.primary1};
-    background-color: ${({ theme }) => theme.bg0};
-  }
+// export const FixedGlobalStyle = createGlobalStyle`
+//   html, input, textarea, button {
+//     font-family: 'Montserrat';
+//     font-display: fallback;
+//   }
+//   @supports (font-variation-settings: normal) {
+//     html, input, textarea, button {
+//       font-family: 'Montserrat';
+//     }
+//   }
   
-  body {
-    min-height: 100vh;
-    background-position: 0 -30vh;
-    background-repeat: no-repeat;
-  }
-  `;
+//   html,
+//   body {
+//     margin: 0;
+//     padding: 0;
+//     -ms-overflow-style: none; /* IE and Edge */
+//     scrollbar-width: none; /* Firefox */
+//   }
+//   body::-webkit-scrollbar {
+//     display: none;
+//   }
+  
+  
+//    a {
+//      color: ${colors().blue1}; 
+//    }
+  
+//   * {
+//     box-sizing: border-box;
+//   }
+  
+//   button {
+//     user-select: none;
+//   }
+  
+//   html {
+//     font-size: 16px;
+//     font-variant: none;
+//     -webkit-font-smoothing: antialiased;
+//     -moz-osx-font-smoothing: grayscale;
+//     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+//     font-feature-settings: 'ss01' on, 'ss02' on,  'cv01' on, 'cv03' on;
+    
+//   }
+//   `;
+
+// export const ThemedGlobalStyle = createGlobalStyle`
+//   html {
+//     color: ${({ theme }) => theme.primary1};
+//     background-color: ${({ theme }) => theme.bg0};
+//   }
+  
+//   body {
+//     min-height: 100vh;
+//     background-position: 0 -30vh;
+//     background-repeat: no-repeat;
+//   }
+//   `;

@@ -26,7 +26,7 @@ function pairAdapter(pairList: any[], network = 'icp') {
     })
 }
 
-export default function useFetchPairList(address: string) {
+export default function useFetchPairList() {
     const { useQueryCall } = createReactor({
         canisterId: import.meta.env.CANISTER_ID_CORE,
         idlFactory,

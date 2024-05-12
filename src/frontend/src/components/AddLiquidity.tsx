@@ -1,5 +1,5 @@
 
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { ButtonLight } from "./Button";
 import { AutoColumn } from "./Column";
 import ConnectWallet from "/images/connect-wallet.png";

@@ -1,12 +1,11 @@
 import { Check, ChevronDown } from 'react-feather';
 
-import styled from 'styled-components/macro';
+import styled from '@emotion/styled/macro';
 import { darken } from 'polished';
-import { Button as RebassButton, ButtonProps } from 'rebass/styled-components';
-
-import useTheme from '../../hooks/useTheme';
+import { Button as RebassButton, ButtonProps } from '@rebass/emotion';
 
 import { RowBetween } from '../Row';
+import { useTheme } from '@emotion/react';
 
 const Base = styled(RebassButton)<{
   padding?: string;

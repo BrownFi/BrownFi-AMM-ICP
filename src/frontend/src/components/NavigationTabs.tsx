@@ -1,10 +1,10 @@
 import { ArrowLeft } from 'react-feather';
 import { Link as HistoryLink, NavLink } from 'react-router-dom';
 
-import styled from 'styled-components';
+import styled from "@emotion/styled";
 import { darken } from 'polished';
 
-import useTheme from '../hooks/useTheme';
+import { useTheme } from '@emotion/react';
 
 import { TYPE } from '../theme';
 
@@ -19,9 +19,7 @@ const Tabs = styled.div`
 
 const activeClassName = 'ACTIVE';
 
-const StyledNavLink = styled(NavLink).attrs({
-  activeClassName,
-})`
+const StyledNavLink = styled(NavLink)`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
   justify-content: center;
@@ -57,12 +55,12 @@ const StyledArrowLeft = styled(ArrowLeft)`
 export function SwapPoolTabs({ active }: { active: 'swap' | 'pool' }) {
   return (
     <Tabs style={{ marginBottom: '20px', display: 'none', padding: '1rem 1rem 0 1rem' }}>
-      <StyledNavLink id={`swap-nav-link`} to={'/swap'} isActive={() => active === 'swap'}>
+      {/* <StyledNavLink id={`swap-nav-link`} to={'/swap'}}>
         Swap
       </StyledNavLink>
-      <StyledNavLink id={`pool-nav-link`} to={'/pool'} isActive={() => active === 'pool'}>
+      <StyledNavLink id={`pool-nav-link`} to={'/pool'}}>
         Pools
-      </StyledNavLink>
+      </StyledNavLink> */}
     </Tabs>
   );
 }

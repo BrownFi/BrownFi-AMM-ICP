@@ -1,9 +1,8 @@
-import { useContext } from 'react';
-
-import styled, { ThemeContext } from 'styled-components';
+import styled from '@emotion/styled';
 
 import { TYPE } from '../theme';
 import { RowBetween, RowFixed } from './Row';
+import { useTheme } from '@emotion/react';
 
 const StyledSwapHeader = styled.div`
   padding: 26px 25px 5px;
@@ -19,7 +18,7 @@ const Box = styled.div`
   justify-content: center;
 `;
 export default function SwapHeader() {
-  const theme = useContext(ThemeContext);
+  const theme = useTheme();
   return (
     <StyledSwapHeader>
       <RowBetween>

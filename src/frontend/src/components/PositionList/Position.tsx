@@ -1,4 +1,4 @@
-import { useTheme } from "styled-components";
+import { useTheme } from "@emotion/react";
 import { TYPE } from "../../theme";
 import { RowBetween } from "../Row";
 import { GoDotFill } from "react-icons/go";

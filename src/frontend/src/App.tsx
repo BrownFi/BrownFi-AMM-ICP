@@ -2,13 +2,14 @@
 import { Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import BannerImg from "/images/background-1.png";
 import BannerImg2 from "/images/background-2.png";
 import Pool from "./components/Pool";
 import Swap from "./components/Swap";
 import PositionDetail from "./components/PositionDetail";
 import { HideMedium } from "./components/Responsive";
+import { MEDIA_WIDTHS } from "./theme";
 
 const AppWrapper = styled.div<{ isHomePage: boolean }>`
   display: flex;
@@ -30,10 +31,10 @@ const BodyWrapper = styled.div`
   height: 100vh;
   justify-content: center;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${MEDIA_WIDTHS.upToSmall} {
     padding: 16px;
     padding-top: 6rem;
-  `};
+  };
 `;
 
 const HeaderWrapper = styled.div`

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "@emotion/styled";
+import { css } from '@emotion/css';
 import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";

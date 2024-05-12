@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { Box, BoxProps } from "rebass/styled-components";
+import styled from "@emotion/styled";
+import { Box, BoxProps } from "@rebass/emotion";
 
 const Row: React.FunctionComponent<BoxProps> = styled(Box)<{
   width?: string;

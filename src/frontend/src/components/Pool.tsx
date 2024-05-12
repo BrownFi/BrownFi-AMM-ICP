@@ -2,46 +2,48 @@ import { Plus } from "react-feather";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import styled, { useTheme } from 'styled-components';
+import styled from '@emotion/styled';
 import LIQUIDITY_POSITION_ICON from '/images/inbox.svg';
 import { ButtonLight, ButtonPrimary } from './Button';
 import { AutoColumn } from './Column';
-import { SwapPoolTabs } from './NavigationTabs';
 import { RowBetween, RowFixed } from './Row';
-import { TYPE } from '../theme';
-import Login from './Login';
-import { useAuth } from '@ic-reactor/react';
-import PositionList from "./PositionList/PositionList";
+import { MEDIA_WIDTHS, TYPE } from "../theme";
+import { useTheme } from "@emotion/react";
+import { useAuth } from "@ic-reactor/react";
 import useFetchPairList from "../hooks/useFetchPairList";
+import { SwapPoolTabs } from "./NavigationTabs";
+import Login from "./Login";
 import { CircularProgress } from "@mui/material";
+import PositionList from "./PositionList/PositionList";
+
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
 `;
 
 const TitleRow = styled(RowBetween)`
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${MEDIA_WIDTHS.upToSmall} {
     flex-wrap: wrap;
     gap: 12px;
     width: 100%;
     flex-direction: column-reverse;
-  `};
+  };
 `;
 
 const ButtonRow = styled(RowFixed)`
   gap: 8px;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${MEDIA_WIDTHS.upToSmall} {
     width: 100%;
     flex-direction: row-reverse;
     justify-content: space-between;
-  `};
+  };
 `;
 
 const ResponsiveButtonPrimary = styled(ButtonPrimary)`
   width: fit-content;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${MEDIA_WIDTHS.upToSmall} {
     width: 48%;
-  `};
+  };
 `;
 
 export const EmptyProposals = styled.div`

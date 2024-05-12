@@ -1,9 +1,9 @@
 import { TYPE } from "../../theme";
-import styled, { useTheme } from "styled-components";
+import styled from "@emotion/styled";
 import { RowBetween, RowFixed } from "../Row";
 import { GoDotFill } from "react-icons/go";
-import { Button } from "rebass";
 import { AutoColumn } from "../Column";
+import { useTheme } from "@emotion/react";
 
 const detail = {
   id: 1,

@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { darken } from "polished";
-import { Button as RebassButton, ButtonProps } from "rebass/styled-components";
+import { Button as RebassButton, ButtonProps } from "@rebass/emotion";
 
 const Base = styled(RebassButton)<{
   padding?: string;
