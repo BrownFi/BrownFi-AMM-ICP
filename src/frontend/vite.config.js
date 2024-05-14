@@ -36,16 +36,8 @@ export default ({ mode }) => {
     },
     plugins: [
       react({
-        plugins: [
-          [
-            "@swc/plugin-styled-components",
-            {
-              displayName: true,
-              fileName: true,
-              ssr: false,
-            },
-          ],
-        ],
+        jsxImportSource: "@emotion/react",
+        plugins: [["@swc/plugin-emotion", {}]],
       }),
       legacy(),
       environment("all", { prefix: "CANISTER_", defineOn: "import.meta.env" }),
