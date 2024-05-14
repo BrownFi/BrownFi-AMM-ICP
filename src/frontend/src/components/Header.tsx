@@ -81,7 +81,7 @@ const HeaderRow = styled(RowFixed)`
   };
 `;
 
-const HeaderLinks = styled(Row)`
+const HeaderLinks = styled.div`
   border-radius: 10px;
   grid-auto-flow: column;
   gap: 1rem;
@@ -213,20 +213,13 @@ export default function Header() {
             </Title>
           </HeaderRow>
         </HideSmall>
-        <HeaderLinks>
+        <HeaderLinks className="flex flex-row">
           <StyledNavLink id={`swap-nav-link`} to={"/swap"}>
             Swap
           </StyledNavLink>
           <StyledNavLink
             id={`pool-nav-link`}
             to={"/pool"}
-            // isActive={(match, { pathname }) =>
-            //   Boolean(match) ||
-            //   pathname.startsWith("/add") ||
-            //   pathname.startsWith("/remove") ||
-            //   pathname.startsWith("/increase") ||
-            //   pathname.startsWith("/find")
-            // }
           >
             Pools
           </StyledNavLink>

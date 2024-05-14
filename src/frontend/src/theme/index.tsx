@@ -1,7 +1,6 @@
 import { ReactNode, useMemo } from "react";
 import {
   css,
-  CSSObject,
   Global,
   ThemeProvider as StyledComponentsThemeProvider,
 } from "@emotion/react";

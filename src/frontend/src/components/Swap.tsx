@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { css } from "@emotion/css";
 import { colors, theme } from "../theme";
-import AppBody from "../AppBody";
 import SwapHeader from "./SwapHeader";
 import { AutoColumn } from "./Column";
 import CurrencyInputPanel from "./CurrencyInputPanel";
@@ -60,17 +59,15 @@ export default function Swap() {
 
   return (
     <>
-      <AppBody>
-        <SwapHeader />
-        <Wrapper id='swap-page'>
-          <AutoColumn gap={'md'}>
-            <CurrencyInputPanel />
-            <ArrowWrapper clickable>
-            </ArrowWrapper>
-            <CurrencyInputPanel />
-          </AutoColumn>
-        </Wrapper>
-      </AppBody>
+      <SwapHeader />
+      <Wrapper id='swap-page'>
+        <AutoColumn gap={'md'}>
+          <CurrencyInputPanel />
+          <ArrowWrapper clickable>
+          </ArrowWrapper>
+          <CurrencyInputPanel />
+        </AutoColumn>
+      </Wrapper>
     </>
   );
 }

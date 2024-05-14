@@ -3,6 +3,7 @@ import { css } from '@emotion/css';
 import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
+import ConfirmationModal from "./ConfirmationModal";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -92,6 +93,7 @@ function Login({ asButton }: LoginProps) {
       onClick={handleClick}
       pending={authenticating}
     >
+      <ConfirmationModal/>
       <img src={ConnectWallet} />
       <Text>
         {authenticated

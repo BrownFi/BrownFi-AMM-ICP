@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import type * as CSS from 'csstype';
 
 export const RowWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLDivElement>) => {
-  return <button style={props}> {children} </button>;
+  return <div style={props}> {children} </div>;
 }
 
 const Row = styled(RowWrapper)<{
