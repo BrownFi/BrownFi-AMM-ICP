@@ -1,14 +1,7 @@
 import styled from "@emotion/styled";
 import { darken } from "polished";
-import { ReactNode } from "react";
-import type * as CSS from 'csstype';
 
-export const ButtonWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-  return <button style={props}> {children} </button>;
-}
-
-
-const Base = styled(ButtonWrapper)<{
+const Base = styled.button<{
   padding?: string;
   width?: string;
   borderRadius?: string;
