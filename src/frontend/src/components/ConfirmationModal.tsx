@@ -1,22 +1,21 @@
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import Modal from "./Modal";
 
-export function ConfirmationModal() {
+interface ConfirmationModalProps extends PropsWithChildren {
+}
+
+export function ConfirmationModal({ children }: ConfirmationModalProps) {
   const [modal, setModal] = useState(false);
 
   return (
     <>
-      <button
-        onClick={() => setModal(true)}
-      >
-        Open modal
-      </button>
       <Modal
         openModal={modal}
         closeModal={() => setModal(false)}
       >
-        Modal content.
+        Are you sure?
       </Modal>
+      {children}
     </>
   )
 }

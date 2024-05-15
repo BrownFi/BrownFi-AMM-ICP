@@ -3,7 +3,6 @@ import { css } from '@emotion/css';
 import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
-import ConfirmationModal from "./ConfirmationModal";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -59,6 +58,7 @@ function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
 
   function handleClick() {
+    console.log('######################')
     if (identity?.getPrincipal().isAnonymous()) login();
     else {
       // confirm({
@@ -87,13 +87,13 @@ function Login({ asButton }: LoginProps) {
   }
 
   return (
+    // <ConfirmationModal>
     <Web3StatusConnect
       id="connect-wallet"
       faded={!authenticated}
       onClick={handleClick}
       pending={authenticating}
     >
-      <ConfirmationModal/>
       <img src={ConnectWallet} />
       <Text>
         {authenticated
@@ -104,6 +104,7 @@ function Login({ asButton }: LoginProps) {
           : "Connect Wallet"}
       </Text>
     </Web3StatusConnect>
+    // </ConfirmationModal>
   );
 }
 
