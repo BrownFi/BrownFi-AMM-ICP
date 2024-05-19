@@ -1,22 +1,11 @@
-import { PropsWithChildren, useState } from "react";
-import Modal from "./Modal";
+import { DialogHTMLAttributes, PropsWithChildren, useState } from "react";
 
-interface ConfirmationModalProps extends PropsWithChildren {
-}
 
-export function ConfirmationModal({ children }: ConfirmationModalProps) {
-  const [modal, setModal] = useState(false);
-
+export function ConfirmationModal({  }: ConfirmationModalProps) {
   return (
-    <>
-      <Modal
-        openModal={modal}
-        closeModal={() => setModal(false)}
-      >
-        Are you sure?
-      </Modal>
-      {children}
-    </>
+    <dialog open>
+      <p>first dialog</p>
+    </dialog>
   )
 }
 

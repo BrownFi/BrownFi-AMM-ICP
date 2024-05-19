@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 
 export interface ModalProps {
   openModal: boolean;
-  closeModal: () => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-function Modal({ openModal, closeModal, children }: ModalProps) {
+function Modal({ openModal, children }: ModalProps) {
   const ref = useRef<HTMLDialogElement>();
+
 
   useEffect(() => {
     if (openModal) {
@@ -21,10 +20,9 @@ function Modal({ openModal, closeModal, children }: ModalProps) {
   return (
     <dialog
       ref={ref}
-      onCancel={closeModal}
     >
       {children}
-      <button onClick={closeModal}>
+      <button onClick={() => { ref.current?.close() }}>
         Close
       </button>
     </dialog>

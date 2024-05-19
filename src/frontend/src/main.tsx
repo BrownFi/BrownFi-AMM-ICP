@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from "./theme";
+import ThemeProvider, { FixedGlobalStyle } from "./theme";
 import { HashRouter } from "react-router-dom";
 import { AgentProvider } from "@ic-reactor/react";
 import "./index.css";
@@ -16,7 +16,6 @@ root.render(
     <FixedGlobalStyle />
     <AgentProvider>
       <ThemeProvider>
-        <ThemedGlobalStyle />
         <HashRouter>
           <App />
         </HashRouter>

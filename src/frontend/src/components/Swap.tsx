@@ -41,22 +41,6 @@ export const ArrowWrapper = styled.div<{ clickable: boolean }>`
 `;
 
 export default function Swap() {
-  // const { useQueryCall, useAuthState } = createReactor({
-  //     canisterId: import.meta.env.CANISTER_ID_TOKEN1,
-  //     idlFactory,
-  //     host: "http://localhost:8080",
-  // });
-
-  // const { call, data, loading, error } = useQueryCall({
-  //     functionName: "icrc1_balance_of",
-  //     args: [{ owner: "", subaccount: [] }],
-  //     refetchInterval: 1000,
-  //     refetchOnMount: true,
-  //     onLoading: () => console.log("Loading..."),
-  //     onSuccess: (data) => console.log("Success!", data),
-  //     onError: (error) => console.log("Error!", error),
-  // })
-
   return (
     <>
       <SwapHeader />

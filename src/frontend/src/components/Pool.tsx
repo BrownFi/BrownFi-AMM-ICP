@@ -91,6 +91,7 @@ export default function Pool() {
   const theme = useTheme();
   const { authenticated } = useAuth();
   const [positions, setPositions] = useState<PoolDetails[]>([]);
+  const loading = false;
   // const { call, data, error, loading } = useFetchPairList();
 
   useEffect(() => {
@@ -236,23 +237,14 @@ export default function Pool() {
                           >
                             Your positions ({positions.length})
                           </Text.body>
-                          {/* {positions.length != 0 && (
-                              <Text.body
-                                color={"#27e3ab"}
-                                fontSize={14}
-                                fontWeight={500}
-                              >
-                                Hide closed positions
-                              </Text.body> 
-                          )}*/}
                         </RowBetween>
                         <div className="w-full h-[1px] bg-[#4c4a4f]" />
-                        {/* {loading ? (
+                        {loading ? (
                           <div className="flex justify-center items-center w-full h-[100px]">
                           </div>
                         ) : (
                           <PositionList positions={positions}></PositionList>
-                        )} */}
+                        )}
                       </div>
                     </div>
                     <BottomSection />

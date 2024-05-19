@@ -5,7 +5,6 @@ import {
   ThemeProvider as StyledComponentsThemeProvider,
 } from "@emotion/react";
 import type * as CSS from 'csstype';
-export { ThemedGlobalStyle } from "./ThemedGlobalStyle";
 
 const white = "#FFFFFF";
 const black = "#000000";

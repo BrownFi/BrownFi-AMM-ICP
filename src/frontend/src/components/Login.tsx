@@ -3,6 +3,9 @@ import { css } from '@emotion/css';
 import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
+import { useState } from "react";
+import ConfirmationModal from "./ConfirmationModal";
+import Modal from "./Modal";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -56,25 +59,16 @@ export interface LoginProps {
 
 function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
-
   function handleClick() {
-    console.log('######################')
     if (identity?.getPrincipal().isAnonymous()) login();
     else {
-      // confirm({
-      //   title: "Logout",
-      //   description: "Are you sure you want to logout?",
-      //   allowClose: true,
-      // })
-      //   .then(() => logout())
-      //   .catch(() => { })
     }
   }
 
   if (asButton) {
     return (
       <div className='flex w-full justify-center'>
-        <ButtonLight maxWidth={'436px'} onClick={() => { login() }}>
+        <ButtonLight style={{ maxWidth: "436px" }} onClick={() => { login() }}>
           <img src={ConnectWallet} /> &nbsp; {authenticated
             ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
               ?.getPrincipal()
@@ -87,7 +81,6 @@ function Login({ asButton }: LoginProps) {
   }
 
   return (
-    // <ConfirmationModal>
     <Web3StatusConnect
       id="connect-wallet"
       faded={!authenticated}
@@ -104,7 +97,6 @@ function Login({ asButton }: LoginProps) {
           : "Connect Wallet"}
       </Text>
     </Web3StatusConnect>
-    // </ConfirmationModal>
   );
 }
 
