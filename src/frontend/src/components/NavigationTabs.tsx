@@ -1,12 +1,12 @@
 import { ArrowLeft } from 'react-feather';
 import { Link as HistoryLink, NavLink } from 'react-router-dom';
 
-import styled from "@emotion/styled";
+import styled from 'styled-components';
 import { darken } from 'polished';
 
-import { useTheme } from '@emotion/react';
+import useTheme from '../hooks/useTheme';
 
-import { Text } from '../theme';
+import { TYPE } from '../theme';
 
 import ARROW_BACK from '/images/arrow-back.svg';
 import { RowBetween } from './Row';
@@ -19,7 +19,9 @@ const Tabs = styled.div`
 
 const activeClassName = 'ACTIVE';
 
-const StyledNavLink = styled(NavLink)`
+const StyledNavLink = styled(NavLink).attrs({
+  activeClassName,
+})`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
   justify-content: center;
@@ -55,12 +57,12 @@ const StyledArrowLeft = styled(ArrowLeft)`
 export function SwapPoolTabs({ active }: { active: 'swap' | 'pool' }) {
   return (
     <Tabs style={{ marginBottom: '20px', display: 'none', padding: '1rem 1rem 0 1rem' }}>
-      {/* <StyledNavLink id={`swap-nav-link`} to={'/swap'}}>
+      <StyledNavLink id={`swap-nav-link`} to={'/swap'} isActive={() => active === 'swap'}>
         Swap
       </StyledNavLink>
-      <StyledNavLink id={`pool-nav-link`} to={'/pool'}}>
+      <StyledNavLink id={`pool-nav-link`} to={'/pool'} isActive={() => active === 'pool'}>
         Pools
-      </StyledNavLink> */}
+      </StyledNavLink>
     </Tabs>
   );
 }
@@ -103,9 +105,9 @@ export function AddRemoveTabs({
             <img src={ARROW_BACK} alt='' />
             {/* <ArrowLeft stroke={theme.white} /> */}
           </HistoryLink>
-          <Text.mediumHeader fontWeight={500} color={theme.white} fontFamily={'Russo One'} fontSize={24}>
+          <TYPE.mediumHeader fontWeight={500} color={theme.white} fontFamily={'Russo One'} fontSize={24}>
             {creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}
-          </Text.mediumHeader>
+          </TYPE.mediumHeader>
         </div>
       </div>
     </Tabs>

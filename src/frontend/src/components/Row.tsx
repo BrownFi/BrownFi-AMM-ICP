@@ -1,12 +1,7 @@
-import styled from "@emotion/styled";
-import { ReactNode } from "react";
-import type * as CSS from 'csstype';
+import styled from 'styled-components';
+import { Box } from 'rebass/styled-components';
 
-export const RowWrapper = ({ children, ...props }: { children?: ReactNode} & CSS.Properties & React.ButtonHTMLAttributes<HTMLDivElement>) => {
-  return <div style={props}> {children} </div>;
-}
-
-const Row = styled(RowWrapper)<{
+const Row = styled(Box)<{
   width?: string;
   align?: string;
   justify?: string;
@@ -14,11 +9,11 @@ const Row = styled(RowWrapper)<{
   border?: string;
   borderRadius?: string;
 }>`
-  width: ${({ width }) => width ?? "100%"};
+  width: ${({ width }) => width ?? '100%'};
   display: flex;
-  align-items: ${({ align }) => align ?? "center"};
-  justify-content: ${({ justify }) => justify ?? "flex-start"};
-  padding: ${({ padding }) => padding ?? "0"};
+  align-items: ${({ align }) => align ?? 'center'};
+  justify-content: ${({ justify }) => justify ?? 'flex-start'};
+  padding: ${({ padding }) => padding ?? '0'};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};
 `;
@@ -48,23 +43,23 @@ export const RowFixed = styled(Row)<{ gap?: string; justify?: string }>`
 `;
 
 export const ResponsiveRow = styled.div<{
-  breakpoint?: "xs" | "sm" | "md" | "lg";
-  rowAlignment?: "center" | "flex-start" | "flex-end" | string;
+  breakpoint?: 'xs' | 'sm' | 'md' | 'lg';
+  rowAlignment?: 'center' | 'flex-start' | 'flex-end' | string;
 }>`
   display: flex;
   flex-direction: row;
-  align-items: ${({ rowAlignment }) => rowAlignment || "center"};
+  align-items: ${({ rowAlignment }) => rowAlignment || 'center'};
   justify-content: initial;
-`;
-  // ${({ theme, breakpoint, rowAlignment }) =>
-  //   ((breakpoint === "sm" && theme.mediaWidth.upToSmall) ||
-  //     (breakpoint === "md" && theme.mediaWidth.upToMedium) ||
-  //     (breakpoint === "lg" && theme.mediaWidth.upToLarge) ||
-  //     theme.mediaWidth.upToExtraSmall)`
-  //   flex-direction: column;
-  //   justify-content: ${rowAlignment || "center"};
-  //   align-items: initial;
-  // `};
 
+  ${({ theme, breakpoint, rowAlignment }) =>
+    ((breakpoint === 'sm' && theme.mediaWidth.upToSmall) ||
+      (breakpoint === 'md' && theme.mediaWidth.upToMedium) ||
+      (breakpoint === 'lg' && theme.mediaWidth.upToLarge) ||
+      theme.mediaWidth.upToExtraSmall)`
+    flex-direction: column;
+    justify-content: ${rowAlignment || 'center'};
+    align-items: initial;
+  `};
+`;
 
 export default Row;

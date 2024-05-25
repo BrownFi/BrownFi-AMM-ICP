@@ -1,11 +1,8 @@
-import styled from "@emotion/styled";
-import { css } from '@emotion/css';
+import styled, { css } from "styled-components";
 import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
-import { useState } from "react";
-import ConfirmationModal from "./ConfirmationModal";
-import Modal from "./Modal";
+import { ConfirmProvider, useConfirm } from "material-ui-confirm";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -59,16 +56,25 @@ export interface LoginProps {
 
 function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
+  const confirm = useConfirm();
+
   function handleClick() {
     if (identity?.getPrincipal().isAnonymous()) login();
     else {
+      confirm({
+        title: "Logout",
+        description: "Are you sure you want to logout?",
+        allowClose: true,
+      })
+        .then(() => logout())
+        .catch(() => { })
     }
   }
 
   if (asButton) {
     return (
       <div className='flex w-full justify-center'>
-        <ButtonLight style={{ maxWidth: "436px" }} onClick={() => { login() }}>
+        <ButtonLight maxWidth={'436px'} onClick={() => {login()}}>
           <img src={ConnectWallet} /> &nbsp; {authenticated
             ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
               ?.getPrincipal()
@@ -106,6 +112,8 @@ Login.defaultProps = {
 
 export default function WrappedLogin(props: LoginProps) {
   return (
-    <Login {...props} />
+    <ConfirmProvider>
+      <Login {...props} />
+    </ConfirmProvider>
   );
 }

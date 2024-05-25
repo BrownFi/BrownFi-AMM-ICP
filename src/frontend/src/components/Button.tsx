@@ -1,7 +1,8 @@
-import styled from "@emotion/styled";
+import styled from "styled-components";
 import { darken } from "polished";
+import { Button as RebassButton, ButtonProps } from "rebass/styled-components";
 
-const Base = styled.button<{
+const Base = styled(RebassButton)<{
   padding?: string;
   width?: string;
   borderRadius?: string;
@@ -244,7 +245,7 @@ export function ButtonConfirmed({
   confirmed,
   altDisabledStyle,
   ...rest
-}: { confirmed?: boolean; altDisabledStyle?: boolean }) {
+}: { confirmed?: boolean; altDisabledStyle?: boolean } & ButtonProps) {
   if (confirmed) {
     return <ButtonConfirmedStyle {...rest} />;
   } else {
@@ -255,7 +256,7 @@ export function ButtonConfirmed({
 export function ButtonError({
   error,
   ...rest
-}: { error?: boolean }) {
+}: { error?: boolean } & ButtonProps) {
   if (error) {
     return <ButtonErrorStyle {...rest} />;
   } else {
@@ -266,7 +267,7 @@ export function ButtonError({
 export function ButtonRadio({
   active,
   ...rest
-}: { active?: boolean }) {
+}: { active?: boolean } & ButtonProps) {
   if (!active) {
     return <ButtonWhite {...rest} />;
   } else {

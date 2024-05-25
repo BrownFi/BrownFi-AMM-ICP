@@ -1,17 +1,13 @@
 import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
+import { render } from "react-dom";
 import App from "./App";
 import ThemeProvider, { FixedGlobalStyle } from "./theme";
 import { HashRouter } from "react-router-dom";
 import { AgentProvider } from "@ic-reactor/react";
 import "./index.css";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-
-
-root.render(
+const root = document.getElementById("root");
+render(
   <StrictMode>
     <FixedGlobalStyle />
     <AgentProvider>
@@ -21,5 +17,6 @@ root.render(
         </HashRouter>
       </ThemeProvider>
     </AgentProvider>
-  </StrictMode>
+  </StrictMode>,
+  root
 );

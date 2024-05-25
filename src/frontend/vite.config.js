@@ -2,8 +2,8 @@ import { fileURLToPath, URL } from "url";
 import { defineConfig, loadEnv } from "vite";
 import environment from "vite-plugin-environment";
 import path from "node:path";
-import react from "@vitejs/plugin-react-swc";
-import legacy from '@vitejs/plugin-legacy';
+// import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 
 /** @type {import('vite').UserConfig} */
 export default ({ mode }) => {
@@ -35,11 +35,7 @@ export default ({ mode }) => {
       },
     },
     plugins: [
-      react({
-        jsxImportSource: "@emotion/react",
-        plugins: [["@swc/plugin-emotion", {}]],
-      }),
-      legacy(),
+      react({ plugins: [] }),
       environment("all", { prefix: "CANISTER_", defineOn: "import.meta.env" }),
       environment("all", { prefix: "DFX_" }),
     ],
@@ -56,7 +52,6 @@ export default ({ mode }) => {
     define: {
       "process.env": "{}", // This is to avoid the error 'process is not defined
       global: "globalThis",
-      "SC_DISABLE_SPEEDY": "true",
     },
   });
 };

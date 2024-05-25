@@ -1,13 +1,8 @@
-import { RowBetween } from "../Row";
+import { PoolDetails } from "../../model/pools";
 import Position from "./Position";
 
 interface PositionListProps {
-  positions: Array<{
-    id: string;
-    tokenPay: string;
-    tokenReceive: string;
-    isActive: boolean;
-  }>;
+  positions: PoolDetails[];
 }
 
 export default function PositionList({ positions } : PositionListProps) {

@@ -799,10 +799,10 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     };
     
     
-    // public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
-    //     let pairList = getPairList();
-        
-    // }
+    public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
+        let pairList = await getPairList();
+        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator);
+    };
 
     /*
       - Retrieve a current balance of `user`
@@ -1076,6 +1076,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
           #getAmountIn : () -> (Principal, Principal, Nat);
           #getTokenList : () -> ();
           #getPairList : () -> ();
+          #getPairListByCreator : () -> (Principal);
           #balanceOf : () -> (Text, Principal);
           #getCapSetting : () -> ();
       }
@@ -1125,6 +1126,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
             case (#getAmountIn _) { true };
             case (#getTokenList _) { true };
             case (#getPairList _) { true };
+            case (#getPairListByCreator _) { true };
             case (#balanceOf _) { true };
             case (#getCapSetting _) { true };
         }

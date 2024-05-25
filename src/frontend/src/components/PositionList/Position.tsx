@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { RowBetween } from "../Row";
 import { GoDotFill } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import { Text } from "../../theme";
+import { TYPE as Text } from "../../theme";
 
 interface PositionProps {
   position: {
