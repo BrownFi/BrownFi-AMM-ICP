@@ -3,6 +3,7 @@ import { ButtonLight, ButtonSecondary } from "./Button";
 import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
 import { ConfirmProvider, useConfirm } from "material-ui-confirm";
+import { IDENTITY_PROVIDER } from "../hooks/config";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -59,7 +60,9 @@ function Login({ asButton }: LoginProps) {
   const confirm = useConfirm();
 
   function handleClick() {
-    if (identity?.getPrincipal().isAnonymous()) login();
+    if (identity?.getPrincipal().isAnonymous()) login({
+      identityProvider: IDENTITY_PROVIDER,
+    });
     else {
       confirm({
         title: "Logout",
@@ -74,7 +77,11 @@ function Login({ asButton }: LoginProps) {
   if (asButton) {
     return (
       <div className='flex w-full justify-center'>
-        <ButtonLight maxWidth={'436px'} onClick={() => {login()}}>
+        <ButtonLight maxWidth={'436px'} onClick={() => {
+          login({
+            identityProvider: IDENTITY_PROVIDER,
+          })
+        }}>
           <img src={ConnectWallet} /> &nbsp; {authenticated
             ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
               ?.getPrincipal()

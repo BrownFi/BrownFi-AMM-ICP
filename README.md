@@ -28,6 +28,9 @@ cd brownfi-amm
 # Start the replica and run in the background
 dfx start --clean --background
 
+# Deploy II
+dfx deploy internet_identity
+
 # Create identities using in the demo
 dfx identity new alice --storage-mode plaintext
 dfx identity new bob --storage-mode plaintext

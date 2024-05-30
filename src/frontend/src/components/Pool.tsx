@@ -13,6 +13,7 @@ import Login from './Login';
 import { useAuth } from '@ic-reactor/react';
 import PositionList from "./PositionList/PositionList";
 import { PoolDetails } from "../model/pools";
+import { CoreActorProvider, useCoreQueryCall } from "../hooks/coreActor";
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -76,11 +77,19 @@ function BottomSection() {
   )
 }
 
-export default function Pool() {
+function Pool() {
   const theme = useTheme();
-  const { authenticated } = useAuth();
+  const { authenticated, identity } = useAuth();
   const [positions, setPositions] = useState<PoolDetails[]>([]);
-  // const { call, data, error, loading } = useFetchPairList();
+  const { call, data, error, loading } = useCoreQueryCall({
+    functionName: "getPairListByCreator",
+    args: [identity?.getPrincipal()],
+    refetchInterval: 10000,
+    refetchOnMount: true,
+    onLoading: () => console.log("Loading..."),
+    onSuccess: (data) => console.log("Success!", data),
+    onError: (error) => console.log("Error!", error),
+  })
 
   useEffect(() => {
     setPositions([
@@ -149,7 +158,7 @@ export default function Pool() {
         currentLP: "2.333",
       },
     ])
-    // call();
+    call();
   }, [authenticated])
 
   return (
@@ -249,4 +258,15 @@ export default function Pool() {
       </PageWrapper >
     </>
   );
+}
+
+export default function WrappedPool() {
+  return (
+    <CoreActorProvider
+      canisterId={import.meta.env.CANISTER_ID_CORE}
+      loadingComponent={<div>Loading Core Agent ...</div>}
+    >
+      <Pool />
+    </CoreActorProvider>
+  )
 }

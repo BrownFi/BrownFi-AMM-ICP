@@ -7,8 +7,14 @@ import { getTokenIcon } from "../../../utils/utils";
 import { SUITOKENS } from "../../../utils/tokens";
 import { Field } from "../../../model/inputs";
 
+interface SelectTokenModalProps {
+	hide: boolean;
+	qToken: string;
+	bToken: string;
+}
+
 const SelectTokenModal = (props: any) => {
-	const { isShowing, hide, token0, token1, setToken, typeModal, balances } = props;
+	const { hide, token0, token1, setToken, typeModal } = props;
 	const [searchValue, setSearchValue] = useState("");
 
 	const handleInputChange = (event: any) => {
