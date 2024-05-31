@@ -1,0 +1,81 @@
+type UserInfo = 
+ record {
+   balances: vec record {
+                   text;
+                   nat;
+                 };
+   lpBalances: vec record {
+                     text;
+                     nat;
+                   };
+ };
+type TxReceipt = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+type TokenInfoExt = 
+ record {
+   decimals: nat8;
+   fee: nat;
+   id: text;
+   name: text;
+   symbol: text;
+   totalSupply: nat;
+ };
+type TokenAnalyticsInfo = 
+ record {
+   decimals: nat8;
+   fee: nat;
+   name: text;
+   symbol: text;
+   totalSupply: nat;
+ };
+type PairInfoExt = 
+ record {
+   bReserve: nat;
+   bToken: text;
+   creator: principal;
+   feeRate: nat;
+   id: text;
+   k: nat;
+   l: nat;
+   lpToken: text;
+   pLast: nat;
+   qReserve: nat;
+   qToken: text;
+   totalSupply: nat;
+ };
+type CapSettings = 
+ record {
+   CapId: text;
+   CapRootBucketId: opt text;
+ };
+type BrownFi = 
+ service {
+   addLiquidity: (principal, principal, nat, nat, int) -> (TxReceipt);
+   balanceOf: (text, principal) -> (nat);
+   deposit: (principal, nat) -> (TxReceipt);
+   depositTo: (principal, principal, nat) -> (TxReceipt);
+   getAmountIn: (principal, principal, nat) -> (TxReceipt);
+   getCapSetting: () -> (CapSettings);
+   getDelegatee: (principal) -> (opt principal) query;
+   getFeeTo: () -> (principal) query;
+   getOwner: () -> (principal) query;
+   getPair: (text, text) -> (opt PairInfoExt) query;
+   getPairList: () -> (vec PairInfoExt);
+   getPairListByCreator: (principal) -> (vec PairInfoExt);
+   getTokenList: () -> (vec TokenInfoExt);
+   getTokenMetadata: (text) -> (TokenAnalyticsInfo) query;
+   getUserInfo: (principal) -> (UserInfo) query;
+   setCapId: (principal) -> (bool);
+   setDelegation: (principal) -> (bool);
+   setFeeTo: (principal) -> (bool);
+   setOwner: (principal) -> (bool);
+   setPair: (principal, principal) -> (TxReceipt);
+   setPairConfig: (text, text, nat, nat, nat) -> (bool);
+   setToken: (principal) -> (bool);
+   swap: (principal, principal, nat, int) -> (TxReceipt);
+   withdraw: (principal, nat) -> (TxReceipt);
+ };
+service : (principal, principal, principal) -> BrownFi

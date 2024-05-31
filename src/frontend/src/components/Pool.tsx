@@ -13,7 +13,7 @@ import Login from './Login';
 import { useAuth } from '@ic-reactor/react';
 import PositionList from "./PositionList/PositionList";
 import { PoolDetails } from "../model/pools";
-import { CoreActorProvider, useCoreQueryCall } from "../hooks/coreActor";
+import { CoreActorProvider, useCoreQueryCall, useFetchPairList } from "../hooks/coreActor";
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -79,17 +79,8 @@ function BottomSection() {
 
 function Pool() {
   const theme = useTheme();
-  const { authenticated, identity } = useAuth();
   const [positions, setPositions] = useState<PoolDetails[]>([]);
-  const { call, data, error, loading } = useCoreQueryCall({
-    functionName: "getPairListByCreator",
-    args: [identity?.getPrincipal()],
-    refetchInterval: 10000,
-    refetchOnMount: true,
-    onLoading: () => console.log("Loading..."),
-    onSuccess: (data) => console.log("Success!", data),
-    onError: (error) => console.log("Error!", error),
-  })
+  const { authenticated, data, error, loading } = useFetchPairList();
 
   useEffect(() => {
     setPositions([
@@ -158,8 +149,8 @@ function Pool() {
         currentLP: "2.333",
       },
     ])
-    call();
-  }, [authenticated])
+    console.log("data", data)
+  })
 
   return (
     <>

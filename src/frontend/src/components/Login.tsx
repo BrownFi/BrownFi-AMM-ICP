@@ -4,6 +4,8 @@ import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
 import { ConfirmProvider, useConfirm } from "material-ui-confirm";
 import { IDENTITY_PROVIDER } from "../hooks/config";
+import { CoreActorProvider, useCoreQueryCall } from "../hooks/coreActor";
+import { useEffect } from "react";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -58,6 +60,24 @@ export interface LoginProps {
 function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
   const confirm = useConfirm();
+
+  const { call } = useCoreQueryCall({
+    functionName: "getDelegatee",
+    args: [identity?.getPrincipal()],
+    refetchInterval: 1000000,
+    refetchOnMount: true,
+    onLoading: () => console.log("Loading..."),
+    onSuccess: (data) => console.log("Success!", data),
+    onError: (error) => console.log("Error!", error),
+  })
+
+  useEffect(() => {
+    if (authenticated) {
+      console.log("## Principal: ", identity?.getPrincipal().toString());
+      console.log("Calling getDelegatee")
+      call()
+    }
+  }, [authenticated])
 
   function handleClick() {
     if (identity?.getPrincipal().isAnonymous()) login({
@@ -120,7 +140,12 @@ Login.defaultProps = {
 export default function WrappedLogin(props: LoginProps) {
   return (
     <ConfirmProvider>
-      <Login {...props} />
+      <CoreActorProvider
+        canisterId={import.meta.env.CANISTER_ID_CORE}
+        loadingComponent={<div>Loading Core Agent ...</div>}
+      >
+        <Login {...props} />
+      </CoreActorProvider>
     </ConfirmProvider>
   );
 }

@@ -1,5 +1,21 @@
 {
   "canisters": {
+    "internet_identity": {
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2024-05-13/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/download/release-2024-05-13/internet_identity_dev.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "frontend": {}
+    },
+    "router": {
+      "type": "custom",
+      "candid": "src/local/cap_router.did",
+      "wasm": "src/local/cap_router.wasm"
+    },
     "core": {
       "dependencies": [
         "router"
@@ -26,22 +42,6 @@
       "type": "custom",
       "candid": "https://raw.githubusercontent.com/dfinity/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/rs/rosetta-api/icrc1/ledger/ledger.did",
       "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz"
-    },
-    "router": {
-      "type": "custom",
-      "candid": "src/local/cap_router.did",
-      "wasm": "src/local/cap_router.wasm"
-    },
-    "internet_identity": {
-      "type": "custom",
-      "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2024-05-13/internet_identity.did",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/download/release-2024-05-13/internet_identity_dev.wasm.gz",
-      "remote": {
-        "id": {
-          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
-        }
-      },
-      "frontend": {}
     }
   },
   "output_env_file": ".env",

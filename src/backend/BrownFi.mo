@@ -148,13 +148,14 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     private stable var owner = owner_;
     private stable var feeTo = owner_;
     private stable var txCounter : Nat = 0;
-    private stable var depositCounter : Nat = 0;
+    private stable var _depositCounter : Nat = 0;
     private stable var ticketNo : Nat = 0;      //  being used to track failed withdraws
     private stable var tokenFee: Nat = 10000; // 0.0001 if decimal == 8
     private stable let blackhole : Principal = Principal.fromText("aaaaa-aa");
     private stable let scale : Nat = 100_000_000;
     private stable var capId: Text = Principal.toText(capId_);
 
+    private var delegations = HashMap.HashMap<Principal, Principal>(1, Principal.equal, Principal.hash);
     private var tokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var lpTokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var pairs = HashMap.HashMap<Text, PairInfo>(1, Text.equal, Text.hash);
@@ -169,6 +170,34 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     private var cap: Cap.Cap = Cap.Cap(bfId, capId, 1_000_000_000_000);
 
     /*
+      - Login with II generate different Principal ID for the same user
+      - Discard privacy of the user
+    */
+    private func _checkAuthOrDelegations(toCheck: Principal, ref: Principal): Bool {
+        if (toCheck == ref) {
+            return true;
+        } else {
+            switch (delegations.get(ref)) {
+                case (?delegated) {
+                    return delegated == toCheck;
+                };
+                case (_) {
+                    return false;
+                };
+            };
+        }
+    };
+
+    public query func getDelegatee(delegator: Principal) : async ?Principal {
+        return delegations.get(delegator);
+    };
+
+    public shared(msg) func setDelegation(delegatee: Principal) : async Bool {
+        delegations.put(delegatee, msg.caller);
+        return true;
+    };
+
+    /*
       - Call to set new `owner` of the Canister
       - Requirement: 
         - `msg.caller` must be `owner`
@@ -177,7 +206,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `newOwner`: the Principal ID of a new `owner`
     */
     public shared(msg) func setOwner(newOwner : Principal) : async Bool {
-        assert(msg.caller == owner and newOwner != blackhole);
+        assert(_checkAuthOrDelegations(msg.caller, owner) and newOwner != blackhole);
         owner := newOwner;
         return true;
     };
@@ -191,7 +220,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `newFeeTo`: the Principal ID of a new `feeTo`
     */
     public shared(msg) func setFeeTo(newFeeTo : Principal) : async Bool {
-        assert(msg.caller == owner and newFeeTo != blackhole);
+        assert(_checkAuthOrDelegations(msg.caller, owner) and newFeeTo != blackhole);
         feeTo := newFeeTo;
         return true;
     };
@@ -203,7 +232,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `tokenId`: the Principal ID of the Canister
     */
     public shared(msg) func setToken(tokenId : Principal) : async Bool {
-        assert(msg.caller == owner);
+        assert(_checkAuthOrDelegations(msg.caller, owner));
         //  Check whether `tokenId` has been already set before
         let tid : Text = Principal.toText(tokenId);
         assert(not tokens.hasToken(tid));
@@ -235,7 +264,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `newCapId`: the Pricipal ID of CAP Canister
     */
     public shared(msg) func setCapId (newCapId : Principal) : async Bool {
-        assert(msg.caller == owner);
+        assert(_checkAuthOrDelegations(msg.caller, owner));
         capId := Principal.toText(newCapId);
         
         return cap.setRouterId(capId);
@@ -326,7 +355,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         l_ : Nat,
         feeRate_ : Nat
     ) : async Bool {
-        assert(msg.caller == owner);
+        assert(_checkAuthOrDelegations(msg.caller, owner));
 
         let pair = bToken # ":" # qToken;
         assert(Option.isSome(pairs.get(pair)));
@@ -801,7 +830,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     
     public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
         let pairList = await getPairList();
-        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator);
+        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator or pair.creator == delegations.get(creator));
     };
 
     /*
@@ -1056,6 +1085,8 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
       caller : Principal;
       arg : Blob;
       msg : {
+          #getDelegatee : () -> Principal;
+          #setDelegation : () -> Principal;
           #setOwner : () -> Principal;
           #setFeeTo : () -> Principal;
           #setToken : () -> Principal;
@@ -1082,10 +1113,12 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
       }
     }) : Bool {
         switch (msg) {
-            case (#setOwner _) { ( caller == owner ) };
-            case (#setFeeTo _) { ( caller == owner ) };
-            case (#setToken _) { ( caller == owner ) };
-            case (#setCapId _) { ( caller == owner ) };
+            case (#getDelegatee _) { true };
+            case (#setDelegation _) { true };
+            case (#setOwner _) { ( _checkAuthOrDelegations(caller, owner) ) };
+            case (#setFeeTo _) { ( _checkAuthOrDelegations(caller, owner) ) };
+            case (#setToken _) { ( _checkAuthOrDelegations(caller, owner) ) };
+            case (#setCapId _) { ( _checkAuthOrDelegations(caller, owner) ) };
             case (#setPair _) { true };
             case (#setPairConfig d) {
                 var pair = d().0 # ":" # d().1;
