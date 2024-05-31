@@ -3,10 +3,10 @@ import { useState } from "react";
 import { css, styled } from "styled-components";
 import { twMerge } from "tailwind-merge";
 import AppBody from "../AppBody";
-import { SUI_COIN_TYPE } from "../constants/constants";
+import { CoreActorProvider } from "../hooks/coreActor";
+import { useTokenList } from "../hooks/useTokenList";
 import { Field } from "../model/inputs";
 import { colors } from "../theme";
-import { SUITOKENS } from "../utils/tokens";
 import { AutoColumn } from "./Column";
 import ArrowDown from "./Icons/ArrowDown";
 import SwapIcon from "./Icons/SwapIcon";
@@ -49,18 +49,11 @@ export const ArrowWrapper = styled.div<{ clickable: boolean }>`
 			: null}
 `;
 
-export default function Swap() {
+function Swap() {
 	const [isShowTokenModal, setIsShowTokenModal] = useState<boolean>(false);
 	const [isShowConfirmModal, setIsShowConfirmModal] = useState<boolean>(false);
 	const [typeModal, setTypeModal] = useState<number>(1);
-
-	const [tokens, setTokens] = useState<{
-		[key in Field]: string;
-	}>({
-		[Field.INPUT]: SUI_COIN_TYPE,
-		[Field.OUTPUT]: SUITOKENS[0].address,
-	});
-
+	const { tokens, loading } = useTokenList();
 	const [tokenAmounts, setTokenAmounts] = useState<{ [key in Field]: string }>({
 		[Field.INPUT]: "",
 		[Field.OUTPUT]: "",
@@ -248,7 +241,7 @@ export default function Swap() {
 					hide={setIsShowTokenModal}
 					token0={tokens[Field.INPUT]}
 					token1={tokens[Field.OUTPUT]}
-					setToken={setTokens}
+					setToken={() => { }}
 					typeModal={typeModal}
 				/>
 			)}
@@ -264,3 +257,15 @@ export default function Swap() {
 		</>
 	);
 }
+
+export default function WrappedSwap() {
+	return (
+		<CoreActorProvider
+			canisterId={import.meta.env.CANISTER_ID_CORE}
+			loadingComponent={<div>Loading Core Agent ...</div>}
+		>
+			<Swap />
+		</CoreActorProvider>
+	)
+}
+

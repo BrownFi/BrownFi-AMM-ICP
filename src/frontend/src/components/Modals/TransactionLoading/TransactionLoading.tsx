@@ -6,9 +6,17 @@ import { LoadingOutlined } from "@ant-design/icons";
 import CheckCircle from "../../Icons/CheckedCircle";
 import FailedCircle from "../../Icons/FailCircle";
 
-const ConfirmModal = (props: any) => {
-	const [isShowMore, setIsShowMore] = useState<boolean>(false);
-	const { isShowing, hide, status, setStatus, isSwap } = props;
+export interface ConfirmationModalProps {
+	isShowing: boolean;
+	open: (bool) => void;
+	onConfirm: () => void;
+	status: string;
+	successMessage?: string;
+	failedMessage?: string;
+}
+
+const ConfirmModal = (props: ConfirmationModalProps) => {
+	const { isShowing, open, onConfirm, status, successMessage, failedMessage} = props;
 
 	const useOutsideAlerter = (ref: any) => {
 		useEffect(() => {
@@ -17,8 +25,7 @@ const ConfirmModal = (props: any) => {
 			 */
 			function handleClickOutside(event: any) {
 				if (ref.current && !ref.current.contains(event.target)) {
-					hide(false);
-					setStatus("");
+					open(false);
 				}
 			}
 			// Bind the event listener
@@ -48,10 +55,24 @@ const ConfirmModal = (props: any) => {
 					>
 						<ConfirmModalHeader
 							close={() => {
-								hide(false);
-								setStatus("");
+								open(false);
 							}}
 						/>
+						Are you sure you want to proceed with this?
+              <button className="flex flex-col items-center gap-5 btn-outline"
+                onClick={() => {
+                  onConfirm();
+                }}
+              >
+                {status === "submitting" ? "Proceeding" : "Proceed"}
+              </button>
+              <button className="flex flex-col items-center gap-5 btn-outline"
+                onClick={() => {
+                  open(false)
+                }}
+              >
+                Close
+              </button>
 						{status === "submitting" && (
 							<>
 								<div className="flex flex-col items-center gap-5">
@@ -75,7 +96,7 @@ const ConfirmModal = (props: any) => {
 								<div className="flex flex-col items-center gap-5">
 									<CheckCircle />
 									<div className="flex flex-col items-center gap-5">
-										<span className="text-[32px] text-[#27E39F] font-semibold leading-[39px]">{isSwap ? "Swap Success" : "Add Liquidity Success"}</span>
+										<span className="text-[32px] text-[#27E39F] font-semibold leading-[39px]">{successMessage || "Succeed"}</span>
 									</div>
 								</div>
 							</>
@@ -85,7 +106,7 @@ const ConfirmModal = (props: any) => {
 								<div className="flex flex-col items-center gap-5">
 									<FailedCircle />
 									<div className="flex flex-col items-center gap-5">
-										<span className="text-[32px] text-[#FF3B6A] font-semibold leading-[39px]">{isSwap ? "Swap Fail" : "Add Liquidity Fail"}</span>
+										<span className="text-[32px] text-[#FF3B6A] font-semibold leading-[39px]">{failedMessage || "Failed"}</span>
 									</div>
 								</div>
 								<span className="text-base text-[#FF3B6A] font-bold leading-[20px] cursor-pointer">View on Explorer</span>

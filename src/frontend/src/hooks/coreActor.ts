@@ -1,7 +1,5 @@
-import { createActorContext, useAuth } from "@ic-reactor/react"
-import { core, idlFactory } from "../../../declarations/core"
-import { useEffect } from "react";
-import { PoolDetails } from "../model/pools";
+import { createActorContext } from "@ic-reactor/react";
+import { core, idlFactory } from "../../../declarations/core";
 
 export type Core = typeof core
 

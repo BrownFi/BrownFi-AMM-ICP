@@ -15,9 +15,9 @@ export function usePositions() {
       args: [identity?.getPrincipal()],
       refetchInterval: 100_000,
       refetchOnMount: true,
-      onLoading: () => console.log("Loading..."),
-      onSuccess: (data) => console.log("Success!", data),
-      onError: (error) => console.log("Error!", error),
+      // onLoading: () => console.log("Loading..."),
+      // onSuccess: (data) => console.log("Success!", data),
+      // onError: (error) => console.log("Error!", error),
     })
   
     useEffect(() => {

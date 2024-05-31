@@ -1,9 +1,9 @@
 import { css, styled } from "styled-components";
 import AppBody from "../AppBody";
 import { AutoColumn } from "./Column";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Field } from "../model/inputs";
-import { Input, Skeleton, Slider } from "antd";
+import { Input, Slider } from "antd";
 import ArrowDown from "./Icons/ArrowDown";
 import SwapIcon from "./Icons/SwapIcon";
 import { twMerge } from "tailwind-merge";
@@ -12,6 +12,7 @@ import ArrowBack from "./Icons/ArrowBack";
 import HelpIcon from "./Icons/HelpIcon";
 import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
 import { CoreActorProvider } from "../hooks/coreActor";
+import { TokenDetails } from "../model/tokens";
 
 export const Wrapper = styled.div`
 	position: relative;
@@ -57,57 +58,56 @@ export type CreateAddLiquidTXPayloadParams = {
 };
 
 function AddLiquidity() {
-	const [isShowTokenModal, setIsShowTokenModal] = useState<boolean>(false);
-	const [typeModal, setTypeModal] = useState<number>(1);
+	const [isShowInputTokenModal, setShowInputTokenModal] = useState<boolean>(false);
+	const [isShowOuputTokenModal, setShowOutputTokenModal] = useState<boolean>(false);
 	const [isShowConfirmModal, setIsShowConfirmModal] = useState<boolean>(false);
-	const [disabled, setDisabled] = useState(false);
 	const [k, setK] = useState(2);
-	const [status, setStatus] = useState<string>("");
-	const [typedValue, setTypedValue] = useState("");
-	const [independentField, setIndependentField] = useState<Field>(Field.INPUT);
-	const [digest, setDigest] = useState<string>("");
-
+	const [status, setStatus] = useState<string>("")
 	const [tokens, setTokens] = useState<{
-		[key in Field]: string;
+		[key in Field]: TokenDetails | "";
 	}>({
 		[Field.INPUT]: "",
 		[Field.OUTPUT]: "",
 	});
-
-	const onChangeK = (newValue: number) => {
-		setK(newValue);
-	};
 
 	const [tokenAmounts, setTokenAmounts] = useState<{ [key in Field]: string }>({
 		[Field.INPUT]: "",
 		[Field.OUTPUT]: "",
 	});
 
-	const [parsedTokenAmounts, setParsedTokenAmounts] = useState<{
-		[key in Field]: any | undefined;
-	}>({
-		[Field.INPUT]: undefined,
-		[Field.OUTPUT]: undefined,
-	});
+	useEffect(() => {
+		if (tokens.INPUT && tokens.OUTPUT && tokenAmounts.INPUT && tokenAmounts.OUTPUT) {
+			setIsShowConfirmModal(true)
+		}
+	}, [tokens, tokenAmounts])
+
+
+	const onChangeK = (newValue: number) => {
+		setK(newValue);
+	};
 
 	const handleChangeAmounts = (value: string, independentField: Field) => {
 		if (isNaN(+value)) return;
 
-		// if (value === "") {
-		// 	setTokenAmounts({
-		// 		[Field.INPUT]: "",
-		// 		[Field.OUTPUT]: "",
-		// 	});
-		// 	return;
-		// }
-
-		setTypedValue(value);
-		setIndependentField(independentField);
 		setTokenAmounts({
 			[Field.INPUT]: value,
 			[Field.OUTPUT]: (Number(value) * 9).toString(),
 		});
 	};
+
+	const setInputToken = (token: TokenDetails) => {
+		setTokens({
+			INPUT: token,
+			OUTPUT: tokens.OUTPUT,
+		})
+	}
+
+	const setOutputToken = (token: TokenDetails) => {
+		setTokens({
+			INPUT: tokens.INPUT,
+			OUTPUT: token,
+		})
+	}
 
 	return (
 		<>
@@ -127,12 +127,13 @@ function AddLiquidity() {
 				<Wrapper id="swap-page">
 					<AutoColumn
 						gap={"md"}
-						// justify="center"
+					// justify="center"
 					>
 						<div className="flex w-full flex-col items-center gap-2">
 							<div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4 self-stretch">
 								<div className="flex justify-between items-center self-stretch">
-									<span className="text-lg font-normal text-white font-['Russo_One']">You Pay</span>
+									{tokens.INPUT && (<span className="text-base font-medium">{tokens.INPUT.symbol}</span>)}
+									<span className="text-lg font-normal text-white font-['Russo_One']">Quote Token</span>
 									<div className="flex items-center gap-1 text-base font-normal">
 										<span>Balance:</span>
 										<span>--</span>
@@ -150,17 +151,9 @@ function AddLiquidity() {
 										</div>
 										<div
 											className="flex justify-between items-center bg-[#1D1C21] py-[7px] px-3 cursor-pointer shadow-[0_2px_12px_0px_rgba(11,14,25,0.12)] w-[153px]"
-											onClick={() => {
-												setTypeModal(1);
-												setIsShowTokenModal(true);
-											}}
+											onClick={() => setShowInputTokenModal(true)}
 										>
 											<div className="flex items-center gap-2">
-												{/* <img
-													src={getTokenIcon(tokens[Field.INPUT] ?? "")}
-													alt=""
-													className="h-5 w-5"
-												/> */}
 												<span className="text-sm font-medium">--</span>
 											</div>
 											<ArrowDown />
@@ -177,18 +170,13 @@ function AddLiquidity() {
 									});
 								}}
 							/>
-							{/* To */}
 							<div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4">
 								<div className="flex justify-between items-center self-stretch">
-									<span className="text-lg font-normal text-white font-['Russo_One']">Your Receive</span>
+									{tokens.OUTPUT && (<span className="text-base font-medium">{tokens.OUTPUT.symbol}</span>)}
+									<span className="text-lg font-normal text-white font-['Russo_One']">Pay Token</span>
 									<div className="flex items-center gap-1 text-base font-normal">
 										<span>Balance:</span>
 										<span>--</span>
-										{/* <Skeleton.Input
-											className={!isLoading ? "!hidden" : ""}
-											active
-											size="small"
-										/> */}
 									</div>
 								</div>
 								<div className="flex flex-col items-start gap-[2px] self-stretch">
@@ -203,29 +191,12 @@ function AddLiquidity() {
 												value={tokenAmounts[Field.OUTPUT]}
 												onChange={(e) => handleChangeAmounts(e.target.value, Field.OUTPUT)}
 											/>
-											{/* <Skeleton.Input
-									className={
-										!isLoadingTrade
-											? "!hidden"
-											: ""
-									}
-									active
-									size="small"
-								/> */}
 										</div>
 										<div
 											className="flex justify-between items-center bg-[#1D1C21] py-[7px] px-3 cursor-pointer shadow-[0_2px_12px_0px_rgba(11,14,25,0.12)] w-[153px]"
-											onClick={() => {
-												setTypeModal(2);
-												setIsShowTokenModal(true);
-											}}
+											onClick={() => setShowOutputTokenModal(true)}
 										>
 											<div className="flex items-center gap-2">
-												{/* <img
-													src={getTokenIcon(tokens[Field.OUTPUT] ?? "")}
-													alt=""
-													className="h-5 w-5"
-												/> */}
 												<span className="text-sm font-medium">--</span>
 											</div>
 											<ArrowDown />
@@ -237,7 +208,7 @@ function AddLiquidity() {
 						</div>
 						<div className="flex flex-col items-start gap-8 self-stretch">
 							<div className="flex flex-col items-start gap-4 self-stretch">
-								<div className="flex items-center gap-5 self-stretch">
+								{/* <div className="flex items-center gap-5 self-stretch">
 									<div className="flex items-center gap-1">
 										<span className="text-base font-bold leading-[20px]">Set Liquidity Concentration Parameter</span>
 										<HelpIcon />
@@ -252,12 +223,11 @@ function AddLiquidity() {
 										max={2}
 										min={0.8}
 										step={0.1}
-										tooltipPlacement="bottom"
+										// tooltipPlacement="bottom"
 										onChange={onChangeK}
-										disabled={disabled}
 									/>
 									<span className="text-base font-medium leading-[24px]">2</span>
-								</div>
+								</div> */}
 							</div>
 							<div className="flex justify-between items-center self-stretch">
 								<span className="text-base font-bold leading-[20px]">Capital Efficiency</span>
@@ -266,41 +236,26 @@ function AddLiquidity() {
 								</div>
 							</div>
 						</div>
-						{/* {!currentAccount && <Login></Login>} */}
-						{/* {currentAccount && balances && BigNumberInstance(tokenAmounts[Field.INPUT]) > getBalanceAmount(balances[0]) ? (
-							<div className="flex justify-center items-center gap-2 self-stretch py-[18px] px-6 bg-[#737373] cursor-not-allowed">
-								<span className="text-base font-bold">Insufficient Balance</span>
-							</div>
-						) : (
-							<div
-								className={twMerge(
-									"flex justify-center items-center gap-2 self-stretch py-[18px] px-6 bg-[#773030] cursor-pointer",
-									!currentAccount && "hidden"
-								)}
-								onClick={addLiquidity}
-							>
-								<span className="text-base font-bold">Add</span>
-							</div>
-						)} */}
 					</AutoColumn>
 				</Wrapper>
 			</AppBody>
-			{isShowTokenModal && (
+			{isShowInputTokenModal && (
 				<SelectTokenModal
-					isShowing={isShowTokenModal}
-					hide={setIsShowTokenModal}
-					token0={tokens[Field.INPUT]}
-					token1={tokens[Field.OUTPUT]}
-					setToken={setTokens}
-					typeModal={typeModal}
+					open={setShowInputTokenModal}
+					setToken={setInputToken}
+				/>
+			)}
+			{isShowOuputTokenModal && (
+				<SelectTokenModal
+					open={setShowOutputTokenModal}
+					setToken={setOutputToken}
 				/>
 			)}
 			{isShowConfirmModal && (
 				<ConfirmModal
 					isShowing={isShowConfirmModal}
-					hide={setIsShowConfirmModal}
+					open={setIsShowConfirmModal}
 					status={status}
-					setStatus={setStatus}
 				/>
 			)}
 		</>
