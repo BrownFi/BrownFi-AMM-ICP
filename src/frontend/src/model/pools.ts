@@ -1,10 +1,10 @@
-export interface PoolDetails {
-	id: number;
+export interface PositionDetails {
+	id: string;
 	tokenPay: string;
 	tokenReceive: string;
 	lpToken?: string;
 	isActive: boolean;
-	parameter: string;
+	parameter: Record<string, string>;
 	currentLP: string;
 }
 

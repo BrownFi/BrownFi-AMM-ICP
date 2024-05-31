@@ -4,14 +4,9 @@ import { Input } from "antd";
 import { SelectTokenModalHeader } from "./components/SelectTokenHeader";
 import SearchIcon from "../../Icons/SearchIcon";
 import { getTokenIcon } from "../../../utils/utils";
-import { SUITOKENS } from "../../../utils/tokens";
 import { Field } from "../../../model/inputs";
+import { CoreActorProvider } from "../../../hooks/coreActor";
 
-interface SelectTokenModalProps {
-	hide: boolean;
-	qToken: string;
-	bToken: string;
-}
 
 const SelectTokenModal = (props: any) => {
 	const { hide, token0, token1, setToken, typeModal } = props;
@@ -61,36 +56,6 @@ const SelectTokenModal = (props: any) => {
 	const wrapperRef = useRef(null);
 	useOutsideAlerter(wrapperRef);
 
-	// const searchToken = (token: any) => {
-	// 	const strFirstTwo = token.slice(0, 2);
-	// 	// let tempArr = [];
-	// 	if (strFirstTwo === "0x") {
-	// 		// mockDataTokenTest.map((item) => {
-	// 		//   if (token === item.address) tempArr.push(item);
-	// 		// });
-	// 		return mockDataTokenTest.filter(
-	// 			(item: any) => {
-	// 				const searchTerm = token.toLowerCase();
-	// 				const itemValue =
-	// 					item.address.toLowerCase();
-	// 				return itemValue.includes(searchTerm);
-	// 			}
-	// 		);
-	// 	} else {
-	// 		// mockDataTokenTest.map((item) => {
-	// 		//   if (token.toLowerCase() === item.name.toLowerCase()) tempArr.push(item);
-	// 		// });
-	// 		return mockDataTokenTest.filter(
-	// 			(item: any) => {
-	// 				const searchTerm = token.toLowerCase();
-	// 				const itemValue =
-	// 					item.name.toLowerCase();
-	// 				return itemValue.includes(searchTerm);
-	// 			}
-	// 		);
-	// 	}
-	// 	// return tempArr;
-	// };
 	return (
 		<div>
 			<div className={`modal-overlay`}>
@@ -133,7 +98,7 @@ const SelectTokenModal = (props: any) => {
 					<div className="flex flex-col items-start gap-1 self-stretch">
 						{searchValue === "" && (
 							<>
-								{SUITOKENS.map((item: any, index: number) => {
+								{tokens.map((item: any, index: number) => {
 									return (
 										<div
 											key={index}
@@ -181,4 +146,14 @@ const SelectTokenModal = (props: any) => {
 	);
 };
 
-export default SelectTokenModal;
+export default function WrappedSelectTokenModal() {
+	return (
+		<CoreActorProvider
+			canisterId={import.meta.env.CANISTER_ID_CORE}
+			loadingComponent={<div>Loading Core Agent ...</div>}
+		>
+			<SelectTokenModal />
+		</CoreActorProvider>
+	)
+}
+

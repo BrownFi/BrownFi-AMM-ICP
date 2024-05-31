@@ -1,6 +1,5 @@
 import { Plus } from "react-feather";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 import styled, { useTheme } from 'styled-components';
 import LIQUIDITY_POSITION_ICON from '/images/inbox.svg';
@@ -10,10 +9,9 @@ import { SwapPoolTabs } from './NavigationTabs';
 import { RowBetween, RowFixed } from './Row';
 import { TYPE } from '../theme';
 import Login from './Login';
-import { useAuth } from '@ic-reactor/react';
 import PositionList from "./PositionList/PositionList";
-import { PoolDetails } from "../model/pools";
-import { CoreActorProvider, useCoreQueryCall, useFetchPairList } from "../hooks/coreActor";
+import { CoreActorProvider } from "../hooks/coreActor";
+import { usePositions } from "../hooks/usePositions";
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -56,7 +54,7 @@ export const EmptyProposals = styled.div`
 
 function BottomSection() {
   const theme = useTheme();
-
+  
   return (
     <div className='flex flex-col justify-center items-center py-3 gap-[2px] bg-[#323038]'>
       <div className='flex gap-1'>
@@ -79,78 +77,7 @@ function BottomSection() {
 
 function Pool() {
   const theme = useTheme();
-  const [positions, setPositions] = useState<PoolDetails[]>([]);
-  const { authenticated, data, error, loading } = useFetchPairList();
-
-  useEffect(() => {
-    setPositions([
-      {
-        id: 1,
-        tokenPay: "PAY",
-        tokenReceive: "REC",
-        isActive: true,
-        parameter: "23",
-        currentLP: "2.333",
-      },
-      {
-        id: 2,
-        tokenPay: "TEST1",
-        tokenReceive: "TEST2",
-        isActive: true,
-        parameter: "12",
-        currentLP: "4.3",
-      },
-      {
-        id: 1,
-        tokenPay: "PAY",
-        tokenReceive: "REC",
-        isActive: true,
-        parameter: "23",
-        currentLP: "2.333",
-      },
-      {
-        id: 2,
-        tokenPay: "TEST1",
-        tokenReceive: "TEST2",
-        isActive: true,
-        parameter: "12",
-        currentLP: "4.3",
-      },
-      {
-        id: 2,
-        tokenPay: "TEST1",
-        tokenReceive: "TEST2",
-        isActive: true,
-        parameter: "12",
-        currentLP: "4.3",
-      },
-      {
-        id: 1,
-        tokenPay: "PAY",
-        tokenReceive: "REC",
-        isActive: true,
-        parameter: "23",
-        currentLP: "2.333",
-      },
-      {
-        id: 2,
-        tokenPay: "TEST1",
-        tokenReceive: "TEST2",
-        isActive: true,
-        parameter: "12",
-        currentLP: "4.3",
-      },
-      {
-        id: 1,
-        tokenPay: "PAY",
-        tokenReceive: "REC",
-        isActive: true,
-        parameter: "23",
-        currentLP: "2.333",
-      },
-    ])
-    console.log("data", data)
-  })
+  const { authenticated, positions, error, loading } = usePositions();
 
   return (
     <>
@@ -225,15 +152,6 @@ function Pool() {
                           >
                             Your positions ({positions.length})
                           </TYPE.body>
-                          {/* {positions.length != 0 && (
-                              <TYPE.body
-                                color={"#27e3ab"}
-                                fontSize={14}
-                                fontWeight={500}
-                              >
-                                Hide closed positions
-                              </TYPE.body> 
-                          )}*/}
                         </RowBetween>
                         <div className="w-full h-[1px] bg-[#4c4a4f]" />
                         <PositionList positions={positions}></PositionList>

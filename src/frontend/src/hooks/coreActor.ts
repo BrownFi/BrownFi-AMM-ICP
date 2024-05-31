@@ -1,6 +1,7 @@
 import { createActorContext, useAuth } from "@ic-reactor/react"
 import { core, idlFactory } from "../../../declarations/core"
 import { useEffect } from "react";
+import { PoolDetails } from "../model/pools";
 
 export type Core = typeof core
 
@@ -11,25 +12,3 @@ export const {
 } = createActorContext<Core>({
   idlFactory,
 })
-
-export function useFetchPairList() {
-  const { authenticated, identity } = useAuth();
-
-  const { call, data, error, loading } = useCoreQueryCall({
-    functionName: "getPairListByCreator",
-    args: [identity?.getPrincipal()],
-    refetchInterval: 100_000,
-    refetchOnMount: true,
-    onLoading: () => console.log("Loading..."),
-    onSuccess: (data) => console.log("Success!", data),
-    onError: (error) => console.log("Error!", error),
-  })
-
-  useEffect(() => {
-    if (authenticated) {
-      call()
-    }
-  }, [authenticated])
-
-  return { authenticated, data, error, loading }
-}

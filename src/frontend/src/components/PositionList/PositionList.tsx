@@ -1,8 +1,8 @@
-import { PoolDetails } from "../../model/pools";
+import { PositionDetails } from "../../model/pools";
 import Position from "./Position";
 
 interface PositionListProps {
-  positions: PoolDetails[];
+  positions: PositionDetails[];
 }
 
 export default function PositionList({ positions } : PositionListProps) {
@@ -14,7 +14,6 @@ export default function PositionList({ positions } : PositionListProps) {
         scrollbarColor: "#1D1C21 #323038",
         scrollbarWidth: "thin",
         scrollbarGutter: "stable both-edges",
-        cursor: "pointer",
       }}
     >
       {positions.length != 0

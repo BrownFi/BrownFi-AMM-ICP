@@ -11,6 +11,7 @@ import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
 import ArrowBack from "./Icons/ArrowBack";
 import HelpIcon from "./Icons/HelpIcon";
 import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
+import { CoreActorProvider } from "../hooks/coreActor";
 
 export const Wrapper = styled.div`
 	position: relative;
@@ -55,7 +56,7 @@ export type CreateAddLiquidTXPayloadParams = {
 	slippage: number;
 };
 
-export default function AddLiquidity() {
+function AddLiquidity() {
 	const [isShowTokenModal, setIsShowTokenModal] = useState<boolean>(false);
 	const [typeModal, setTypeModal] = useState<number>(1);
 	const [isShowConfirmModal, setIsShowConfirmModal] = useState<boolean>(false);
@@ -304,4 +305,16 @@ export default function AddLiquidity() {
 			)}
 		</>
 	);
+}
+
+
+export default function WrappedAddLiquidity() {
+	return (
+		<CoreActorProvider
+			canisterId={import.meta.env.CANISTER_ID_CORE}
+			loadingComponent={<div>Loading Core Agent ...</div>}
+		>
+			<AddLiquidity />
+		</CoreActorProvider>
+	)
 }

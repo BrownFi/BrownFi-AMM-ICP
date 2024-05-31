@@ -1,30 +1,18 @@
-import { useTheme } from "@emotion/react";
+import useTheme from '../../hooks/useTheme';
 import { RowBetween } from "../Row";
 import { GoDotFill } from "react-icons/go";
-import { useNavigate } from "react-router-dom";
 import { TYPE as Text } from "../../theme";
+import { PositionDetails } from "../../model/pools";
 
 interface PositionProps {
-  position: {
-    id: string;
-    tokenPay: string;
-    tokenReceive: string;
-    isActive: boolean;
-  };
+  position: PositionDetails
 }
 
 export default function Position({ position }: PositionProps) {
   const theme = useTheme();
-  const navigate = useNavigate();
-
-  const handleOnClick = () => {
-    navigate(`/pool/${position.id}`);
-  };
-
   return (
     <div
       className="py-3 px-6 flex flex-col gap-3 cursor-pointer"
-      onClick={handleOnClick}
     >
       <RowBetween>
         <Text.body
@@ -40,11 +28,12 @@ export default function Position({ position }: PositionProps) {
             </Text.body>
           </div>
         </Text.body>
-        <div className="h-6 flex justify-center items-center bg-[#314243] px-2 gap-1">
+        <div className="h-6 flex justify-center items-center bg-[#314243] px-2 gap-1" style={
+          position.isActive ? { backgroundColor: theme.green2 } : { backgroundColor: theme.red2 }
+        }>
           <GoDotFill color={theme.green2} size={14} />
           <Text.body
             className="flex gap-1"
-            color={theme.green2}
             fontSize={14}
             fontWeight={500}
           >

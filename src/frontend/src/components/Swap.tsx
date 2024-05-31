@@ -1,23 +1,18 @@
-import { colors, theme } from "../theme";
-import { AutoColumn } from "./Column";
-import { suiClient } from "../utils/config";
-import { Field } from "../model/inputs";
-import { SUILPLIST, SUITOKENS } from "../utils/tokens";
-import { SUI_COIN_TYPE } from "../constants/constants";
-import { BigNumberInstance } from "../utils/bigNumber";
-import { useEffect, useState } from "react";
-import { twMerge } from "tailwind-merge";
-import useSWR from "swr";
-import { Input, Skeleton } from "antd";
+import { Input } from "antd";
+import { useState } from "react";
 import { css, styled } from "styled-components";
-import { isObject } from "lodash";
-import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
+import { twMerge } from "tailwind-merge";
+import AppBody from "../AppBody";
+import { SUI_COIN_TYPE } from "../constants/constants";
+import { Field } from "../model/inputs";
+import { colors } from "../theme";
+import { SUITOKENS } from "../utils/tokens";
+import { AutoColumn } from "./Column";
 import ArrowDown from "./Icons/ArrowDown";
 import SwapIcon from "./Icons/SwapIcon";
-import AppBody from "../AppBody";
-import SwapHeader from "./SwapHeader";
-import Login from "./Login";
+import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
 import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
+import SwapHeader from "./SwapHeader";
 
 const LightDiv = styled.div`
 	color: ${colors().text1};
@@ -95,7 +90,6 @@ export default function Swap() {
 				<Wrapper id="swap-page">
 					<AutoColumn
 						gap={"md"}
-						// justify="center"
 					>
 						<div className="flex w-full flex-col items-center gap-2">
 							<div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4 self-stretch">
