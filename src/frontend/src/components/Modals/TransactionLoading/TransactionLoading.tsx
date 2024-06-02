@@ -16,7 +16,7 @@ export interface ConfirmationModalProps {
 }
 
 const ConfirmModal = (props: ConfirmationModalProps) => {
-	const { isShowing, open, onConfirm, status, successMessage, failedMessage} = props;
+	const { isShowing, open, onConfirm, status, successMessage, failedMessage } = props;
 
 	const useOutsideAlerter = (ref: any) => {
 		useEffect(() => {
@@ -59,20 +59,21 @@ const ConfirmModal = (props: ConfirmationModalProps) => {
 							}}
 						/>
 						Are you sure you want to proceed with this?
-              <button className="flex flex-col items-center gap-5 btn-outline"
-                onClick={() => {
-                  onConfirm();
-                }}
-              >
-                {status === "submitting" ? "Proceeding" : "Proceed"}
-              </button>
-              <button className="flex flex-col items-center gap-5 btn-outline"
-                onClick={() => {
-                  open(false)
-                }}
-              >
-                Close
-              </button>
+						<button className="flex flex-col items-center gap-5 btn-outline"
+							onClick={() => {
+								onConfirm();
+							}}
+						>
+							Yes
+						</button>
+						{status === "submitting" && (<button
+							className="flex flex-col items-center gap-5 btn-outline"
+							onClick={() => {
+								open(false)
+							}}
+						>
+							Close
+						</button>)}
 						{status === "submitting" && (
 							<>
 								<div className="flex flex-col items-center gap-5">

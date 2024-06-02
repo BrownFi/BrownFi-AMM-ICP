@@ -1,18 +1,17 @@
+import { Input } from "antd";
+import { useState } from "react";
 import { css, styled } from "styled-components";
-import AppBody from "../AppBody";
-import { AutoColumn } from "./Column";
-import { useEffect, useState } from "react";
-import { Field } from "../model/inputs";
-import { Input, Slider } from "antd";
-import ArrowDown from "./Icons/ArrowDown";
-import SwapIcon from "./Icons/SwapIcon";
 import { twMerge } from "tailwind-merge";
-import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
-import ArrowBack from "./Icons/ArrowBack";
-import HelpIcon from "./Icons/HelpIcon";
-import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
+import AppBody from "../AppBody";
 import { CoreActorProvider } from "../hooks/coreActor";
+import { Field } from "../model/inputs";
 import { TokenDetails } from "../model/tokens";
+import { AutoColumn } from "./Column";
+import AddLiquidityIcon from "./Icons/AddLiquidityIcon";
+import ArrowBack from "./Icons/ArrowBack";
+import ArrowDown from "./Icons/ArrowDown";
+import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
+import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
 
 export const Wrapper = styled.div`
 	position: relative;
@@ -75,12 +74,20 @@ function AddLiquidity() {
 		[Field.OUTPUT]: "",
 	});
 
-	useEffect(() => {
-		if (tokens.INPUT && tokens.OUTPUT && tokenAmounts.INPUT && tokenAmounts.OUTPUT) {
-			setIsShowConfirmModal(true)
-		}
-	}, [tokens, tokenAmounts])
+	// useEffect(() => {
+	// 	if (tokens.INPUT && tokens.OUTPUT && tokenAmounts.INPUT && tokenAmounts.OUTPUT) {
+	// 		setIsShowConfirmModal(true)
+	// 	}
+	// }, [tokens, tokenAmounts])
 
+	const onConfirmAddLiquidity = () => {
+		console.log("Confirm Add Liquidity")
+		console.log(tokens)
+		setStatus("loading")
+		setTimeout(() => {
+			setStatus("success")
+		}, 2000)
+	};
 
 	const onChangeK = (newValue: number) => {
 		setK(newValue);
@@ -127,7 +134,6 @@ function AddLiquidity() {
 				<Wrapper id="swap-page">
 					<AutoColumn
 						gap={"md"}
-					// justify="center"
 					>
 						<div className="flex w-full flex-col items-center gap-2">
 							<div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4 self-stretch">
@@ -162,13 +168,8 @@ function AddLiquidity() {
 									<div className="flex items-center gap-1 text-sm font-medium text-[rgba(255,255,255,0.50)]">--</div>
 								</div>
 							</div>
-							<SwapIcon
-								handleChangeToken={() => {
-									setTokens({
-										[Field.INPUT]: tokens[Field.OUTPUT],
-										[Field.OUTPUT]: tokens[Field.INPUT],
-									});
-								}}
+							<AddLiquidityIcon
+                onClick={() => setIsShowConfirmModal(true)}
 							/>
 							<div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4">
 								<div className="flex justify-between items-center self-stretch">
@@ -208,26 +209,6 @@ function AddLiquidity() {
 						</div>
 						<div className="flex flex-col items-start gap-8 self-stretch">
 							<div className="flex flex-col items-start gap-4 self-stretch">
-								{/* <div className="flex items-center gap-5 self-stretch">
-									<div className="flex items-center gap-1">
-										<span className="text-base font-bold leading-[20px]">Set Liquidity Concentration Parameter</span>
-										<HelpIcon />
-									</div>
-								</div>
-								<div className="flex items-center gap-2 self-stretch">
-									<span className="text-base font-medium leading-[24px] whitespace-nowrap">0.8</span>
-									<Slider
-										className="w-full"
-										defaultValue={k}
-										tooltip={{ open: true }}
-										max={2}
-										min={0.8}
-										step={0.1}
-										// tooltipPlacement="bottom"
-										onChange={onChangeK}
-									/>
-									<span className="text-base font-medium leading-[24px]">2</span>
-								</div> */}
 							</div>
 							<div className="flex justify-between items-center self-stretch">
 								<span className="text-base font-bold leading-[20px]">Capital Efficiency</span>
@@ -238,26 +219,32 @@ function AddLiquidity() {
 						</div>
 					</AutoColumn>
 				</Wrapper>
-			</AppBody>
+			</AppBody >
 			{isShowInputTokenModal && (
 				<SelectTokenModal
 					open={setShowInputTokenModal}
 					setToken={setInputToken}
 				/>
-			)}
-			{isShowOuputTokenModal && (
-				<SelectTokenModal
-					open={setShowOutputTokenModal}
-					setToken={setOutputToken}
-				/>
-			)}
-			{isShowConfirmModal && (
-				<ConfirmModal
-					isShowing={isShowConfirmModal}
-					open={setIsShowConfirmModal}
-					status={status}
-				/>
-			)}
+			)
+			}
+			{
+				isShowOuputTokenModal && (
+					<SelectTokenModal
+						open={setShowOutputTokenModal}
+						setToken={setOutputToken}
+					/>
+				)
+			}
+			{
+				isShowConfirmModal && ( 
+					<ConfirmModal
+						isShowing={isShowConfirmModal}
+						open={setIsShowConfirmModal}
+						status={status}
+						onConfirm={onConfirmAddLiquidity}
+					/>
+				)
+			}
 		</>
 	);
 }
