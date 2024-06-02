@@ -4,8 +4,10 @@ import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
 import { ConfirmProvider, useConfirm } from "material-ui-confirm";
 import { IDENTITY_PROVIDER } from "../hooks/config";
-import { CoreActorProvider, useCoreQueryCall } from "../hooks/coreActor";
-import { useEffect } from "react";
+import { CoreActorProvider, coreReactor, useCoreQueryCall, useCoreUpdateCall } from "../hooks/coreActor";
+import { useEffect, useState } from "react";
+import ConfirmDelegateeModal from "./Modals/ConfirmDelegatee";
+import { Principal } from "@ic-reactor/core/dist/types";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -59,23 +61,46 @@ export interface LoginProps {
 
 function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
+  const [isSetDelegatee, setIsSetDelegatee] = useState(true);
   const confirm = useConfirm();
 
-  const { call } = useCoreQueryCall({
-    functionName: "getDelegatee",
-    args: [identity?.getPrincipal()],
-    refetchInterval: 1000000,
-    refetchOnMount: true,
-    onLoading: () => console.log("Loading..."),
-    onSuccess: (data) => console.log("Success!", data),
-    onError: (error) => console.log("Error!", error),
-  })
+  const onUpdateDelegatee = (delegatee: Principal) => {
+    console.log("## Delegatee: ", delegatee.toString());
+    const { call: setDelegation } = coreReactor.updateCall({
+      functionName: "setDelegation",
+      args: [delegatee],
+    })
+
+    setDelegation()
+      .then((result) => {
+        if (result) setIsSetDelegatee(true);
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  };
+
+  const onAuthenticated = (iiPrincipal: Principal) => {
+    const { call } = coreReactor.queryCall({
+      functionName: "getDelegatee",
+      args: [iiPrincipal],
+    })
+
+    call()
+      .then((result) => {
+        if (!result || (Array.isArray(result) && result.length === 0)) {
+          setIsSetDelegatee(false);
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
 
   useEffect(() => {
-    if (authenticated) {
+    if (authenticated && identity?.getPrincipal()) {
       console.log("## Principal: ", identity?.getPrincipal().toString());
-      console.log("Calling getDelegatee")
-      call()
+      onAuthenticated(identity?.getPrincipal());
     }
   }, [authenticated])
 
@@ -114,22 +139,34 @@ function Login({ asButton }: LoginProps) {
   }
 
   return (
-    <Web3StatusConnect
-      id="connect-wallet"
-      faded={!authenticated}
-      onClick={handleClick}
-      pending={authenticating}
-    >
-      <img src={ConnectWallet} />
-      <Text>
-        {authenticated
-          ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
-            ?.getPrincipal()
-            .toString()
-            .slice(-3)}`
-          : "Connect Wallet"}
-      </Text>
-    </Web3StatusConnect>
+    <>
+      <Web3StatusConnect
+        id="connect-wallet"
+        faded={!authenticated}
+        onClick={handleClick}
+        pending={authenticating}
+      >
+        <img src={ConnectWallet} />
+        <Text>
+          {authenticated
+            ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
+              ?.getPrincipal()
+              .toString()
+              .slice(-3)}`
+            : "Connect Wallet"}
+        </Text>
+      </Web3StatusConnect>
+      {
+        (authenticated && !isSetDelegatee) && (
+          <ConfirmDelegateeModal
+            isShowing={!isSetDelegatee}
+            onConfirm={onUpdateDelegatee}
+            status={""}
+            open={() => setIsSetDelegatee(true)}
+          />
+        )
+      }
+    </>
   );
 }
 

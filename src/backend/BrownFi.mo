@@ -194,7 +194,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     };
 
     public shared(msg) func setDelegation(delegatee: Principal) : async Bool {
-        delegations.put(delegatee, msg.caller);
+        delegations.put(msg.caller, delegatee);
         return true;
     };
 
@@ -859,7 +859,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     
     public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
         let pairList = await getPairList();
-        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator or pair.creator == delegations.get(creator));
+        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator or pair.creator == delegations.get(msg.caller));
     };
 
     /*
