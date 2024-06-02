@@ -7,7 +7,7 @@ const SwapIcon = (props: any) => {
 			viewBox="0 0 24 24"
 			fill="none"
 			className="cursor-pointer"
-			onClick={() => props.handleChangeToken()}
+            {...props}
 		>
 			<rect
 				width="24"

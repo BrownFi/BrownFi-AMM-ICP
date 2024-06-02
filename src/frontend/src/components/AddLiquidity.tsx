@@ -74,12 +74,6 @@ function AddLiquidity() {
 		[Field.OUTPUT]: "",
 	});
 
-	// useEffect(() => {
-	// 	if (tokens.INPUT && tokens.OUTPUT && tokenAmounts.INPUT && tokenAmounts.OUTPUT) {
-	// 		setIsShowConfirmModal(true)
-	// 	}
-	// }, [tokens, tokenAmounts])
-
 	const onConfirmAddLiquidity = () => {
 		console.log("Confirm Add Liquidity")
 		console.log(tokens)
@@ -169,7 +163,7 @@ function AddLiquidity() {
 								</div>
 							</div>
 							<AddLiquidityIcon
-                onClick={() => setIsShowConfirmModal(true)}
+								onClick={() => setIsShowConfirmModal(true)}
 							/>
 							<div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4">
 								<div className="flex justify-between items-center self-stretch">
@@ -236,7 +230,7 @@ function AddLiquidity() {
 				)
 			}
 			{
-				isShowConfirmModal && ( 
+				isShowConfirmModal && (
 					<ConfirmModal
 						isShowing={isShowConfirmModal}
 						open={setIsShowConfirmModal}
