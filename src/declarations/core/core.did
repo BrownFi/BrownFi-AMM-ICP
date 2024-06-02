@@ -31,6 +31,19 @@ type TokenAnalyticsInfo =
    symbol: text;
    totalSupply: nat;
  };
+type SwapUpdate = 
+ record {
+   dy: nat;
+   fee: nat;
+   p1: nat;
+   x1: nat;
+   y1: nat;
+ };
+type QuoteTxReceipt = 
+ variant {
+   err: text;
+   ok: SwapUpdate;
+ };
 type PairInfoExt = 
  record {
    bReserve: nat;
@@ -68,6 +81,7 @@ type BrownFi =
    getTokenList: () -> (vec TokenInfoExt);
    getTokenMetadata: (text) -> (TokenAnalyticsInfo) query;
    getUserInfo: (principal) -> (UserInfo) query;
+   quote: (principal, principal, nat) -> (QuoteTxReceipt);
    setCapId: (principal) -> (bool);
    setDelegation: (principal) -> (bool);
    setFeeTo: (principal) -> (bool);

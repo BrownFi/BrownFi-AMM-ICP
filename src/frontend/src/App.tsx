@@ -8,6 +8,7 @@ import BannerImg2 from "/images/background-2.png";
 import Pool from "./components/Pool";
 import Swap from "./components/Swap";
 import AddLiquidity from "./components/AddLiquidity";
+import { Toaster } from "react-hot-toast";
 
 const AppWrapper = styled.div<{ isHomePage: boolean }>`
 	display: flex;
@@ -83,6 +84,7 @@ function App() {
 					</Routes>
 				</BodyWrapper>
 			</AppWrapper>
+			<Toaster />
 			<Footer />
 		</>
 	);

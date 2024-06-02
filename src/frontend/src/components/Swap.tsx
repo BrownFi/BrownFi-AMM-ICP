@@ -13,6 +13,7 @@ import SwapIcon from "./Icons/SwapIcon";
 import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
 import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
 import SwapHeader from "./SwapHeader";
+import toast from "react-hot-toast";
 
 const LightDiv = styled.div`
 	color: ${colors().text1};
@@ -65,9 +66,16 @@ function Swap() {
   });
 
   const [status, setStatus] = useState<string>("");
+  // const { call, data, error, loading } = useQuote({
+    
+  // });
 
   const handleChangeAmounts = (value: string, independentField: Field) => {
     if (isNaN(+value)) return;
+    if (independentField === Field.OUTPUT) {
+      toast.error("Not support quote pay token yet")
+      return;
+    }
 
     setTokenAmounts({
       [Field.INPUT]: value,

@@ -130,6 +130,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     public type TokenInfoExt = Tokens.TokenInfoExt;
     public type TokenAnalyticsInfo = Tokens.TokenAnalyticsInfo;
     public type TxReceipt = Result.Result<Nat, Text>;
+    public type QuoteTxReceipt = Result.Result<SwapUpdate, Text>;
     public type PairInfoExt = {
         id : Text;
         bToken : Text;           //  Principal
@@ -596,6 +597,34 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
 
         txCounter += 1;
         return #ok(txCounter - 1);
+    };
+
+    public shared(msg) func quote(
+        bToken : Principal,
+        qToken : Principal,
+        amount : Nat,
+    ) : async QuoteTxReceipt {
+        if (amount == 0) return #err("Amount should not be zero");
+
+        let btid : Text = Principal.toText(bToken);
+        let qtid : Text = Principal.toText(qToken);
+        if (tokens.hasToken(btid) == false) return #err("Token not supported: " # btid);
+        if (tokens.hasToken(qtid) == false) return #err("Token not supported: " # qtid);
+        var pair : PairInfo = switch (pairs.get(btid # ":" # qtid)) {
+            case (?p) { p; };
+            case (_) return #err("Pair not existed");
+        };
+        if (amount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
+
+        let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
+        let pAmount : Nat = updateInfo.dy + updateInfo.fee;
+        if (tokens.balanceOf(qtid, msg.caller) < (pAmount)) return #err("Insufficient balance: " # qtid);
+        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), pAmount) == false)
+            return #err("Transfer failed: " # qtid);
+        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), msg.caller, amount) == false)
+            return #err("Transfer failed: " # btid);
+        
+        return #ok(updateInfo);
     };
 
     /*
@@ -1098,6 +1127,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
           #withdraw : () -> (Principal, Nat);
           #addLiquidity : () -> (Principal, Principal, Nat, Nat, Int);
           #swap : () -> (Principal, Principal, Nat, Int);
+          #quote : () -> (Principal, Principal, Nat);
 
           #getOwner : () -> ();
           #getFeeTo : () -> ();
@@ -1150,6 +1180,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
                 if (tokens.hasToken(tid) == false or Principal.isAnonymous(caller)) return false;
                 return true;
             };
+            case (#quote d) { true };
 
             case (#getOwner _) { true };
             case (#getFeeTo _) { true };
