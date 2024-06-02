@@ -17,7 +17,7 @@ export interface ConfirmationModalProps {
 
 const ConfirmModal = (props: ConfirmationModalProps) => {
 	const { isShowing, open, onConfirm, status, successMessage, failedMessage } = props;
-
+	const [isClosable, setClosable] = useState(true);
 	const useOutsideAlerter = (ref: any) => {
 		useEffect(() => {
 			/**
@@ -53,19 +53,19 @@ const ConfirmModal = (props: ConfirmationModalProps) => {
 							status === "fail" && "gap-10"
 						)}
 					>
-						<ConfirmModalHeader
+						{isClosable && <ConfirmModalHeader
 							close={() => {
 								open(false);
 							}}
-						/>
+						/>}
 						Are you sure you want to proceed with this?
-						<button className="flex flex-col items-center gap-5 btn-outline"
+						{(!status || status === "submitting")} && (<button className="flex flex-col items-center gap-5 btn-outline"
 							onClick={() => {
 								onConfirm();
 							}}
 						>
 							Yes
-						</button>
+						</button>)
 						{(!status || status === "submitting") && (<button
 							className="flex flex-col items-center gap-5 btn-outline"
 							onClick={() => {

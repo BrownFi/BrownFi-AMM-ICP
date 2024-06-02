@@ -27,7 +27,6 @@ const ConfirmDelegateeModal = (props: ConfirmationModalProps) => {
 			onConfirm(Principal.fromText(delegateePrincipal)) 
 		}
 	}
-
 	const useOutsideAlerter = (ref: any) => {
 		useEffect(() => {
 			/**

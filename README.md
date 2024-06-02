@@ -37,6 +37,11 @@ dfx identity new bob --storage-mode plaintext
 dfx identity new owner --storage-mode plaintext
 dfx identity use owner
 
+# When using the internet identity, you need to create a new identity for the canister
+dfx identity import --seed-file owner.txt owner --storage-mode plaintext
+dfx identity import --seed-file alice.txt alice --storage-mode plaintext
+dfx identity import --seed-file bob.txt bob --storage-mode plaintext
+
 # Run the demo script file
 ./demo.sh
 
