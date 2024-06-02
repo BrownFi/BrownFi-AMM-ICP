@@ -584,10 +584,15 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
 
         let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
         let pAmount : Nat = updateInfo.dy + updateInfo.fee;
-        if (tokens.balanceOf(qtid, msg.caller) < (pAmount)) return #err("Insufficient balance: " # qtid);
-        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), pAmount) == false)
+        var realUser: Principal = msg.caller;
+        switch (await getDelegatee(msg.caller)) {
+            case (?delegatee) { realUser := delegatee; };
+            case (_) { return #err("Delegatee not found")};
+        };
+        if (tokens.balanceOf(qtid, realUser) < (pAmount)) return #err("Insufficient balance: " # qtid);
+        if (tokens.zeroFeeTransfer(qtid, realUser, Principal.fromActor(this), pAmount) == false)
             return #err("Transfer failed: " # qtid);
-        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), msg.caller, amount) == false)
+        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), realUser, amount) == false)
             return #err("Transfer failed: " # btid);
         
         pair.pLast := updateInfo.p1;
@@ -856,10 +861,10 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         return Buffer.toArray(pairList);
     };
     
-    
     public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
+        assert(_checkAuthOrDelegations(msg.caller, creator));
         let pairList = await getPairList();
-        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator or pair.creator == delegations.get(msg.caller));
+        return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator);
     };
 
     /*

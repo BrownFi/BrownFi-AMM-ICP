@@ -3,7 +3,7 @@ import { useState } from "react";
 import { css, styled } from "styled-components";
 import { twMerge } from "tailwind-merge";
 import AppBody from "../AppBody";
-import { CoreActorProvider } from "../hooks/coreActor";
+import { CoreActorProvider, coreReactor } from "../hooks/coreActor";
 import { Field } from "../model/inputs";
 import { TokenDetails } from "../model/tokens";
 import { colors } from "../theme";
@@ -14,6 +14,7 @@ import SelectTokenModal from "./Modals/SelectToken/SelectTokenModal";
 import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
 import SwapHeader from "./SwapHeader";
 import toast from "react-hot-toast";
+import { Principal } from "@dfinity/principal";
 
 const LightDiv = styled.div`
 	color: ${colors().text1};
@@ -66,10 +67,6 @@ function Swap() {
   });
 
   const [status, setStatus] = useState<string>("");
-  // const { call, data, error, loading } = useQuote({
-    
-  // });
-
   const handleChangeAmounts = (value: string, independentField: Field) => {
     if (isNaN(+value)) return;
     if (independentField === Field.OUTPUT) {
@@ -100,10 +97,34 @@ function Swap() {
   const onConfirmSwap = () => {
     console.log("Confirm Swap")
     console.log(tokens)
+    const { call } = coreReactor.updateCall({
+      functionName: "swap",
+      args: [
+        Principal.fromText((tokens.INPUT as TokenDetails).address),
+        Principal.fromText((tokens.OUTPUT as TokenDetails).address),
+        BigInt(tokenAmounts[Field.INPUT]),
+        BigInt("1741447837000000000")
+      ]
+    });
+
+    call()
+      .then((result) => {
+        // @ts-expect-error 
+        if (result.err) {
+          // @ts-expect-error
+          toast.error(result.err)
+          setStatus("fail")
+        } else {
+          console.log("## Swap Result: ", result)
+          setStatus("success")
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+        setStatus("fail")
+      })
+    
     setStatus("loading")
-    setTimeout(() => {
-      setStatus("success")
-    }, 2000)
   };
 
   return (

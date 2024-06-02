@@ -66,7 +66,7 @@ const ConfirmModal = (props: ConfirmationModalProps) => {
 						>
 							Yes
 						</button>
-						{status === "submitting" && (<button
+						{(!status || status === "submitting") && (<button
 							className="flex flex-col items-center gap-5 btn-outline"
 							onClick={() => {
 								open(false)
