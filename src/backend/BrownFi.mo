@@ -587,7 +587,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         var realUser: Principal = msg.caller;
         switch (await getDelegatee(msg.caller)) {
             case (?delegatee) { realUser := delegatee; };
-            case (_) { return #err("Delegatee not found")};
+            case (_) { realUser := realUser; };
         };
         if (tokens.balanceOf(qtid, realUser) < (pAmount)) return #err("Insufficient balance: " # qtid);
         if (tokens.zeroFeeTransfer(qtid, realUser, Principal.fromActor(this), pAmount) == false)

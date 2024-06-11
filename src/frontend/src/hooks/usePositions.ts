@@ -2,13 +2,14 @@ import { useAuth } from "@ic-reactor/react";
 import { useEffect } from "react";
 import { useCoreQueryCall } from "./coreActor";
 import { PositionDetails } from "../model/pools";
+import { Principal } from "@dfinity/principal";
 
 export function usePositions() {
     const { authenticated, identity } = useAuth();
 
     const { call, data, error, loading } = useCoreQueryCall({
       functionName: "getPairListByCreator",
-      args: [identity?.getPrincipal()],
+      args: [Principal.fromText("medlw-2c5pb-n4eht-4f3js-vtrp7-2juyk-smdl5-xitl6-x7ezi-dm5wx-cae")],
       refetchInterval: 100_000,
       refetchOnMount: true,
     })

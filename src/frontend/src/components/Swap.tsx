@@ -102,7 +102,7 @@ function Swap() {
       args: [
         Principal.fromText((tokens.INPUT as TokenDetails).address),
         Principal.fromText((tokens.OUTPUT as TokenDetails).address),
-        BigInt(tokenAmounts[Field.INPUT]) * (BigInt(10) ** BigInt((tokens.INPUT as TokenDetails).decimals)),
+        BigInt(tokenAmounts[Field.INPUT]),
         BigInt("1741447837000000000")
       ]
     });
@@ -123,7 +123,7 @@ function Swap() {
         console.error(error)
         setStatus("fail")
       })
-    
+
     setStatus("loading")
   };
 
@@ -138,7 +138,7 @@ function Swap() {
             <div className="flex w-full flex-col items-center gap-2">
               <div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4 self-stretch">
                 <div className="flex justify-between items-center self-stretch">
-                {tokens.INPUT && (<span className="text-base font-medium">{tokens.INPUT.symbol}</span>)}
+                  {tokens.INPUT && (<span className="text-base font-medium">{tokens.INPUT.symbol}</span>)}
                   <span className="text-lg font-normal text-white font-['Russo_One']">You Pay</span>
                   <div className="flex items-center gap-1 text-base font-normal">
                     <span>Balance:</span>
@@ -175,7 +175,7 @@ function Swap() {
               />
               <div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4">
                 <div className="flex justify-between items-center self-stretch">
-                {tokens.OUTPUT && (<span className="text-base font-medium">{tokens.OUTPUT.symbol}</span>)}
+                  {tokens.OUTPUT && (<span className="text-base font-medium">{tokens.OUTPUT.symbol}</span>)}
                   <span className="text-lg font-normal text-white font-['Russo_One']">Your Receive</span>
                   <div className="flex items-center gap-1 text-base font-normal">
                     <span>Balance:</span>
