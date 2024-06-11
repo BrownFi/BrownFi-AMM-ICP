@@ -102,7 +102,7 @@ function Swap() {
       args: [
         Principal.fromText((tokens.INPUT as TokenDetails).address),
         Principal.fromText((tokens.OUTPUT as TokenDetails).address),
-        BigInt(tokenAmounts[Field.INPUT]),
+        BigInt(tokenAmounts[Field.INPUT]) * (BigInt(10) ** BigInt((tokens.INPUT as TokenDetails).decimals)),
         BigInt("1741447837000000000")
       ]
     });

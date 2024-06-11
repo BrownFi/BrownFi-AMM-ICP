@@ -59,13 +59,13 @@ const ConfirmModal = (props: ConfirmationModalProps) => {
 							}}
 						/>}
 						Are you sure you want to proceed with this?
-						{(!status || status === "submitting")} && (<button className="flex flex-col items-center gap-5 btn-outline"
+						{(!status || status === "submitting")} <button className="flex flex-col items-center gap-5 btn-outline"
 							onClick={() => {
 								onConfirm();
 							}}
 						>
 							Yes
-						</button>)
+						</button>
 						{(!status || status === "submitting") && (<button
 							className="flex flex-col items-center gap-5 btn-outline"
 							onClick={() => {

@@ -236,7 +236,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         assert(_checkAuthOrDelegations(msg.caller, owner));
         //  Check whether `tokenId` has been already set before
         let tid : Text = Principal.toText(tokenId);
-        assert(not tokens.hasToken(tid));
+        // assert(not tokens.hasToken(tid));
 
         let tokenActor : ICRC2TokenActor = actor(tid);
         let metadata = await _getMetadata(tokenActor, tokenId);
@@ -862,7 +862,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     };
     
     public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
-        assert(_checkAuthOrDelegations(msg.caller, creator));
+        // assert(_checkAuthOrDelegations(msg.caller, creator));
         let pairList = await getPairList();
         return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator);
     };
