@@ -61,46 +61,11 @@ export interface LoginProps {
 
 function Login({ asButton }: LoginProps) {
   const { authenticated, authenticating, login, logout, identity } = useAuth();
-  const [isSetDelegatee, setIsSetDelegatee] = useState(true);
   const confirm = useConfirm();
-
-  const onUpdateDelegatee = (delegatee: Principal) => {
-    console.log("## Delegatee: ", delegatee.toString());
-    const { call: setDelegation } = coreReactor.updateCall({
-      functionName: "setDelegation",
-      args: [delegatee],
-    })
-
-    setDelegation()
-      .then((result) => {
-        if (result) setIsSetDelegatee(true);
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  };
-
-  const onAuthenticated = (iiPrincipal: Principal) => {
-    const { call } = coreReactor.queryCall({
-      functionName: "getDelegatee",
-      args: [iiPrincipal],
-    })
-
-    call()
-      .then((result) => {
-        if (!result || (Array.isArray(result) && result.length === 0)) {
-          setIsSetDelegatee(false);
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
 
   useEffect(() => {
     if (authenticated && identity?.getPrincipal()) {
       console.log("## Principal: ", identity?.getPrincipal().toString());
-      onAuthenticated(identity?.getPrincipal());
     }
   }, [authenticated])
 
@@ -156,16 +121,6 @@ function Login({ asButton }: LoginProps) {
             : "Connect Wallet"}
         </Text>
       </Web3StatusConnect>
-      {
-        (authenticated && !isSetDelegatee) && (
-          <ConfirmDelegateeModal
-            isShowing={!isSetDelegatee}
-            onConfirm={onUpdateDelegatee}
-            status={""}
-            open={() => setIsSetDelegatee(true)}
-          />
-        )
-      }
     </>
   );
 }

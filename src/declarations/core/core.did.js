@@ -44,7 +44,7 @@ export const idlFactory = ({ IDL }) => {
     'y1' : IDL.Nat,
     'fee' : IDL.Nat,
   });
-  const QuoteTxReceipt = IDL.Variant({ 'ok' : SwapUpdate, 'err' : IDL.Text });
+  const QuoteTxReceipt = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const BrownFi = IDL.Service({
     'addLiquidity' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Nat, IDL.Nat, IDL.Int],

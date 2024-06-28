@@ -53,7 +53,7 @@ export interface PairInfoExt {
   'bToken' : string,
   'lpToken' : string,
 }
-export type QuoteTxReceipt = { 'ok' : SwapUpdate } |
+export type QuoteTxReceipt = { 'ok' : bigint } |
   { 'err' : string };
 export interface SwapUpdate {
   'dy' : bigint,

@@ -9,10 +9,12 @@
     "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\""
   },
   "dependencies": {
+    "@dfinity/ledger-icp": "^2.3.1",
     "@ic-reactor/core": "^1.7.5",
     "@ic-reactor/react": "^1.7.8",
     "@reach/dialog": "^0.18.0",
     "antd": "^5.16.1",
+    "artemis-web3-adapter": "^1.1.2",
     "bignumber.js": "^9.1.2",
     "class-variance-authority": "^0.7.0",
     "cookies-ts": "^1.0.5",

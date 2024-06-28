@@ -130,7 +130,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     public type TokenInfoExt = Tokens.TokenInfoExt;
     public type TokenAnalyticsInfo = Tokens.TokenAnalyticsInfo;
     public type TxReceipt = Result.Result<Nat, Text>;
-    public type QuoteTxReceipt = Result.Result<SwapUpdate, Text>;
+    public type QuoteTxReceipt = Result.Result<Nat, Text>;
     public type PairInfoExt = {
         id : Text;
         bToken : Text;           //  Principal
@@ -156,7 +156,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     private stable let scale : Nat = 100_000_000;
     private stable var capId: Text = Principal.toText(capId_);
 
-    private var delegations = HashMap.HashMap<Principal, Principal>(1, Principal.equal, Principal.hash);
     private var tokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var lpTokens : Tokens.Tokens = Tokens.Tokens(feeTo, []);
     private var pairs = HashMap.HashMap<Text, PairInfo>(1, Text.equal, Text.hash);
@@ -171,34 +170,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     private var cap: Cap.Cap = Cap.Cap(bfId, capId, 1_000_000_000_000);
 
     /*
-      - Login with II generate different Principal ID for the same user
-      - Discard privacy of the user
-    */
-    private func _checkAuthOrDelegations(toCheck: Principal, ref: Principal): Bool {
-        if (toCheck == ref) {
-            return true;
-        } else {
-            switch (delegations.get(ref)) {
-                case (?delegated) {
-                    return delegated == toCheck;
-                };
-                case (_) {
-                    return false;
-                };
-            };
-        }
-    };
-
-    public query func getDelegatee(delegator: Principal) : async ?Principal {
-        return delegations.get(delegator);
-    };
-
-    public shared(msg) func setDelegation(delegatee: Principal) : async Bool {
-        delegations.put(msg.caller, delegatee);
-        return true;
-    };
-
-    /*
       - Call to set new `owner` of the Canister
       - Requirement: 
         - `msg.caller` must be `owner`
@@ -207,7 +178,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `newOwner`: the Principal ID of a new `owner`
     */
     public shared(msg) func setOwner(newOwner : Principal) : async Bool {
-        assert(_checkAuthOrDelegations(msg.caller, owner) and newOwner != blackhole);
+        assert(msg.caller == owner and newOwner != blackhole);
         owner := newOwner;
         return true;
     };
@@ -221,7 +192,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `newFeeTo`: the Principal ID of a new `feeTo`
     */
     public shared(msg) func setFeeTo(newFeeTo : Principal) : async Bool {
-        assert(_checkAuthOrDelegations(msg.caller, owner) and newFeeTo != blackhole);
+        assert(msg.caller == owner and newFeeTo != blackhole);
         feeTo := newFeeTo;
         return true;
     };
@@ -233,7 +204,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `tokenId`: the Principal ID of the Canister
     */
     public shared(msg) func setToken(tokenId : Principal) : async Bool {
-        assert(_checkAuthOrDelegations(msg.caller, owner));
+        assert(msg.caller == owner);
         //  Check whether `tokenId` has been already set before
         let tid : Text = Principal.toText(tokenId);
         // assert(not tokens.hasToken(tid));
@@ -265,7 +236,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         - `newCapId`: the Pricipal ID of CAP Canister
     */
     public shared(msg) func setCapId (newCapId : Principal) : async Bool {
-        assert(_checkAuthOrDelegations(msg.caller, owner));
+        assert(msg.caller == owner);
         capId := Principal.toText(newCapId);
         
         return cap.setRouterId(capId);
@@ -356,7 +327,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         l_ : Nat,
         feeRate_ : Nat
     ) : async Bool {
-        assert(_checkAuthOrDelegations(msg.caller, owner));
+        assert(msg.caller == owner);
 
         let pair = bToken # ":" # qToken;
         assert(Option.isSome(pairs.get(pair)));
@@ -431,6 +402,8 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     public shared(msg) func deposit(tokenId : Principal, amount : Nat) : async TxReceipt {
         let tid : Text = Principal.toText(tokenId);
         let fee : Nat = tokens.getFee(tid);
+        if (tokens.hasToken(tid) == false) return #err("Token not supported: " # tid);
+        if (amount < fee) return #err("Amount should be greater than fee: " # Nat.toText(fee)); 
         assert(tokens.hasToken(tid) and amount >= fee);
         
         ignore _addRecord(
@@ -449,8 +422,8 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         let tokenActor : ICRC2TokenActor = actor(tid);
         let txid = switch (await _transferFrom(tid, tokenActor, msg.caller, amount, fee)) {
             case (#Ok(id)) { id; };
-            case (#Err(e)) { return #err("token transfer failed:" # tid); };
-            case (#ICRCTransferError(e)) { return #err("token transfer failed:" # tid); };
+            case (#Err(e)) { return #err("token transfer failed:" # debug_show(e)); };
+            case (#ICRCTransferError(e)) { return #err("token transfer failed:" # debug_show(e)); };
         };
 
         ignore tokens.mint(tid, msg.caller, amount);
@@ -584,15 +557,12 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
 
         let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
         let pAmount : Nat = updateInfo.dy + updateInfo.fee;
-        var realUser: Principal = msg.caller;
-        switch (await getDelegatee(msg.caller)) {
-            case (?delegatee) { realUser := delegatee; };
-            case (_) { realUser := realUser; };
-        };
-        if (tokens.balanceOf(qtid, realUser) < (pAmount)) return #err("Insufficient balance: " # qtid);
-        if (tokens.zeroFeeTransfer(qtid, realUser, Principal.fromActor(this), pAmount) == false)
+        if (tokens.balanceOf(qtid, msg.caller) < (pAmount)) return #err("Insufficient balance: "#Nat.toText(tokens.balanceOf(qtid, msg.caller))#"<"#Nat.toText(pAmount));
+        // send quote token from caller to this canister
+        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), pAmount) == false)
             return #err("Transfer failed: " # qtid);
-        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), realUser, amount) == false)
+        // send base token from this canister to caller
+        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), msg.caller, amount) == false)
             return #err("Transfer failed: " # btid);
         
         pair.pLast := updateInfo.p1;
@@ -623,13 +593,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
 
         let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
         let pAmount : Nat = updateInfo.dy + updateInfo.fee;
-        if (tokens.balanceOf(qtid, msg.caller) < (pAmount)) return #err("Insufficient balance: " # qtid);
-        if (tokens.zeroFeeTransfer(qtid, msg.caller, Principal.fromActor(this), pAmount) == false)
-            return #err("Transfer failed: " # qtid);
-        if (tokens.zeroFeeTransfer(btid, Principal.fromActor(this), msg.caller, amount) == false)
-            return #err("Transfer failed: " # btid);
-        
-        return #ok(updateInfo);
+        return #ok(pAmount);
     };
 
     /*
@@ -862,7 +826,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     };
     
     public shared(msg) func getPairListByCreator(creator : Principal): async [PairInfoExt] {
-        // assert(_checkAuthOrDelegations(msg.caller, creator));
         let pairList = await getPairList();
         return Array.filter<PairInfoExt>(pairList, func pair = pair.creator == creator);
     };
@@ -1119,8 +1082,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
       caller : Principal;
       arg : Blob;
       msg : {
-          #getDelegatee : () -> Principal;
-          #setDelegation : () -> Principal;
           #setOwner : () -> Principal;
           #setFeeTo : () -> Principal;
           #setToken : () -> Principal;
@@ -1148,12 +1109,10 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
       }
     }) : Bool {
         switch (msg) {
-            case (#getDelegatee _) { true };
-            case (#setDelegation _) { true };
-            case (#setOwner _) { ( _checkAuthOrDelegations(caller, owner) ) };
-            case (#setFeeTo _) { ( _checkAuthOrDelegations(caller, owner) ) };
-            case (#setToken _) { ( _checkAuthOrDelegations(caller, owner) ) };
-            case (#setCapId _) { ( _checkAuthOrDelegations(caller, owner) ) };
+            case (#setOwner _) { ( caller == owner ) };
+            case (#setFeeTo _) { ( caller == owner ) };
+            case (#setToken _) { ( caller == owner ) };
+            case (#setCapId _) { ( caller == owner ) };
             case (#setPair _) { true };
             case (#setPairConfig d) {
                 var pair = d().0 # ":" # d().1;

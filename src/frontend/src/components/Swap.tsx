@@ -15,6 +15,8 @@ import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
 import SwapHeader from "./SwapHeader";
 import toast from "react-hot-toast";
 import { Principal } from "@dfinity/principal";
+import { approve, createLedgerCannister } from "../hooks/ledgerActor";
+import debounce from "debounce";
 
 const LightDiv = styled.div`
 	color: ${colors().text1};
@@ -65,19 +67,45 @@ function Swap() {
     [Field.INPUT]: "",
     [Field.OUTPUT]: "",
   });
+  const [quote, setQuote] = useState<string>("0");
 
   const [status, setStatus] = useState<string>("");
   const handleChangeAmounts = (value: string, independentField: Field) => {
     if (isNaN(+value)) return;
-    if (independentField === Field.OUTPUT) {
+    if (independentField === Field.INPUT) {
       toast.error("Not support quote pay token yet")
       return;
     }
 
-    setTokenAmounts({
-      [Field.INPUT]: value,
-      [Field.OUTPUT]: (Number(value) * 9).toString(),
-    });
+
+    if (tokens.INPUT === "" || tokens.OUTPUT === "") {
+      setTokenAmounts({
+        [Field.INPUT]: "",
+        [Field.OUTPUT]: value,
+      });
+    } else {
+      const { call: callQuote } = coreReactor.updateCall({
+        functionName: "quote",
+        args: [
+          Principal.fromText((tokens.INPUT as TokenDetails).address),
+          Principal.fromText((tokens.OUTPUT as TokenDetails).address),
+          BigInt(value),
+        ]
+      });
+  
+      callQuote()
+        .then(result => {
+          if (result.ok) {
+            setTokenAmounts({
+              [Field.INPUT]: result.ok?.toString() || "",
+              [Field.OUTPUT]: value,
+            });
+            setQuote(result.ok?.toString() || "0")
+          } else {
+            toast.error(result.err)
+          }
+        })
+    }
   };
 
   const setInputToken = (token: TokenDetails) => {
@@ -95,24 +123,43 @@ function Swap() {
   }
 
   const onConfirmSwap = () => {
-    console.log("Confirm Swap")
-    console.log(tokens)
-    const { call } = coreReactor.updateCall({
+    const { call: callDeposit } = coreReactor.updateCall({
+      functionName: "deposit",
+      args: [
+        Principal.fromText((tokens.OUTPUT as TokenDetails).address),
+        BigInt(quote),
+      ]
+    }); 
+
+    const { call: callSwap } = coreReactor.updateCall({
       functionName: "swap",
       args: [
         Principal.fromText((tokens.INPUT as TokenDetails).address),
         Principal.fromText((tokens.OUTPUT as TokenDetails).address),
         BigInt(tokenAmounts[Field.INPUT]),
+        // FIXME: hardcode deadline
         BigInt("1741447837000000000")
       ]
     });
 
-    call()
+    approve((tokens.OUTPUT as TokenDetails).address, BigInt(quote) * BigInt(10))
+      .then(() => callDeposit())
+      .then((result) => {
+        if (result.err) {
+          toast.error(result.err)
+          console.error("## Deposit Error: ", result.err)
+          setStatus("fail")
+        } else {
+          console.log("## Deposit Result: ", result)
+        }
+      })
+      .then(() => callSwap())
       .then((result) => {
         // @ts-expect-error 
         if (result.err) {
           // @ts-expect-error
           toast.error(result.err)
+          console.error("## Swap Error: ", result.err)
           setStatus("fail")
         } else {
           console.log("## Swap Result: ", result)
@@ -120,7 +167,7 @@ function Swap() {
         }
       })
       .catch((error) => {
-        console.error(error)
+        console.dir(error)
         setStatus("fail")
       })
 
@@ -149,10 +196,13 @@ function Swap() {
                   <div className="flex justify-between items-center self-stretch">
                     <div className="flex justify-between items-center self-stretch">
                       <Input
+                        readOnly
                         placeholder="0.0"
                         className="border-none px-0 text-xl font-bold max-w-[150px] text-[#C6C6C6]"
                         value={tokenAmounts[Field.INPUT]}
-                        onChange={(e) => handleChangeAmounts(e.target.value, Field.INPUT)}
+                        onChange={(e) => {
+                          debounce(handleChangeAmounts, 1000)(e.target.value, Field.INPUT)
+                        }}
                       />
                     </div>
                     <div
@@ -191,7 +241,9 @@ function Swap() {
                           "border-none px-0 text-xl max-w-[150px] font-medium text-[#27E3AB]"
                         )}
                         value={tokenAmounts[Field.OUTPUT]}
-                        onChange={(e) => handleChangeAmounts(e.target.value, Field.OUTPUT)}
+                        onChange={(e) => {
+                          debounce(handleChangeAmounts, 1000)(e.target.value, Field.OUTPUT)
+                        }}
                       />
                     </div>
                     <div
