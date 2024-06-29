@@ -63,6 +63,13 @@ echo ""
 eval ./scripts/get-user-info.sh bob core
 echo ""
 
+echo Get Amount In
+echo ================================================================
+echo ""
+echo "Get amount in tokenB for 50000 tokenA"
+eval ./scripts/getAmountIn.sh alice core tokenA tokenB 50000
+echo ""
+
 echo Swap
 echo ================================================================
 echo ""

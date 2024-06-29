@@ -135,7 +135,7 @@ function Swap() {
       args: [
         Principal.fromText((tokens.RECEIVE as TokenDetails).address),
         Principal.fromText((tokens.PAY as TokenDetails).address),
-        BigInt(tokenAmounts[SwapField.PAY]),
+        BigInt(tokenAmounts[SwapField.RECEIVE]),
         // FIXME: hardcode deadline
         BigInt("1741447837000000000")
       ]
