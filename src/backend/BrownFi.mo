@@ -130,7 +130,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     public type TokenInfoExt = Tokens.TokenInfoExt;
     public type TokenAnalyticsInfo = Tokens.TokenAnalyticsInfo;
     public type TxReceipt = Result.Result<Nat, Text>;
-    public type QuoteTxReceipt = Result.Result<Nat, Text>;
     public type PairInfoExt = {
         id : Text;
         bToken : Text;           //  Principal
@@ -243,7 +242,7 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
     };
 
     /*
-      - Call to create a pool for a token pair (`token0`/`token1`)
+      - Call to create a pool for a token pair (`tokenA`/`tokenB`)
       - Requirement: 
         - `msg.caller` can be ANY
         - `bToken` and `qToken` must be registered by `owner`
@@ -536,6 +535,19 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
         return #ok(txCounter - 1);
     };
 
+    /**
+        - Swap the amount of `qToken` that `msg.caller` to receive `bToken`
+        - Requirement: 
+            - `msg.caller` can be ANY
+            - `bToken` and `qToken` must be registered by `owner`
+            -  A pair, created by `bToken` and `qToken`, must exist
+            - `amount` must be less than the current pool reserve
+        - Params:
+            - `bToken`: the Principal ID of the base token Canister
+            - `qToken`: the Principal ID of the quote token Canister
+            - `amount`: the amount of `bToken` to receive
+            - `deadline`: the deadline of the transaction
+    **/
     public shared(msg) func swap(
         bToken : Principal,
         qToken : Principal,
@@ -554,7 +566,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
             case (_) return #err("Pair not existed");
         };
         if (amount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
-
         let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
         let pAmount : Nat = updateInfo.dy + updateInfo.fee;
         if (tokens.balanceOf(qtid, msg.caller) < (pAmount)) return #err("Insufficient balance: "#Nat.toText(tokens.balanceOf(qtid, msg.caller))#"<"#Nat.toText(pAmount));
@@ -572,28 +583,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
 
         txCounter += 1;
         return #ok(txCounter - 1);
-    };
-
-    public shared(msg) func quote(
-        bToken : Principal,
-        qToken : Principal,
-        amount : Nat,
-    ) : async QuoteTxReceipt {
-        if (amount == 0) return #err("Amount should not be zero");
-
-        let btid : Text = Principal.toText(bToken);
-        let qtid : Text = Principal.toText(qToken);
-        if (tokens.hasToken(btid) == false) return #err("Token not supported: " # btid);
-        if (tokens.hasToken(qtid) == false) return #err("Token not supported: " # qtid);
-        var pair : PairInfo = switch (pairs.get(btid # ":" # qtid)) {
-            case (?p) { p; };
-            case (_) return #err("Pair not existed");
-        };
-        if (amount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
-
-        let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
-        let pAmount : Nat = updateInfo.dy + updateInfo.fee;
-        return #ok(pAmount);
     };
 
     /*
@@ -766,16 +755,16 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
       - Params: 
         - `bToken` the Principal ID of `bToken`
         - `qToken` the Principal ID of `qToken`
-        - `oAmount` the exact amount of `bToken` that `msg.caller` wants to receive
+        - `amount` the exact amount of `bToken` that `msg.caller` wants to receive
       - Returns:
         - iAmount: the amount of `qToken` that `msg.caller` needs to pay (included tx_fee)
     */
     public shared(msg) func getAmountIn(
         bToken : Principal,
         qToken : Principal,
-        oAmount : Nat
+        amount : Nat
     ) : async TxReceipt {
-        if (oAmount == 0) return #err("Amount should not be zero");
+        if (amount == 0) return #err("Amount should not be zero");
 
         let btid : Text = Principal.toText(bToken);
         let qtid : Text = Principal.toText(qToken);
@@ -785,11 +774,10 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
             case (?p) { p; };
             case (_) return #err("Pair not existed");
         };
-        if (oAmount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
-        let updateInfo : SwapUpdate = _getSwapUpdate(pair, oAmount);
-        let iAmount : Nat = updateInfo.dy + updateInfo.fee;
-
-        return #ok(iAmount);
+        if (amount >= pair.bReserve) return #err("Exceed pool reserve: " # btid);
+        let updateInfo : SwapUpdate = _getSwapUpdate(pair, amount);
+        let pAmount : Nat = updateInfo.dy + updateInfo.fee;
+        return #ok(pAmount);
     };
 
     /*
@@ -1093,7 +1081,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
           #withdraw : () -> (Principal, Nat);
           #addLiquidity : () -> (Principal, Principal, Nat, Nat, Int);
           #swap : () -> (Principal, Principal, Nat, Int);
-          #quote : () -> (Principal, Principal, Nat);
 
           #getOwner : () -> ();
           #getFeeTo : () -> ();
@@ -1144,7 +1131,6 @@ shared(msg) actor class BrownFi(owner_ : Principal, bfId: Principal, capId_: Pri
                 if (tokens.hasToken(tid) == false or Principal.isAnonymous(caller)) return false;
                 return true;
             };
-            case (#quote d) { true };
 
             case (#getOwner _) { true };
             case (#getFeeTo _) { true };

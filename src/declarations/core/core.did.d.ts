@@ -12,7 +12,6 @@ export interface BrownFi {
   'depositTo' : ActorMethod<[Principal, Principal, bigint], TxReceipt>,
   'getAmountIn' : ActorMethod<[Principal, Principal, bigint], TxReceipt>,
   'getCapSetting' : ActorMethod<[], CapSettings>,
-  'getDelegatee' : ActorMethod<[Principal], [] | [Principal]>,
   'getFeeTo' : ActorMethod<[], Principal>,
   'getOwner' : ActorMethod<[], Principal>,
   'getPair' : ActorMethod<[string, string], [] | [PairInfoExt]>,
@@ -21,9 +20,7 @@ export interface BrownFi {
   'getTokenList' : ActorMethod<[], Array<TokenInfoExt>>,
   'getTokenMetadata' : ActorMethod<[string], TokenAnalyticsInfo>,
   'getUserInfo' : ActorMethod<[Principal], UserInfo>,
-  'quote' : ActorMethod<[Principal, Principal, bigint], QuoteTxReceipt>,
   'setCapId' : ActorMethod<[Principal], boolean>,
-  'setDelegation' : ActorMethod<[Principal], boolean>,
   'setFeeTo' : ActorMethod<[Principal], boolean>,
   'setOwner' : ActorMethod<[Principal], boolean>,
   'setPair' : ActorMethod<[Principal, Principal], TxReceipt>,
@@ -52,15 +49,6 @@ export interface PairInfoExt {
   'qToken' : string,
   'bToken' : string,
   'lpToken' : string,
-}
-export type QuoteTxReceipt = { 'ok' : bigint } |
-  { 'err' : string };
-export interface SwapUpdate {
-  'dy' : bigint,
-  'p1' : bigint,
-  'x1' : bigint,
-  'y1' : bigint,
-  'fee' : bigint,
 }
 export interface TokenAnalyticsInfo {
   'fee' : bigint,

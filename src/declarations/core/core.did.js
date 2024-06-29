@@ -37,14 +37,6 @@ export const idlFactory = ({ IDL }) => {
     'lpBalances' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)),
     'balances' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)),
   });
-  const SwapUpdate = IDL.Record({
-    'dy' : IDL.Nat,
-    'p1' : IDL.Nat,
-    'x1' : IDL.Nat,
-    'y1' : IDL.Nat,
-    'fee' : IDL.Nat,
-  });
-  const QuoteTxReceipt = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const BrownFi = IDL.Service({
     'addLiquidity' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Nat, IDL.Nat, IDL.Int],
@@ -64,11 +56,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'getCapSetting' : IDL.Func([], [CapSettings], []),
-    'getDelegatee' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Opt(IDL.Principal)],
-        ['query'],
-      ),
     'getFeeTo' : IDL.Func([], [IDL.Principal], ['query']),
     'getOwner' : IDL.Func([], [IDL.Principal], ['query']),
     'getPair' : IDL.Func(
@@ -85,13 +72,7 @@ export const idlFactory = ({ IDL }) => {
     'getTokenList' : IDL.Func([], [IDL.Vec(TokenInfoExt)], []),
     'getTokenMetadata' : IDL.Func([IDL.Text], [TokenAnalyticsInfo], ['query']),
     'getUserInfo' : IDL.Func([IDL.Principal], [UserInfo], ['query']),
-    'quote' : IDL.Func(
-        [IDL.Principal, IDL.Principal, IDL.Nat],
-        [QuoteTxReceipt],
-        [],
-      ),
     'setCapId' : IDL.Func([IDL.Principal], [IDL.Bool], []),
-    'setDelegation' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'setFeeTo' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'setOwner' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'setPair' : IDL.Func([IDL.Principal, IDL.Principal], [TxReceipt], []),

@@ -2,7 +2,7 @@
 export ALICE=$(dfx --identity alice identity get-principal)
 export BOB=$(dfx --identity bob identity get-principal)
 export OWNER=$(dfx --identity owner identity get-principal)
-dfx deploy token1 --argument '
+dfx deploy tokenB --argument '
   (variant {
     Init = record {
       token_name = "Token B";

@@ -32,33 +32,33 @@ echo ""
 echo Register and Create: TokenA and TokenB
 echo ================================================================
 echo ""
-eval ./scripts/setToken.sh owner core token0
-eval ./scripts/setToken.sh owner core token1
-eval ./scripts/setPair.sh owner core token0 token1
+eval ./scripts/setToken.sh owner core tokenA
+eval ./scripts/setToken.sh owner core tokenB
+eval ./scripts/setPair.sh owner core tokenA tokenB
 echo ""
 
 echo Approve and Deposit
 echo ================================================================
 echo ""
-eval ./scripts/approve.sh alice token0 core 550000
-eval ./scripts/approve.sh alice token1 core 550000
-eval ./scripts/approve.sh bob token0 core 550000
-eval ./scripts/approve.sh bob token1 core 550000
-eval ./scripts/deposit.sh alice core token0 500000
-eval ./scripts/deposit.sh alice core token1 500000
-eval ./scripts/deposit.sh bob core token1 100000
+eval ./scripts/approve.sh alice tokenA core 550000
+eval ./scripts/approve.sh alice tokenB core 550000
+eval ./scripts/approve.sh bob tokenA core 550000
+eval ./scripts/approve.sh bob tokenB core 550000
+eval ./scripts/deposit.sh alice core tokenA 500000
+eval ./scripts/deposit.sh alice core tokenB 500000
+eval ./scripts/deposit.sh bob core tokenB 100000
 echo ""
 
 echo Add Liquidity
 echo ================================================================
 echo ""
-eval ./scripts/addLiquidity.sh alice core token0 token1 500000 500000 1741447837000000000
+eval ./scripts/addLiquidity.sh alice core tokenA tokenB 500000 500000 1741447837000000000
 echo ""
 
 echo Info Before Swapping
 echo ================================================================
 echo ""
-eval ./scripts/getPair.sh owner core token0 token1
+eval ./scripts/getPair.sh owner core tokenA tokenB
 echo ""
 eval ./scripts/get-user-info.sh bob core
 echo ""
@@ -66,13 +66,13 @@ echo ""
 echo Swap
 echo ================================================================
 echo ""
-eval ./scripts/swap.sh bob core token0 token1 50000 1741447837000000000
+eval ./scripts/swap.sh bob core tokenA tokenB 50000 1741447837000000000
 echo ""
 
 echo Info After Swapping
 echo ================================================================
 echo ""
-eval ./scripts/getPair.sh owner core token0 token1
+eval ./scripts/getPair.sh owner core tokenA tokenB
 echo ""
 eval ./scripts/get-user-info.sh bob core
 echo ""

@@ -31,19 +31,6 @@ type TokenAnalyticsInfo =
    symbol: text;
    totalSupply: nat;
  };
-type SwapUpdate = 
- record {
-   dy: nat;
-   fee: nat;
-   p1: nat;
-   x1: nat;
-   y1: nat;
- };
-type QuoteTxReceipt = 
- variant {
-   err: text;
-   ok: SwapUpdate;
- };
 type PairInfoExt = 
  record {
    bReserve: nat;
@@ -72,7 +59,6 @@ type BrownFi =
    depositTo: (principal, principal, nat) -> (TxReceipt);
    getAmountIn: (principal, principal, nat) -> (TxReceipt);
    getCapSetting: () -> (CapSettings);
-   getDelegatee: (principal) -> (opt principal) query;
    getFeeTo: () -> (principal) query;
    getOwner: () -> (principal) query;
    getPair: (text, text) -> (opt PairInfoExt) query;
@@ -81,14 +67,24 @@ type BrownFi =
    getTokenList: () -> (vec TokenInfoExt);
    getTokenMetadata: (text) -> (TokenAnalyticsInfo) query;
    getUserInfo: (principal) -> (UserInfo) query;
-   quote: (principal, principal, nat) -> (QuoteTxReceipt);
    setCapId: (principal) -> (bool);
-   setDelegation: (principal) -> (bool);
    setFeeTo: (principal) -> (bool);
    setOwner: (principal) -> (bool);
    setPair: (principal, principal) -> (TxReceipt);
    setPairConfig: (text, text, nat, nat, nat) -> (bool);
    setToken: (principal) -> (bool);
+   /// - Swap N tokens of  `qToken` to amount `bToken`
+   ///         - Requirement: 
+   ///             - `msg.caller` can be ANY
+   ///             - `bToken` and `qToken` must be registered by `owner`
+   ///             - A pair, created by `bToken` and `qToken`, must exist
+   ///             - `amount` must be less than the current pool reserve
+   ///         - Params:
+   ///             - `bToken`: the Principal ID of the base token Canister
+   ///             - `qToken`: the Principal ID of the quote token Canister
+   ///             - `amount`: the amount of `bToken` to receive
+   ///             - `deadline`: the deadline of the transaction
+   ///     *
    swap: (principal, principal, nat, int) -> (TxReceipt);
    withdraw: (principal, nat) -> (TxReceipt);
  };

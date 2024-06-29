@@ -1,6 +1,6 @@
 #!/bin/bash
-canister_name=$1
-sender=$2
+sender=$1
+canister_name=$2
 receiver=$3
 amount=$4
 

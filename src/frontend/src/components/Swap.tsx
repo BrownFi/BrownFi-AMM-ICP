@@ -4,7 +4,7 @@ import { css, styled } from "styled-components";
 import { twMerge } from "tailwind-merge";
 import AppBody from "../AppBody";
 import { CoreActorProvider, coreReactor } from "../hooks/coreActor";
-import { Field } from "../model/inputs";
+import { Field, SwapField } from "../model/inputs";
 import { TokenDetails } from "../model/tokens";
 import { colors } from "../theme";
 import { AutoColumn } from "./Column";
@@ -15,7 +15,7 @@ import ConfirmModal from "./Modals/TransactionLoading/TransactionLoading";
 import SwapHeader from "./SwapHeader";
 import toast from "react-hot-toast";
 import { Principal } from "@dfinity/principal";
-import { approve, createLedgerCannister } from "../hooks/ledgerActor";
+import { approve } from "../hooks/ledgerActor";
 import debounce from "debounce";
 
 const LightDiv = styled.div`
@@ -54,53 +54,51 @@ export const ArrowWrapper = styled.div<{ clickable: boolean }>`
 `;
 
 function Swap() {
-  const [isShowInputTokenModal, setShowInputTokenModal] = useState<boolean>(false);
-  const [isShowOuputTokenModal, setShowOutputTokenModal] = useState<boolean>(false);
+  const [isShowPAYTokenModal, setShowPAYTokenModal] = useState<boolean>(false);
+  const [isShowOuputTokenModal, setShowRECEIVETokenModal] = useState<boolean>(false);
   const [isShowConfirmModal, setIsShowConfirmModal] = useState<boolean>(false);
   const [tokens, setTokens] = useState<{
-    [key in Field]: TokenDetails | "";
+    [key in SwapField]: TokenDetails | "";
   }>({
-    [Field.INPUT]: "",
-    [Field.OUTPUT]: "",
+    [SwapField.PAY]: "",
+    [SwapField.RECEIVE]: "",
   });
-  const [tokenAmounts, setTokenAmounts] = useState<{ [key in Field]: string }>({
-    [Field.INPUT]: "",
-    [Field.OUTPUT]: "",
+  const [tokenAmounts, setTokenAmounts] = useState<{ [key in SwapField]: string }>({
+    [SwapField.PAY]: "",
+    [SwapField.RECEIVE]: "",
   });
-  const [quote, setQuote] = useState<string>("0");
 
   const [status, setStatus] = useState<string>("");
-  const handleChangeAmounts = (value: string, independentField: Field) => {
+  const handleChangeAmounts = (value: string, independentField: SwapField) => {
     if (isNaN(+value)) return;
-    if (independentField === Field.INPUT) {
+    if (independentField === SwapField.PAY) {
       toast.error("Not support quote pay token yet")
       return;
     }
 
 
-    if (tokens.INPUT === "" || tokens.OUTPUT === "") {
+    if (tokens.PAY === "" || tokens.RECEIVE === "") {
       setTokenAmounts({
-        [Field.INPUT]: "",
-        [Field.OUTPUT]: value,
+        [SwapField.PAY]: "",
+        [SwapField.RECEIVE]: value,
       });
     } else {
-      const { call: callQuote } = coreReactor.updateCall({
-        functionName: "quote",
+      const { call: getAmountIn } = coreReactor.updateCall({
+        functionName: "getAmountIn",
         args: [
-          Principal.fromText((tokens.INPUT as TokenDetails).address),
-          Principal.fromText((tokens.OUTPUT as TokenDetails).address),
+          Principal.fromText((tokens.RECEIVE as TokenDetails).address),
+          Principal.fromText((tokens.PAY as TokenDetails).address),
           BigInt(value),
         ]
       });
   
-      callQuote()
+      getAmountIn()
         .then(result => {
           if (result.ok) {
             setTokenAmounts({
-              [Field.INPUT]: result.ok?.toString() || "",
-              [Field.OUTPUT]: value,
+              [SwapField.PAY]: result.ok?.toString() || "",
+              [SwapField.RECEIVE]: value,
             });
-            setQuote(result.ok?.toString() || "0")
           } else {
             toast.error(result.err)
           }
@@ -108,41 +106,42 @@ function Swap() {
     }
   };
 
-  const setInputToken = (token: TokenDetails) => {
+  const setPAYToken = (token: TokenDetails) => {
     setTokens({
-      INPUT: token,
-      OUTPUT: tokens.OUTPUT,
+      PAY: token,
+      RECEIVE: tokens.RECEIVE,
     })
   }
 
-  const setOutputToken = (token: TokenDetails) => {
+  const setRECEIVEToken = (token: TokenDetails) => {
     setTokens({
-      INPUT: tokens.INPUT,
-      OUTPUT: token,
+      PAY: tokens.PAY,
+      RECEIVE: token,
     })
   }
 
   const onConfirmSwap = () => {
+    console.log("Will be deposit amount", BigInt(tokenAmounts[SwapField.PAY]).toString());
     const { call: callDeposit } = coreReactor.updateCall({
       functionName: "deposit",
       args: [
-        Principal.fromText((tokens.OUTPUT as TokenDetails).address),
-        BigInt(quote),
+        Principal.fromText((tokens.PAY as TokenDetails).address),
+        BigInt(tokenAmounts[SwapField.PAY]),
       ]
     }); 
 
     const { call: callSwap } = coreReactor.updateCall({
       functionName: "swap",
       args: [
-        Principal.fromText((tokens.INPUT as TokenDetails).address),
-        Principal.fromText((tokens.OUTPUT as TokenDetails).address),
-        BigInt(tokenAmounts[Field.INPUT]),
+        Principal.fromText((tokens.RECEIVE as TokenDetails).address),
+        Principal.fromText((tokens.PAY as TokenDetails).address),
+        BigInt(tokenAmounts[SwapField.PAY]),
         // FIXME: hardcode deadline
         BigInt("1741447837000000000")
       ]
     });
 
-    approve((tokens.OUTPUT as TokenDetails).address, BigInt(quote) * BigInt(10))
+    approve((tokens.PAY as TokenDetails).address, BigInt(tokenAmounts[SwapField.PAY]) * BigInt(10))
       .then(() => callDeposit())
       .then((result) => {
         if (result.err) {
@@ -185,8 +184,8 @@ function Swap() {
             <div className="flex w-full flex-col items-center gap-2">
               <div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4 self-stretch">
                 <div className="flex justify-between items-center self-stretch">
-                  {tokens.INPUT && (<span className="text-base font-medium">{tokens.INPUT.symbol}</span>)}
-                  <span className="text-lg font-normal text-white font-['Russo_One']">You Pay</span>
+                  {tokens.RECEIVE && (<span className="text-base font-medium">{tokens.RECEIVE.symbol}</span>)}
+                  <span className="text-lg font-normal text-white font-['Russo_One']">You Receive</span>
                   <div className="flex items-center gap-1 text-base font-normal">
                     <span>Balance:</span>
                     <span>--</span>
@@ -196,18 +195,17 @@ function Swap() {
                   <div className="flex justify-between items-center self-stretch">
                     <div className="flex justify-between items-center self-stretch">
                       <Input
-                        readOnly
                         placeholder="0.0"
                         className="border-none px-0 text-xl font-bold max-w-[150px] text-[#C6C6C6]"
-                        value={tokenAmounts[Field.INPUT]}
+                        value={tokenAmounts[SwapField.RECEIVE]}
                         onChange={(e) => {
-                          debounce(handleChangeAmounts, 1000)(e.target.value, Field.INPUT)
+                          debounce(handleChangeAmounts, 200)(e.target.value, SwapField.RECEIVE)
                         }}
                       />
                     </div>
                     <div
                       className="flex justify-between items-center bg-[#1D1C21] py-[7px] px-3 cursor-pointer shadow-[0_2px_12px_0px_rgba(11,14,25,0.12)] w-[153px]"
-                      onClick={() => setShowInputTokenModal(true)}
+                      onClick={() => setShowRECEIVETokenModal(true)}
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">--</span>
@@ -225,8 +223,8 @@ function Swap() {
               />
               <div className="flex flex-col items-start gap-5 self-stretch bg-[#131216] p-4">
                 <div className="flex justify-between items-center self-stretch">
-                  {tokens.OUTPUT && (<span className="text-base font-medium">{tokens.OUTPUT.symbol}</span>)}
-                  <span className="text-lg font-normal text-white font-['Russo_One']">Your Receive</span>
+                  {tokens.PAY && (<span className="text-base font-medium">{tokens.PAY.symbol}</span>)}
+                  <span className="text-lg font-normal text-white font-['Russo_One']">Your Pay</span>
                   <div className="flex items-center gap-1 text-base font-normal">
                     <span>Balance:</span>
                     <span>--</span>
@@ -236,19 +234,20 @@ function Swap() {
                   <div className="flex justify-between items-center self-stretch">
                     <div className="flex justify-between items-center self-stretch">
                       <Input
+                        readOnly
                         placeholder="0.0"
                         className={twMerge(
                           "border-none px-0 text-xl max-w-[150px] font-medium text-[#27E3AB]"
                         )}
-                        value={tokenAmounts[Field.OUTPUT]}
+                        value={tokenAmounts[SwapField.PAY]}
                         onChange={(e) => {
-                          debounce(handleChangeAmounts, 1000)(e.target.value, Field.OUTPUT)
+                          debounce(handleChangeAmounts, 200)(e.target.value, SwapField.PAY)
                         }}
                       />
                     </div>
                     <div
                       className="flex justify-between items-center bg-[#1D1C21] py-[7px] px-3 cursor-pointer shadow-[0_2px_12px_0px_rgba(11,14,25,0.12)] w-[153px]"
-                      onClick={() => setShowOutputTokenModal(true)}
+                      onClick={() => setShowPAYTokenModal(true)}
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">--</span>
@@ -265,18 +264,18 @@ function Swap() {
           </AutoColumn>
         </Wrapper>
       </AppBody>
-      {isShowInputTokenModal && (
+      {isShowPAYTokenModal && (
         <SelectTokenModal
-          open={setShowInputTokenModal}
-          setToken={setInputToken}
+          open={setShowPAYTokenModal}
+          setToken={setPAYToken}
         />
       )
       }
       {
         isShowOuputTokenModal && (
           <SelectTokenModal
-            open={setShowOutputTokenModal}
-            setToken={setOutputToken}
+            open={setShowRECEIVETokenModal}
+            setToken={setRECEIVEToken}
           />
         )
       }
