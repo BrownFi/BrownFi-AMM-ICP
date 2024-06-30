@@ -4,7 +4,7 @@ import { css, styled } from "styled-components";
 import { twMerge } from "tailwind-merge";
 import AppBody from "../AppBody";
 import { CoreActorProvider, coreReactor } from "../hooks/coreActor";
-import { Field, SwapField } from "../model/inputs";
+import { SwapField } from "../model/inputs";
 import { TokenDetails } from "../model/tokens";
 import { colors } from "../theme";
 import { AutoColumn } from "./Column";
@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { Principal } from "@dfinity/principal";
 import { approve } from "../hooks/ledgerActor";
 import debounce from "debounce";
+import { isNumber, isEmpty } from "lodash";
 
 const LightDiv = styled.div`
 	color: ${colors().text1};
@@ -53,36 +54,41 @@ export const ArrowWrapper = styled.div<{ clickable: boolean }>`
       : null}
 `;
 
+const isNumeric = (value: any) => {
+  return isNumber(value) || (!isEmpty(value) && !isNaN(value));
+};
+
 function Swap() {
   const [isShowPAYTokenModal, setShowPAYTokenModal] = useState<boolean>(false);
   const [isShowOuputTokenModal, setShowRECEIVETokenModal] = useState<boolean>(false);
   const [isShowConfirmModal, setIsShowConfirmModal] = useState<boolean>(false);
+  const [payTokenAmount, setPayTokenAmount] = useState<string>("");
+  const [receiveTokenAmount, setReceiveTokenAmount] = useState<string>("");
   const [tokens, setTokens] = useState<{
     [key in SwapField]: TokenDetails | "";
   }>({
     [SwapField.PAY]: "",
     [SwapField.RECEIVE]: "",
   });
-  const [tokenAmounts, setTokenAmounts] = useState<{ [key in SwapField]: string }>({
-    [SwapField.PAY]: "",
-    [SwapField.RECEIVE]: "",
-  });
 
-  const [status, setStatus] = useState<string>("");
-  const handleChangeAmounts = (value: string, independentField: SwapField) => {
-    if (isNaN(+value)) return;
-    if (independentField === SwapField.PAY) {
-      toast.error("Not support quote pay token yet")
+  const handlePayTokenAmountChanged = (value: string) => {
+    if (!isNumeric(value)) {
+      toast.error("Invalid number")
       return;
     }
 
+    toast.error("Not support quote pay token yet")
+  }
 
-    if (tokens.PAY === "" || tokens.RECEIVE === "") {
-      setTokenAmounts({
-        [SwapField.PAY]: "",
-        [SwapField.RECEIVE]: value,
-      });
-    } else {
+  const handleReceiveTokenAmountChanged = (value: string) => {
+    if (!isNumeric(value)) {
+      toast.error("Invalid number")
+      setReceiveTokenAmount(value);
+      return;
+    }
+
+    setReceiveTokenAmount(value);
+    if (tokens.PAY && tokens.RECEIVE) {
       const { call: getAmountIn } = coreReactor.updateCall({
         functionName: "getAmountIn",
         args: [
@@ -95,16 +101,51 @@ function Swap() {
       getAmountIn()
         .then(result => {
           if (result.ok) {
-            setTokenAmounts({
-              [SwapField.PAY]: result.ok?.toString() || "",
-              [SwapField.RECEIVE]: value,
-            });
+            setPayTokenAmount(result.ok?.toString())
           } else {
             toast.error(result.err)
           }
         })
     }
-  };
+  }
+
+  const [status, setStatus] = useState<string>("");
+  // const handleChangeAmounts = (value: string, independentField: SwapField) => {
+  //   if (isNaN(+value)) return;
+  //   if (independentField === SwapField.PAY) {
+  //     toast.error("Not support quote pay token yet")
+  //     return;
+  //   }
+
+
+  //   if (tokens.PAY === "" || tokens.RECEIVE === "") {
+  //     setTokenAmounts({
+  //       [SwapField.PAY]: "",
+  //       [SwapField.RECEIVE]: value,
+  //     });
+  //   } else {
+  //     const { call: getAmountIn } = coreReactor.updateCall({
+  //       functionName: "getAmountIn",
+  //       args: [
+  //         Principal.fromText((tokens.RECEIVE as TokenDetails).address),
+  //         Principal.fromText((tokens.PAY as TokenDetails).address),
+  //         BigInt(value),
+  //       ]
+  //     });
+  
+  //     getAmountIn()
+  //       .then(result => {
+  //         if (result.ok) {
+  //           setTokenAmounts({
+  //             [SwapField.PAY]: result.ok?.toString() || "",
+  //             [SwapField.RECEIVE]: value,
+  //           });
+  //         } else {
+  //           toast.error(result.err)
+  //         }
+  //       })
+  //   }
+  // };
 
   const setPAYToken = (token: TokenDetails) => {
     setTokens({
@@ -121,12 +162,12 @@ function Swap() {
   }
 
   const onConfirmSwap = () => {
-    console.log("Will be deposit amount", BigInt(tokenAmounts[SwapField.PAY]).toString());
+    console.log("Will be deposit amount", BigInt(payTokenAmount).toString());
     const { call: callDeposit } = coreReactor.updateCall({
       functionName: "deposit",
       args: [
         Principal.fromText((tokens.PAY as TokenDetails).address),
-        BigInt(tokenAmounts[SwapField.PAY]),
+        BigInt(payTokenAmount),
       ]
     }); 
 
@@ -135,13 +176,13 @@ function Swap() {
       args: [
         Principal.fromText((tokens.RECEIVE as TokenDetails).address),
         Principal.fromText((tokens.PAY as TokenDetails).address),
-        BigInt(tokenAmounts[SwapField.RECEIVE]),
+        BigInt(receiveTokenAmount),
         // FIXME: hardcode deadline
         BigInt("1741447837000000000")
       ]
     });
 
-    approve((tokens.PAY as TokenDetails).address, BigInt(tokenAmounts[SwapField.PAY]) * BigInt(10))
+    approve((tokens.PAY as TokenDetails).address, BigInt(payTokenAmount) * BigInt(10))
       .then(() => callDeposit())
       .then((result) => {
         if (result.err) {
@@ -197,10 +238,8 @@ function Swap() {
                       <Input
                         placeholder="0.0"
                         className="border-none px-0 text-xl font-bold max-w-[150px] text-[#C6C6C6]"
-                        value={tokenAmounts[SwapField.RECEIVE]}
-                        onChange={(e) => {
-                          debounce(handleChangeAmounts, 200)(e.target.value, SwapField.RECEIVE)
-                        }}
+                        value={receiveTokenAmount}
+                        onChange={(e) => handleReceiveTokenAmountChanged(e.target.value)}
                       />
                     </div>
                     <div
@@ -239,9 +278,9 @@ function Swap() {
                         className={twMerge(
                           "border-none px-0 text-xl max-w-[150px] font-medium text-[#27E3AB]"
                         )}
-                        value={tokenAmounts[SwapField.PAY]}
+                        value={payTokenAmount}
                         onChange={(e) => {
-                          debounce(handleChangeAmounts, 200)(e.target.value, SwapField.PAY)
+                          debounce(handlePayTokenAmountChanged, 200)(e.target.value)
                         }}
                       />
                     </div>
