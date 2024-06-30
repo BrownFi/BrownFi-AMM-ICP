@@ -110,42 +110,6 @@ function Swap() {
   }
 
   const [status, setStatus] = useState<string>("");
-  // const handleChangeAmounts = (value: string, independentField: SwapField) => {
-  //   if (isNaN(+value)) return;
-  //   if (independentField === SwapField.PAY) {
-  //     toast.error("Not support quote pay token yet")
-  //     return;
-  //   }
-
-
-  //   if (tokens.PAY === "" || tokens.RECEIVE === "") {
-  //     setTokenAmounts({
-  //       [SwapField.PAY]: "",
-  //       [SwapField.RECEIVE]: value,
-  //     });
-  //   } else {
-  //     const { call: getAmountIn } = coreReactor.updateCall({
-  //       functionName: "getAmountIn",
-  //       args: [
-  //         Principal.fromText((tokens.RECEIVE as TokenDetails).address),
-  //         Principal.fromText((tokens.PAY as TokenDetails).address),
-  //         BigInt(value),
-  //       ]
-  //     });
-  
-  //     getAmountIn()
-  //       .then(result => {
-  //         if (result.ok) {
-  //           setTokenAmounts({
-  //             [SwapField.PAY]: result.ok?.toString() || "",
-  //             [SwapField.RECEIVE]: value,
-  //           });
-  //         } else {
-  //           toast.error(result.err)
-  //         }
-  //       })
-  //   }
-  // };
 
   const setPAYToken = (token: TokenDetails) => {
     setTokens({
