@@ -14,7 +14,12 @@
     "router": {
       "type": "custom",
       "candid": "src/local/cap_router.did",
-      "wasm": "src/local/cap_router.wasm"
+      "wasm": "src/local/cap_router.wasm",
+      "remote": {
+        "id": {
+          "ic": "u4cjn-7qaaa-aaaak-qin3a-cai"
+        }
+      }
     },
     "core": {
       "dependencies": [

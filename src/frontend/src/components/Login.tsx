@@ -4,10 +4,8 @@ import ConnectWallet from "/images/connect-wallet.png";
 import { useAuth } from "@ic-reactor/react";
 import { ConfirmProvider, useConfirm } from "material-ui-confirm";
 import { IDENTITY_PROVIDER } from "../hooks/config";
-import { CoreActorProvider, coreReactor, useCoreQueryCall, useCoreUpdateCall } from "../hooks/coreActor";
-import { useEffect, useState } from "react";
-import ConfirmDelegateeModal from "./Modals/ConfirmDelegatee";
-import { Principal } from "@ic-reactor/core/dist/types";
+import { CoreActorProvider } from "../hooks/coreActor";
+import { useEffect } from "react";
 
 const Web3StatusGeneric = styled(ButtonSecondary)`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -72,7 +70,7 @@ function Login({ asButton }: LoginProps) {
   function handleClick() {
     if (identity?.getPrincipal().isAnonymous()) login({
       identityProvider: IDENTITY_PROVIDER,
-    });
+    })
     else {
       confirm({
         title: "Logout",
@@ -93,10 +91,7 @@ function Login({ asButton }: LoginProps) {
           })
         }}>
           <img src={ConnectWallet} /> &nbsp; {authenticated
-            ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
-              ?.getPrincipal()
-              .toString()
-              .slice(-3)}`
+            ? `${identity?.getPrincipal().toString()}`
             : "Connect Wallet"}
         </ButtonLight>
       </div>
@@ -114,10 +109,7 @@ function Login({ asButton }: LoginProps) {
         <img src={ConnectWallet} />
         <Text>
           {authenticated
-            ? `${identity?.getPrincipal().toString().slice(0, 5)}...${identity
-              ?.getPrincipal()
-              .toString()
-              .slice(-3)}`
+            ? `${identity?.getPrincipal().toString()}`
             : "Connect Wallet"}
         </Text>
       </Web3StatusConnect>
