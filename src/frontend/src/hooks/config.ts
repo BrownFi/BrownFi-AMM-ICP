@@ -1,7 +1,7 @@
 import { createAgentManager } from "@ic-reactor/core";
 
 export const agentManger = createAgentManager({
-    host: import.meta.env.DFX_NETWORK === "local" ? "http://localhost:4943" : "https://ic0.app",
+    host: import.meta.env.DFX_NETWORK === "local" ? "http://localhost:4943" : "https://icp0.io",
 });
 
 export const IDENTITY_PROVIDER = import.meta.env.DFX_NETWORK === "local" ? 

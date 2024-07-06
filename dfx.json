@@ -26,7 +26,12 @@
         "router"
       ],
       "main": "src/backend/BrownFi.mo",
-      "type": "motoko"
+      "type": "motoko",
+      "remote": {
+        "id": {
+          "ic": "fdfr3-fyaaa-aaaak-qiosq-cai"
+        }
+      }
     },
     "frontend": {
       "dependencies": [
@@ -41,12 +46,22 @@
     "tokenA": {
       "type": "custom",
       "candid": "https://raw.githubusercontent.com/dfinity/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/rs/rosetta-api/icrc1/ledger/ledger.did",
-      "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz"
+      "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "fkg2h-tqaaa-aaaak-qiota-cai"
+        }
+      }
     },
     "tokenB": {
       "type": "custom",
       "candid": "https://raw.githubusercontent.com/dfinity/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/rs/rosetta-api/icrc1/ledger/ledger.did",
-      "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz"
+      "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "fnh4t-6iaaa-aaaak-qiotq-cai"
+        }
+      }
     }
   },
   "output_env_file": ".env",
