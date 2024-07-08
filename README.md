@@ -1,6 +1,6 @@
 # BrownFi AMM Introduction
 
-A novel AMM protocol with high CE & tailored market making strategies. We introduce a novel price discovery mechanism called `Elastic PLOB` to customize CE & market making on AMM, while maintaining a simple UX, fungibility, and reusability of LP tokens from Uniswap v2.
+A novel AMM protocol with high Capital Efficiency (aka liquidity concentration) & tailored market making strategies, while keeping a simple UX, fungibility, and reusability of LP tokens from Uniswap v2.
 
 For more information, please check the [BrownFi Introduction](https://github.com/BrownFi/BrownFi-AMM-ICP/blob/main/BrownFi.md)
 
