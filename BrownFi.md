@@ -33,8 +33,8 @@ Visit [BrownFi pitchdeck](https://drive.google.com/file/d/17Wj3WVPcIviDWLH_W5H-X
 ## Math behinds
 The core swap function of BrownFi is based on an invention of a price discovery mechanism: 
 - Given a pair of tokens X and Y, where X is base token (e.g. ETH) and Y is quote token (e.g. USDT). 
-- Assume that the pool reserve has $x_0$ tokens X and $y_0$ tokens Y with the initial price is $P_0=y_0/x_0.$
-- For any trade input of $dx$ into the pool, we compute the average trading price $\bar{P} = P_0 * (1 + 2R/3),$ where $R$ denotes price impact factor.
+- Assume that the pool reserve has $x_0$ tokens X and $y_0$ tokens Y.  
+- For any trade input of $dx$ into the pool, we compute the average trading price $\bar{P} = P * (1 + 2R/3),$ where $R$ denotes price impact factor, and price $P$ is fed by oracle.  
 - Price impact $R=K * f(dx)$ is proportionate to relative order size $dx.$ Parameter $K$ is usually set LARGE for HIGH volatility, and small for low volatility. We prove that for a certain $K$ and a suitable function $f(dx)$, our elastic PLOB model is the same as CPMM model of Uniswap V2.
 - Finally, we compute the trade output based on the input and the computed average trading price.
 > BrownFi AMM is solely based on research papers on Elatic PLOB model, peer-reviewed by scientists in the fields and accepted for publication on [IEEE Access](https://ieeeaccess.ieee.org/), a globally notable academic journal with high impact factor.  
