@@ -3,7 +3,8 @@
 
 ## Fundamental problems
 - Uniswap v2 is simple but low Capital Efficiency (CE)
-- Uniswap v3 has high CE but complicated UX for LPs, non-fungible LP tokens. It requires LPs to manually adjust and redeploy their liquidity bins.
+- Uniswap v3 has high CE but complicated UX for LPs, non-fungible LP tokens. It requires LPs to manually adjust and redeploy their liquidity bins. These are totally not suitable for retail LPs, as well as new L1-ecosystems with thin liquidity.
+
 ## Solution (a novel AMM): transform MM to asset allocation
 We invent a novel AMM model to tailor CE & market making, while keeping simple UX, fungibility & reusability of LP tokens of Uniswap v2.
 
