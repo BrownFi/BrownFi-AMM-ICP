@@ -1,5 +1,5 @@
 # BrownFi AMM Introduction
-**Innovative AMM protocol with high Capital Efficiency (aka liquidity concentration)**  
+**Innovative AMM protocol with high Capital Efficiency (aka liquidity concentration) 100X higher than UniswapV2 and simple UX for retail LPs**  
 
 ## Fundamental problems
 - Uniswap v2 is simple but low Capital Efficiency (CE)
