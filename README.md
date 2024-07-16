@@ -1,10 +1,9 @@
 # BrownFi AMM Introduction
 
-A novel AMM protocol with high Capital Efficiency (aka liquidity concentration) & tailored market making strategies, while keeping a simple UX, fungibility, and reusability of LP tokens from Uniswap v2.
+A novel AMM protocol with high Capital Efficiency (aka liquidity concentration) & tailored market making strategies, while keeping a simple UX, fungibility, and reusability of LP tokens from Uniswap v2. Our simulation shows that BrownFi AMM offers capital efficiency 100X higher than UniswapV2.  
 
 For more information, please check the [BrownFi Introduction](https://github.com/BrownFi/BrownFi-AMM-ICP/blob/main/BrownFi.md)
-
-![ui](./images/docs/ui.png)
+Prototype deployed on ICP https://ehi6j-4yaaa-aaaak-qiouq-cai.icp0.io/
 
 ## Installations
 
