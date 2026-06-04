@@ -8,7 +8,7 @@ export OWNER=$(dfx --identity owner identity get-principal)
 echo Deploy Certified Asset Provenance - CAP Router
 echo ================================================================
 echo ""
-eval ./scripts/deploy-router.sh
+./scripts/deploy-router.sh
 echo ""
 
 echo Deploy BrownFi Core
